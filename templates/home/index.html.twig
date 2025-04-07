@@ -1,0 +1,94 @@
+{# templates/home/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - Hackify{% endblock %}
+
+{% block body %}
+
+  <header id="header" class="header d-flex align-items-center sticky-top" style="background-color: #1b3347;">
+    <div class="container position-relative d-flex align-items-center justify-content-between">
+      <a href="{{ path('app_home') }}" class="logo d-flex align-items-center me-auto me-xl-0">
+        <img src="{{ asset('assets/img/logo.png') }}" alt="logo">
+        <h1 class="sitename">Hackify</h1>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="#hero" class="active">Accueil</a></li>
+          <li><a href="#about">À propos</a></li>
+          <li><a href="#menu">Hackathons</a></li>
+          <li><a href="#events">Organiser</a></li>
+          <li><a href="#chefs">Participer</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+      <a class="btn-getstarted" href="#book-a-table">Connexion / S'inscrire</a>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Hero Section -->
+    <section id="hero" class="hero section">
+      <div class="container">
+        <div class="row gy-4 justify-content-center justify-content-lg-between">
+          <div class="col-lg-5 order-2 order-lg-1 d-flex flex-column justify-content-center">
+            <h1 data-aos="fade-up">Des défis qui font la différence.</h1>
+            <p data-aos="fade-up" data-aos-delay="100">Un espace unique pour découvrir, organiser et vivre des expériences innovantes autour de la technologie et de la créativité.</p>
+            <div class="d-flex" data-aos="fade-up" data-aos-delay="200">
+              <a href="#book-a-table" class="btn-get-started">Découvrir les hackathons</a>
+            </div>
+          </div>
+          <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
+            <img src="{{ asset('assets/img/image.png') }}" class="img-fluid animated" alt="">
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Hero Section -->
+
+    <!-- About Section -->
+    <section id="about" class="about section">
+      <div class="container section-title" data-aos="fade-up">
+        <h2>About Us</h2>
+        <p><span>Learn More</span> <span class="description-title">About Us</span></p>
+      </div>
+
+      <div class="container">
+        <div class="row gy-4">
+          <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
+            <img src="{{ asset('assets/img/about.jpg') }}" class="img-fluid mb-4" alt="">
+            <div class="book-a-table">
+              <h3>Book a Table</h3>
+              <p>+1 5589 55488 55</p>
+            </div>
+          </div>
+          <div class="col-lg-5" data-aos="fade-up" data-aos-delay="250">
+            <div class="content ps-0 ps-lg-5">
+              <p class="fst-italic">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              </p>
+              <ul>
+                <li><i class="bi bi-check-circle-fill"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
+                <li><i class="bi bi-check-circle-fill"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
+                <li><i class="bi bi-check-circle-fill"></i> <span>Trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
+              </ul>
+              <p>
+                Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+              </p>
+              <div class="position-relative mt-4">
+                <img src="{{ asset('assets/img/about-2.jpg') }}" class="img-fluid" alt="">
+                <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox pulsating-play-btn"></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End About Section -->
+
+  </main>
+
+{% endblock %}
