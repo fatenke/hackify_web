@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Hackathons{% endblock %}
+
+{% block body %}
+    <h1>Liste des Hackathons</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                
+                <th>Titre</th>
+                <th>Description</th>
+                <th>Date Début</th>
+                <th>Date Fin</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for hackathon in hackathons %}
+            <tr>
+            
+                <td>{{ hackathon.nom_hackathon }}</td>
+                <td>{{ hackathon.description }}</td>
+                <td>{{ hackathon.date_debut ? hackathon.dateDebut|date('Y-m-d H:i') : '' }}</td>
+                <td>{{ hackathon.date_fin ? hackathon.dateFin|date('Y-m-d H:i') : '' }}</td>
+                <td>
+                    <a href="">Voir</a> |
+                    <a href="{{ path('modifier_hackathon', { id: hackathon.id_hackathon }) }}">Modifier</a> |
+                    <form method="post" action="{{ path('supprimer_hackathon', {id: hackathon.id_hackathon}) }}" style="display:inline;" onsubmit="return confirm('Es-tu sûr(e) ?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('supprimer' ~ hackathon.id_hackathon) }}">
+                     <button class="btn btn-link p-0 m-0 align-baseline">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">Aucun hackathon trouvé.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('ajouter_hackathon') }}" class="btn btn-success">Ajouter un nouveau Hackathon</a>
+{% endblock %}

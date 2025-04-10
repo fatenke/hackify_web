@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - Hackify{% endblock %}
+
+{% block body %}
+  <!-- Début du contenu de la page d'accueil -->
+  <section id="hero" class="hero section">
+    <div class="container">
+      <h1>Bienvenue sur Hackify</h1>
+      <p>Rejoignez nos hackathons et découvrez des événements innovants.</p>
+    </div>
+  </section>
+
+  <section id="hackathons">
+    <h2>Nos Hackathons</h2>
+    {% for hackathon in hackathons %}
+      <div class="hackathon-card">
+        <h3>{{ hackathon.nom_hackathon }}</h3>
+        <p>{{ hackathon.description }}</p>
+        <a href="#" class="btn btn-primary">Détails</a>
+      </div>
+    {% else %}
+      <p>Aucun hackathon disponible pour le moment.</p>
+    {% endfor %}
+  </section>
+
+  <!-- Autres sections de la page -->
+{% endblock %}
