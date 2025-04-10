@@ -2,107 +2,117 @@
 
 namespace App\Entity;
 
+use App\Repository\VoteRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-use App\Entity\Hackathon;
-
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: VoteRepository::class)]
 class Vote
 {
-
     #[ORM\Id]
-    #[ORM\Column(type: "integer")]
-    private int $id;
+    #[ORM\GeneratedValue]
+    #[ORM\Column(name: 'id')]
+    private ?int $id = null;
 
-        #[ORM\ManyToOne(targetEntity: Evaluation::class, inversedBy: "votes")]
-    #[ORM\JoinColumn(name: 'idEvaluation', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Evaluation $idEvaluation;
+    #[ORM\Column(name: 'idEvaluation')]
+    private ?int $idEvaluation = null;
 
-        #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "votes")]
-    #[ORM\JoinColumn(name: 'idVotant', referencedColumnName: 'id_user', onDelete: 'CASCADE')]
-    private User $idVotant;
+    #[ORM\Column(name: 'idVotant')]
+    private ?int $idVotant = null;
 
-        #[ORM\ManyToOne(targetEntity: Projets::class, inversedBy: "votes")]
-    #[ORM\JoinColumn(name: 'idProjet', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Projets $idProjet;
+    #[ORM\Column(name: 'idProjet')]
+    private ?int $idProjet = null;
 
-        #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: "votes")]
-    #[ORM\JoinColumn(name: 'idHackathon', referencedColumnName: 'id_hackathon', onDelete: 'CASCADE')]
-    private Hackathon $idHackathon;
+    #[ORM\Column(name: 'idHackathon')]
+    private ?int $idHackathon = null;
 
-    #[ORM\Column(type: "float")]
-    private float $valeurVote;
+    #[ORM\Column(name: 'valeurVote')]
+    private ?float $valeurVote = null;
 
-    #[ORM\Column(type: "date")]
-    private \DateTimeInterface $date;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $date = null;
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId($value)
+    public function setId(int $id): static
     {
-        $this->id = $value;
+        $this->id = $id;
+
+        return $this;
     }
 
-    public function getIdEvaluation()
+    public function getIdEvaluation(): ?int
     {
         return $this->idEvaluation;
     }
 
-    public function setIdEvaluation($value)
+    public function setIdEvaluation(int $idEvaluation): static
     {
-        $this->idEvaluation = $value;
+        $this->idEvaluation = $idEvaluation;
+
+        return $this;
     }
 
-    public function getIdVotant()
+    public function getIdVotant(): ?int
     {
         return $this->idVotant;
     }
 
-    public function setIdVotant($value)
+    public function setIdVotant(int $idVotant): static
     {
-        $this->idVotant = $value;
+        $this->idVotant = $idVotant;
+
+        return $this;
     }
 
-    public function getIdProjet()
+    public function getIdProjet(): ?int
     {
         return $this->idProjet;
     }
 
-    public function setIdProjet($value)
+    public function setIdProjet(int $idProjet): static
     {
-        $this->idProjet = $value;
+        $this->idProjet = $idProjet;
+
+        return $this;
     }
 
-    public function getIdHackathon()
+    public function getIdHackathon(): ?int
     {
         return $this->idHackathon;
     }
 
-    public function setIdHackathon($value)
+    public function setIdHackathon(int $idHackathon): static
     {
-        $this->idHackathon = $value;
+        $this->idHackathon = $idHackathon;
+
+        return $this;
     }
 
-    public function getValeurVote()
+    public function getValeurVote(): ?float
     {
         return $this->valeurVote;
     }
 
-    public function setValeurVote($value)
+    public function setValeurVote(float $valeurVote): static
     {
-        $this->valeurVote = $value;
+        $this->valeurVote = $valeurVote;
+
+        return $this;
     }
 
-    public function getDate()
+    public function getDate(): ?\DateTimeInterface
     {
         return $this->date;
     }
 
-    public function setDate($value)
+    public function setDate(\DateTimeInterface $date): static
     {
-        $this->date = $value;
+        $this->date = $date;
+
+        return $this;
     }
 }

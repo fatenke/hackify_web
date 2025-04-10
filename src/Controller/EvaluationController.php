@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Evaluation;
+use App\Form\EvaluationType;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class EvaluationController extends AbstractController
+{
+  #[Route('/evaluation/add', name: 'evaluation_add')]
+  public function add(Request $request, EntityManagerInterface $entityManager): Response
+  {
+    $evaluation = new Evaluation();
+    $form = $this->createForm(EvaluationType::class, $evaluation);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+      $entityManager->persist($evaluation);
+      $entityManager->flush();
+
+
+
+      return $this->redirectToRoute('evaluation_list');
+    }
+
+    return $this->render('addEvaluation.html.twig', [
+      'form' => $form->createView(),
+    ]);
+  }
+  #[Route('/evaluation/list', name: 'evaluation_list')]
+  public function list(EntityManagerInterface $entityManager): Response
+  {
+    $evaluations = $entityManager->getRepository(Evaluation::class)->findAll();
+
+    return $this->render('listEvaluation.html.twig', [
+      'evaluations' => $evaluations
+    ]);
+  }
+  #[Route('/evaluation/edit/{id}', name: 'evaluation_edit')]
+  public function edit(Request $request, EntityManagerInterface $entityManager, int $id): Response
+  {
+    $evaluation = $entityManager->getRepository(Evaluation::class)->find($id);
+
+    if (!$evaluation) {
+      throw $this->createNotFoundException('Evaluation not found');
+    }
+
+    $form = $this->createForm(EvaluationType::class, $evaluation);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+      $entityManager->flush();
+      $this->addFlash('success', 'Evaluation updated successfully!');
+      return $this->redirectToRoute('evaluation_list');
+    }
+
+    return $this->render('editEvaluation.html.twig', [
+      'form' => $form->createView(),
+      'evaluation' => $evaluation
+    ]);
+  }
+
+  #[Route('/evaluation/delete/{id}', name: 'evaluation_delete')]
+  public function delete(EntityManagerInterface $entityManager, int $id): Response
+  {
+    $evaluation = $entityManager->getRepository(Evaluation::class)->find($id);
+
+    if ($evaluation) {
+      $entityManager->remove($evaluation);
+      $entityManager->flush();
+      $this->addFlash('success', 'Evaluation deleted successfully!');
+    }
+
+    return $this->redirectToRoute('evaluation_list');
+  }
+}

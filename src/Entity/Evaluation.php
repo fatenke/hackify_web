@@ -2,138 +2,117 @@
 
 namespace App\Entity;
 
+use App\Repository\EvaluationRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-use App\Entity\Projets;
-use Doctrine\Common\Collections\Collection;
-use App\Entity\Vote;
-
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: EvaluationRepository::class)]
 class Evaluation
 {
-
     #[ORM\Id]
-    #[ORM\Column(type: "integer")]
-    private int $id;
+    #[ORM\GeneratedValue]
+    #[ORM\Column(name: 'id')]
+    private ?int $id = null;
 
-        #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "evaluations")]
-    #[ORM\JoinColumn(name: 'idJury', referencedColumnName: 'id_user', onDelete: 'CASCADE')]
-    private User $idJury;
+    #[ORM\Column(name: 'idJury')]  // Match your actual DB column name
+    private ?int $idJury = null;
 
-        #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: "evaluations")]
-    #[ORM\JoinColumn(name: 'idHackathon', referencedColumnName: 'id_hackathon', onDelete: 'CASCADE')]
-    private Hackathon $idHackathon;
+    #[ORM\Column(name: 'idHackathon')]
+    private ?int $idHackathon = null;
 
-        #[ORM\ManyToOne(targetEntity: Projets::class, inversedBy: "evaluations")]
-    #[ORM\JoinColumn(name: 'idProjet', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Projets $idProjet;
+    #[ORM\Column(name: 'idProjet')]
+    private ?int $idProjet = null;
 
-    #[ORM\Column(type: "float")]
-    private float $NoteTech;
+    #[ORM\Column(name: 'NoteTech')]
+    private ?float $NoteTech = null;
 
-    #[ORM\Column(type: "float")]
-    private float $NoteInnov;
+    #[ORM\Column(name: 'NoteInnov')]
+    private ?float $NoteInnov = null;
 
-    #[ORM\Column(type: "date")]
-    private \DateTimeInterface $date;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $date = null;
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId($value)
+    public function setId(int $id): static
     {
-        $this->id = $value;
+        $this->id = $id;
+
+        return $this;
     }
 
-    public function getIdJury()
+    public function getIdJury(): ?int
     {
         return $this->idJury;
     }
 
-    public function setIdJury($value)
+    public function setIdJury(int $idJury): static
     {
-        $this->idJury = $value;
+        $this->idJury = $idJury;
+
+        return $this;
     }
 
-    public function getIdHackathon()
+    public function getIdHackathon(): ?int
     {
         return $this->idHackathon;
     }
 
-    public function setIdHackathon($value)
+    public function setIdHackathon(int $idHackathon): static
     {
-        $this->idHackathon = $value;
+        $this->idHackathon = $idHackathon;
+
+        return $this;
     }
 
-    public function getIdProjet()
+    public function getIdProjet(): ?int
     {
         return $this->idProjet;
     }
 
-    public function setIdProjet($value)
+    public function setIdProjet(int $idProjet): static
     {
-        $this->idProjet = $value;
+        $this->idProjet = $idProjet;
+
+        return $this;
     }
 
-    public function getNoteTech()
+    public function getNoteTech(): ?float
     {
         return $this->NoteTech;
     }
 
-    public function setNoteTech($value)
+    public function setNoteTech(float $NoteTech): static
     {
-        $this->NoteTech = $value;
+        $this->NoteTech = $NoteTech;
+
+        return $this;
     }
 
-    public function getNoteInnov()
+    public function getNoteInnov(): ?float
     {
         return $this->NoteInnov;
     }
 
-    public function setNoteInnov($value)
+    public function setNoteInnov(float $NoteInnov): static
     {
-        $this->NoteInnov = $value;
+        $this->NoteInnov = $NoteInnov;
+
+        return $this;
     }
 
-    public function getDate()
+    public function getDate(): ?\DateTimeInterface
     {
         return $this->date;
     }
 
-    public function setDate($value)
+    public function setDate(\DateTimeInterface $date): static
     {
-        $this->date = $value;
+        $this->date = $date;
+
+        return $this;
     }
-
-    #[ORM\OneToMany(mappedBy: "idEvaluation", targetEntity: Vote::class)]
-    private Collection $votes;
-
-        public function getVotes(): Collection
-        {
-            return $this->votes;
-        }
-    
-        public function addVote(Vote $vote): self
-        {
-            if (!$this->votes->contains($vote)) {
-                $this->votes[] = $vote;
-                $vote->setIdEvaluation($this);
-            }
-    
-            return $this;
-        }
-    
-        public function removeVote(Vote $vote): self
-        {
-            if ($this->votes->removeElement($vote)) {
-                // set the owning side to null (unless already changed)
-                if ($vote->getIdEvaluation() === $this) {
-                    $vote->setIdEvaluation(null);
-                }
-            }
-    
-            return $this;
-        }
 }
