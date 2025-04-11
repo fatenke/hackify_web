@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hackathons{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Hackathons</h1>
+
+        <a href="{{ path('app_hackathon_new') }}" class="btn btn-primary mb-3">Create New Hackathon</a>
+
+        <div class="row">
+            {% for hackathon in hackathons %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ hackathon.nom_hackathon }}</h5>
+                            <p class="card-text">{{ hackathon.description }}</p>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    From {{ hackathon.date_debut|date('Y-m-d H:i') }} to {{ hackathon.date_fin|date('Y-m-d H:i') }}
+                                </small>
+                            </p>
+                            <p class="card-text">
+                                <strong>Location:</strong> {{ hackathon.lieu }}<br>
+                                <strong>Theme:</strong> {{ hackathon.theme }}
+                            </p>
+                            <div class="btn-group">
+                                <a href="{{ path('app_hackathon_show', {'id': hackathon.id_hackathon}) }}" class="btn btn-info">Show</a>
+                                <a href="{{ path('app_hackathon_edit', {'id': hackathon.id_hackathon}) }}" class="btn btn-warning">Edit</a>
+                                <form method="post" action="{{ path('app_hackathon_delete', {'id': hackathon.id_hackathon}) }}" style="display: inline-block;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ hackathon.id_hackathon) }}">
+                                    <button class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this hackathon?')">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <p>No hackathons found.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %} 
