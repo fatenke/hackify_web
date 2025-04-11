@@ -23,24 +23,35 @@ class EvaluationController extends AbstractController
       $entityManager->persist($evaluation);
       $entityManager->flush();
 
-
-
-      return $this->redirectToRoute('evaluation_list');
+      return $this->redirectToRoute('evaluation_add');
     }
 
     return $this->render('addEvaluation.html.twig', [
       'form' => $form->createView(),
     ]);
   }
+
   #[Route('/evaluation/list', name: 'evaluation_list')]
   public function list(EntityManagerInterface $entityManager): Response
   {
-    $evaluations = $entityManager->getRepository(Evaluation::class)->findAll();
+    // Get all evaluations along with their associated votes
+    $evaluations = $entityManager->getRepository(Evaluation::class)
+      ->findBy([], ['id' => 'ASC']); // Retrieve all evaluations
+
+    // Optionally, load votes for each evaluation. If you have a lot of data, consider using a JOIN query to improve performance.
+    $evaluationVoteMap = [];
+    foreach ($evaluations as $evaluation) {
+      // Get the collection of votes for this evaluation
+      $votes = $evaluation->getVotes(); // This is a PersistentCollection of Vote objects
+      $evaluationVoteMap[$evaluation->getId()] = $votes;
+    }
 
     return $this->render('listEvaluation.html.twig', [
-      'evaluations' => $evaluations
+      'evaluations' => $evaluations, // Pass the evaluations with votes to the template
+      'evaluationVoteMap' => $evaluationVoteMap, // Optionally, map votes for easy access in the template
     ]);
   }
+
   #[Route('/evaluation/edit/{id}', name: 'evaluation_edit')]
   public function edit(Request $request, EntityManagerInterface $entityManager, int $id): Response
   {

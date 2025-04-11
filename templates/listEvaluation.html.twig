@@ -25,6 +25,8 @@
 						<th scope="col">Tech Note</th>
 						<th scope="col">Innovation Note</th>
 						<th scope="col">Date</th>
+						<th scope="col">Votes</th>
+						<!-- New column for displaying votes -->
 						<th scope="col" class="text-center">Actions</th>
 					</tr>
 				</thead>
@@ -38,6 +40,18 @@
 							<td>{{ evaluation.NoteTech }}</td>
 							<td>{{ evaluation.NoteInnov }}</td>
 							<td>{{ evaluation.date|date('Y-m-d') }}</td>
+							<td>
+								<ul>
+									{% for vote in evaluation.getVotes() %}
+										<li>Vote ID:
+											{{ vote.id }}
+											- Value:
+											{{ vote.valeurVote }}</li>
+									{% else %}
+										<li>No votes for this evaluation.</li>
+									{% endfor %}
+								</ul>
+							</td>
 							<td class="text-center">
 								<a href="{{ path('evaluation_edit', {'id': evaluation.id}) }}" class="btn btn-sm btn-outline-primary me-1">Edit</a>
 								<a href="{{ path('evaluation_delete', {'id': evaluation.id}) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this evaluation?')">Delete</a>

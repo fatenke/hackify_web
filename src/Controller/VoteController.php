@@ -23,7 +23,7 @@ class VoteController extends AbstractController
       $entityManager->persist($vote);
       $entityManager->flush();
       $this->addFlash('success', 'Vote added successfully!');
-      return $this->redirectToRoute('vote_list');
+      return $this->redirectToRoute('vote_add');
     }
 
     return $this->render('addVote.html.twig', [
