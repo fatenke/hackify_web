@@ -5,6 +5,10 @@ namespace App\Entity;
 use App\Repository\VoteRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Evaluation;
+use App\Entity\Hackathon;
+use App\Entity\Projet;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: VoteRepository::class)]
 class Vote
@@ -14,23 +18,37 @@ class Vote
     #[ORM\Column(name: 'id')]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'idEvaluation')]
-    private ?int $idEvaluation = null;
+    #[ORM\ManyToOne(targetEntity: Evaluation::class, inversedBy: 'votes')]
+    #[ORM\JoinColumn(name: 'idEvaluation', referencedColumnName: 'id')]
+    #[Assert\NotBlank(message: "Evaluation must not be blank.")]
+    private ?Evaluation $idEvaluation = null;
 
     #[ORM\Column(name: 'idVotant')]
+    #[Assert\NotBlank(message: "Voter ID must not be blank.")]
     private ?int $idVotant = null;
 
-    #[ORM\Column(name: 'idProjet')]
-    private ?int $idProjet = null;
+    #[ORM\ManyToOne(targetEntity: Projet::class)]
+    #[ORM\JoinColumn(name: 'idProjet', referencedColumnName: 'id')]
+    #[Assert\NotBlank(message: "Project must not be blank.")]
+    private ?Projet $idProjet = null;
 
-    #[ORM\Column(name: 'idHackathon')]
-    private ?int $idHackathon = null;
+    #[ORM\ManyToOne(targetEntity: Hackathon::class)]
+    #[ORM\JoinColumn(name: 'idHackathon', referencedColumnName: 'id')]
+    #[Assert\NotBlank(message: "Hackathon must not be blank.")]
+    private ?Hackathon $idHackathon = null;
 
     #[ORM\Column(name: 'valeurVote')]
+    #[Assert\NotBlank(message: "Vote value must not be blank.")]
     private ?float $valeurVote = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotBlank(message: "Date must not be blank.")]
     private ?\DateTimeInterface $date = null;
+
+    public function __construct()
+    {
+        $this->date = new \DateTime(); // today's date as default
+    }
 
     public function getId(): ?int
     {
@@ -40,19 +58,17 @@ class Vote
     public function setId(int $id): static
     {
         $this->id = $id;
-
         return $this;
     }
 
-    public function getIdEvaluation(): ?int
+    public function getIdEvaluation(): ?Evaluation
     {
         return $this->idEvaluation;
     }
 
-    public function setIdEvaluation(int $idEvaluation): static
+    public function setIdEvaluation(?Evaluation $idEvaluation): static
     {
         $this->idEvaluation = $idEvaluation;
-
         return $this;
     }
 
@@ -64,31 +80,28 @@ class Vote
     public function setIdVotant(int $idVotant): static
     {
         $this->idVotant = $idVotant;
-
         return $this;
     }
 
-    public function getIdProjet(): ?int
+    public function getIdProjet(): ?Projet
     {
         return $this->idProjet;
     }
 
-    public function setIdProjet(int $idProjet): static
+    public function setIdProjet(?Projet $idProjet): static
     {
         $this->idProjet = $idProjet;
-
         return $this;
     }
 
-    public function getIdHackathon(): ?int
+    public function getIdHackathon(): ?Hackathon
     {
         return $this->idHackathon;
     }
 
-    public function setIdHackathon(int $idHackathon): static
+    public function setIdHackathon(?Hackathon $idHackathon): static
     {
         $this->idHackathon = $idHackathon;
-
         return $this;
     }
 
@@ -100,7 +113,6 @@ class Vote
     public function setValeurVote(float $valeurVote): static
     {
         $this->valeurVote = $valeurVote;
-
         return $this;
     }
 
@@ -112,7 +124,6 @@ class Vote
     public function setDate(\DateTimeInterface $date): static
     {
         $this->date = $date;
-
         return $this;
     }
 }
