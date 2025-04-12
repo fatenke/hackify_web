@@ -12,6 +12,7 @@ class HackathonType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            /*->add('id_organisateur')*/
             ->add('nom_hackathon')
             ->add('description')
             ->add('date_debut', null, [

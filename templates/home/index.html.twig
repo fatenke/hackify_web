@@ -3,26 +3,151 @@
 {% block title %}Accueil - Hackify{% endblock %}
 
 {% block body %}
-  <!-- Début du contenu de la page d'accueil -->
+  
   <section id="hero" class="hero section">
-    <div class="container">
-      <h1>Bienvenue sur Hackify</h1>
-      <p>Rejoignez nos hackathons et découvrez des événements innovants.</p>
-    </div>
-  </section>
-
-  <section id="hackathons">
-    <h2>Nos Hackathons</h2>
-    {% for hackathon in hackathons %}
-      <div class="hackathon-card">
-        <h3>{{ hackathon.nom_hackathon }}</h3>
-        <p>{{ hackathon.description }}</p>
-        <a href="#" class="btn btn-primary">Détails</a>
+  <div class="container">
+    <div class="row gy-4 justify-content-center justify-content-lg-between">
+      <div class="col-lg-5 order-2 order-lg-1 d-flex flex-column justify-content-center">
+        <h1 data-aos="fade-up">Des défis qui font la différence.</h1>
+        <p data-aos="fade-up" data-aos-delay="100">
+          Un espace unique pour découvrir, organiser et vivre des expériences innovantes autour de la technologie et de la créativité.
+        </p>
+        <div class="d-flex" data-aos="fade-up" data-aos-delay="200">
+          <a href="/hackathon" class="btn-get-started">Découvrir les hackathons</a>
+        </div>
       </div>
-    {% else %}
-      <p>Aucun hackathon disponible pour le moment.</p>
-    {% endfor %}
-  </section>
+      <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
+        <img src="{{ asset('assets/img/image1.png') }}" class="img-fluid animated" alt="">
+      </div>
+    </div>
+  </div>
+</section>
 
-  <!-- Autres sections de la page -->
+
+<section id="about" class="about section">
+
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>À propos de nous</h2>
+    <p><span>Découvrez</span> <span class="description-title">notre mission</span></p>
+  </div><!-- End Section Title -->
+
+  <div class="container">
+    <div class="row gy-4">
+      <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
+        <img src="assets/img/about.png" class="img-fluid mb-4" alt="">
+        <div class="book-a-table">
+          <h3>Contact</h3>
+          <p>contact@hackify.tn</p>
+        </div>
+      </div>
+      <div class="col-lg-5" data-aos="fade-up" data-aos-delay="250">
+        <div class="content ps-0 ps-lg-5">
+          <p class="fst-italic">
+            Hackify est une plateforme dédiée à la découverte, l’organisation et la participation à des hackathons innovants. 
+          </p>
+          <ul>
+            <li><i class="bi bi-check-circle-fill"></i> <span>Encourager l'innovation à travers des défis technologiques.</span></li>
+            <li><i class="bi bi-check-circle-fill"></i> <span>Créer un espace collaboratif pour les talents, les passionnés et les entreprises.</span></li>
+            <li><i class="bi bi-check-circle-fill"></i> <span>Faciliter l'organisation et la gestion des hackathons avec des outils intuitifs.</span></li>
+          </ul>
+          <p>
+            Nous croyons en la force de la communauté et à la magie des idées qui se transforment en projets concrets. Chez Hackify, chaque ligne de code est une opportunité de changer le monde.
+          </p>
+
+          <div class="position-relative mt-4">
+            <img src="assets/img/about-2.jpg" class="img-fluid" alt="">
+            <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox pulsating-play-btn"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+
+ <!-- Hackathon Section -->
+<section id="hackathons" class="hackathon section">
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Nos Hackathons</h2>
+    <p><span>Découvrez nos </span> <span class="description-title">hackathons passionnants</span></p>
+  </div><!-- End Section Title -->
+
+  <div class="container">
+    <ul class="nav nav-tabs d-flex justify-content-center" data-aos="fade-up" data-aos-delay="100">
+      <li class="nav-item">
+        <a class="nav-link active show" data-bs-toggle="tab" data-bs-target="#hackathon-upcoming">
+          <h4>à venir</h4>
+        </a>
+      </li><!-- End tab nav item -->
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" data-bs-target="#hackathon-past">
+          <h4>Past</h4>
+        </a><!-- End tab nav item -->
+      </li>
+    </ul>
+
+    <div class="tab-content" data-aos="fade-up" data-aos-delay="200">
+      <!-- Upcoming Hackathons -->
+      <div class="tab-pane fade active show" id="hackathon-upcoming">
+        <div class="tab-header text-center">
+          <h3>Nos hackathons à ne pas manquer</h3>
+        </div>
+
+        <div class="row gy-5">
+          {% for hackathon in hackathons %}
+            {% if hackathon.date_debut > "now"|date("Y-m-d") %}
+              <div class="col-lg-4">
+                <div class="hackathon-card">
+                  <div class="card-body">
+                    <h5 class="card-title">{{ hackathon.nom_hackathon }}</h5>
+                    <p class="card-text">{{ hackathon.description }}</p>
+                    <p class="card-date">{{ hackathon.date_debut|date("F j, Y") }} - {{ hackathon.date_fin|date("F j, Y") }}</p>
+                    <div>
+                      <a href="{{ path('hackathon_details', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Détails</a>
+                      <a href="#" class="btn btn-primary">Participer</a>
+                    </div> 
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+      
+      <!-- End Upcoming Hackathons -->
+
+      <!-- Past Hackathons -->
+      <div class="tab-pane fade" id="hackathon-past">
+        <div class="tab-header text-center">
+          <h3>Nos anciens hackathons</h3>
+        </div>
+
+        <div class="row gy-5">
+          {% for hackathon in hackathons %}
+            {% if hackathon.date_debut <= "now"|date("Y-m-d") %}
+              <div class="col-lg-4">
+                <div class="hackathon-card">
+                  <div class="card-body">
+                    <h5 class="card-title">{{ hackathon.nom_hackathon }}</h5>
+                    <p class="card-text">{{ hackathon.description }}</p>
+                    <p class="card-date">{{ hackathon.date_debut|date("F j, Y") }} - {{ hackathon.date_fin|date("F j, Y") }}</p>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+ 
+      </div>
+      <!-- End Past Hackathons -->
+
+    </div>
+  </div>
+</section>
+<!-- /Hackathon Section -->
+
+
+
 {% endblock %}

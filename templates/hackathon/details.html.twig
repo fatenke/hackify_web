@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails du Hackathon{% endblock %}
+
+{% block body %}
+<section class="section">
+  <div class="container">
+    <h2 class="mb-4">{{ hackathon.nom_hackathon }}</h2>
+    <p><strong>Lieu :</strong> {{ hackathon.lieu }}</p>
+    <p><strong>Date de début :</strong> {{ hackathon.date_debut ? hackathon.date_debut|date('d/m/Y') : 'N/A' }}</p>
+    <p><strong>Date de fin :</strong> {{ hackathon.date_fin ? hackathon.date_fin|date('d/m/Y') : 'N/A' }}</p>
+    <p><strong>Description :</strong> {{ hackathon.description }}</p>
+
+    <a href="{{ path('app_home') }}" class="btn btn-secondary mt-3">← Retour à l'accueil</a>
+  </div>
+</section>
+{% endblock %}

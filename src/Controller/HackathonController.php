@@ -25,7 +25,7 @@ final class HackathonController extends AbstractController
             'controller_name' => 'HackathonController',
         ]);
     }*/
-    #[Route('ajouter', name: 'ajouter_hackathon')]
+    #[Route('hackathon/ajouter', name: 'ajouter_hackathon')]
     public function ajouter(Request $request, EntityManagerInterface $em): Response
     {
         $hackathon = new Hackathon();
@@ -51,6 +51,22 @@ final class HackathonController extends AbstractController
     
         return $this->render('hackathon/afficher.html.twig', [
             'hackathons' => $hackathons,
+        ]);
+    }
+
+    #[Route('/hackathon/{id}', name:'hackathon_details')]
+    public function details($id, HackathonRepository $hackathonRepository): Response
+    {
+        // Trouver le hackathon par son ID
+        $hackathon = $hackathonRepository->find($id);
+
+        // Si le hackathon n'est pas trouvé, rediriger vers la liste des hackathons
+        if (!$hackathon) {
+            return $this->redirectToRoute('hackathons_index');
+        }
+
+        return $this->render('hackathon/details.html.twig', [
+            'hackathon' => $hackathon,
         ]);
     }
     
