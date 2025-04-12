@@ -8,11 +8,20 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class ParticipationController extends AbstractController
 {
-    #[Route('/participation', name: 'app_participation')]
-    public function index(): Response
-    {
-        return $this->render('participation/index.html.twig', [
-            'controller_name' => 'ParticipationController',
-        ]);
-    }
+    #[Route('/hackathon/{id}/participer', name: 'hackathon_participer')]
+public function participer(
+    Hackathon $hackathon,
+    EntityManagerInterface $em
+): Response {
+    $participation = new Participation();
+    $participation->setHackathon($hackathon);
+    $participation->setDateParticipation(new \DateTime());
+
+    $em->persist($participation);
+    $em->flush();
+
+    $this->addFlash('success', 'Vous êtes inscrit(e) à ce hackathon !');
+
+    return $this->redirectToRoute('hackathon_details', ['id' => $hackathon->getId()]);
+}
 }
