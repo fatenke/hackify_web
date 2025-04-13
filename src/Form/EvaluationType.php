@@ -34,8 +34,8 @@ class EvaluationType extends AbstractType
                 'placeholder' => 'Choose a project',
                 'attr' => ['class' => 'form-control'],
             ])
-            ->add('NoteTech')
-            ->add('NoteInnov')
+            ->add('noteTech')
+            ->add('noteInnov')
             ->add('date', null, [
                 'widget' => 'single_text',
             ])
