@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Participants - {{ hackathon.nom_hackathon }}{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+  <h2>Participants au hackathon : {{ hackathon.nom_hackathon }}</h2>
+  
+  {% if participations is empty %}
+    <p>Aucun participant pour le moment.</p>
+  {% else %}
+      <p>Les participant</p>
+      
+    </ul>
+  {% endif %}
+</div>
+{% endblock %}

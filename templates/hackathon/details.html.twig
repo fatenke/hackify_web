@@ -10,12 +10,19 @@
     <p><strong>Date de début :</strong> {{ hackathon.date_debut ? hackathon.date_debut|date('d/m/Y') : 'N/A' }}</p>
     <p><strong>Date de fin :</strong> {{ hackathon.date_fin ? hackathon.date_fin|date('d/m/Y') : 'N/A' }}</p>
     <p><strong>Description :</strong> {{ hackathon.description }}</p>
+    <div>
     <a href="{{ path('hackathon_participer', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Participer</a>
+    </div>
+    <br>
+    <div>
     <a href="{{ path('modifier_hackathon', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Modifier</a>
     <form method="post" action="{{ path('supprimer_hackathon', {id: hackathon.id_hackathon}) }}" style="display:inline;" onsubmit="return confirm('Es-tu sûr(e) ?');">
                     <input type="hidden" name="_token" value="{{ csrf_token('supprimer' ~ hackathon.id_hackathon) }}">
                      <button class="btn btn-primary">Supprimer</button>
                     </form>
+                    <a href="{{ path('voir_participants', { id: hackathon.id_hackathon}) }}" class="btn btn-primary ms-2" style="background-color: #D291BC;">Voir les participants</a>
+
+                    </div>
     
     <br>
 
