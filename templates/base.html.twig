@@ -52,7 +52,7 @@
 						<a class="nav-link" href="{{ path('evaluation_add') }}">Add Evaluation</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="{{ path('backend_dashboard') }}">Backend</a>
+						<a class="nav-link backend-link" href="{{ path('backend_dashboard') }}">Backend</a>
 					</li>
 				</ul>
 			</div>
@@ -69,5 +69,25 @@
 		<script src="{{ asset('assets/vendor/swiper/swiper-bundle.min.js') }}"></script>
 		<script src="{{ asset('assets/js/main.js') }}"></script>
 
+		<script>
+			// Add password protection to the backend link
+document.addEventListener('DOMContentLoaded', function () {
+const backendLink = document.querySelector('.backend-link');
+const correctPassword = "admin123"; // Change this to your desired password
+
+backendLink.addEventListener('click', function (e) {
+e.preventDefault(); // Prevent the default link behavior
+
+const enteredPassword = prompt("Please enter the backend password:");
+
+if (enteredPassword === correctPassword) { // Password is correct, proceed to the backend page
+window.location.href = this.getAttribute('href');
+} else if (enteredPassword !== null) { // Password was entered but incorrect
+alert("Incorrect password. Please try again.");
+}
+// If user clicks cancel, do nothing
+});
+});
+		</script>
 	</body>
 </html>
