@@ -2,15 +2,17 @@
 
 namespace App\Controller;
 
+use App\Entity\Participation;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\Hackathon;
 use App\Repository\ParticipationRepository;
+use Doctrine\ORM\EntityManagerInterface;
 
 final class ParticipationController extends AbstractController
 {
-    #[Route('/hackathon/{id}/participer', name: 'hackathon_participer')]
+    #[Route('hackathon/{id}/participer', name: 'hackathon_participer')]
 public function participer(
     Hackathon $hackathon,
     EntityManagerInterface $em
@@ -24,9 +26,9 @@ public function participer(
 
     $this->addFlash('success', 'Vous êtes inscrit(e) à ce hackathon !');
 
-    return $this->redirectToRoute('hackathon_details', ['id' => $hackathon->getId()]);
+    return $this->redirectToRoute('hackathon_details', ['id' => $hackathon->getId_hackathon()]);
 }
-#[Route('/hackathon/{id}/participants', name: 'voir_participants')]
+#[Route('hackathon/{id}/participants', name: 'voir_participants')]
 public function voirParticipants(Hackathon $hackathon, ParticipationRepository $participationRepository): Response
 {
     $participations = $participationRepository->findBy(['hackathon' => $hackathon]);
@@ -35,5 +37,22 @@ public function voirParticipants(Hackathon $hackathon, ParticipationRepository $
         'hackathon' => $hackathon,
         'participations' => $participations,
     ]);
+}
+#[Route('participation/annuler/{id}', name: 'annuler_participation')]
+public function annulerParticipation(
+    Participation $participation,
+    EntityManagerInterface $entityManager
+): Response {
+    $entityManager->remove($participation);
+    $entityManager->flush();
+
+    return $this->redirectToRoute('liste_hackathon'); // ou le nom correct de ta page
+}
+#[Route('/participation/{id}/valider', name: 'app_participation_valider')]
+public function accepter(Participation $participation): Response {
+    $participation->setStatut('validé');
+    $this->entityManager->flush();
+
+    return $this->redirectToRoute('app_participants', ['id' => $participation->getHackathon()->getId_hackathon()]);
 }
 }

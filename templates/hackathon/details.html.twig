@@ -10,8 +10,13 @@
     <p><strong>Date de début :</strong> {{ hackathon.date_debut ? hackathon.date_debut|date('d/m/Y') : 'N/A' }}</p>
     <p><strong>Date de fin :</strong> {{ hackathon.date_fin ? hackathon.date_fin|date('d/m/Y') : 'N/A' }}</p>
     <p><strong>Description :</strong> {{ hackathon.description }}</p>
+    {% if hackathon.participations|length < hackathon.max_participants %}
     <div>
     <a href="{{ path('hackathon_participer', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Participer</a>
+    {% else %}
+  <span class="badge bg-danger">Complet</span>
+    {% endif %}
+
     </div>
     <br>
     <div>
@@ -23,11 +28,7 @@
                     <a href="{{ path('voir_participants', { id: hackathon.id_hackathon}) }}" class="btn btn-primary ms-2" style="background-color: #D291BC;">Voir les participants</a>
 
                     </div>
-    
-    <br>
-
-    <a href="{{ path('app_home') }}" class="btn btn-secondary mt-3">← Retour à l'accueil</a>
-    
+      
   </div>
 </section>
 {% endblock %}

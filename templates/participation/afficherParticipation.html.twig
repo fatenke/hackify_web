@@ -9,9 +9,39 @@
   {% if participations is empty %}
     <p>Aucun participant pour le moment.</p>
   {% else %}
-      <p>Les participant</p>
-      
-    </ul>
+      <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Email</th>
+          <th>Date d'inscription</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for participation in participations %}
+          <tr>
+            <td><img src="{{ asset('assets/img/default-use.png') }}" alt="Img_par_défaut" width="60" height="60" class="rounded-circle"></td>
+            <td>nom</td>
+            <td>pronom</td>
+            <td>email</td>
+            <td>{{ participation.date_inscription|date('d/m/Y H:i') }}</td>
+            <td>{{ participation.statut }}</td>
+            <td>
+            {% if participation.statut == 'En attente' %}
+              <a href="#" class="btn btn-success btn-sm">Accepter</a>
+              <a href="#" class="btn btn-danger btn-sm">Refuser</a>
+              {% else %}
+                <em>Aucune action disponible</em>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   {% endif %}
 </div>
 {% endblock %}

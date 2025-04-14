@@ -2,10 +2,7 @@
 
 namespace App\Controller;
 
-/*use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\HttpFoundation\Request;*/
+
 use App\Entity\Hackathon;
 use App\Form\HackathonType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,6 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\HackathonRepository;
+use App\Repository\ParticipationRepository;
+
 
 
 final class HackathonController extends AbstractController
@@ -44,17 +43,21 @@ final class HackathonController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-    #[Route('/hackathon', name: 'liste_hackathon')]
-    public function index(HackathonRepository $hackathonRepository): Response
-    {
-        $hackathons = $hackathonRepository->findAll();
-    
-        return $this->render('hackathon/afficher.html.twig', [
-            'hackathons' => $hackathons,
-        ]);
-    }
+    #[Route('hackathon', name: 'liste_hackathon')]
+    public function liste(
+    HackathonRepository $hackathonRepository,
+    ParticipationRepository $participationRepository
+    ): Response {
+    $hackathons = $hackathonRepository->findAll();
+    $participations = $participationRepository->findAll();
 
-    #[Route('/hackathon/{id}', name:'hackathon_details')]
+    return $this->render('hackathon/afficher.html.twig', [
+        'hackathons' => $hackathons,
+        'participations' => $participations
+    ]);
+}
+
+    #[Route('hackathon/{id}', name:'hackathon_details')]
     public function details($id, HackathonRepository $hackathonRepository): Response
     {
         // Trouver le hackathon par son ID
@@ -71,7 +74,7 @@ final class HackathonController extends AbstractController
     }
     
     
-    #[Route('/hackathon/modifier/{id}', name: 'modifier_hackathon')]
+    #[Route('hackathon/modifier/{id}', name: 'modifier_hackathon')]
     public function modifier(Request $request, Hackathon $hackathon, EntityManagerInterface $em): Response
     {
         $form = $this->createForm(HackathonType::class, $hackathon);
