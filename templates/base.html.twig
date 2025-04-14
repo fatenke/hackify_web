@@ -59,11 +59,12 @@
           <li class="dropdown"><a href="/home#hackathons"><span>Hackathons</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul> 
                <!-- Organisateur -->
-              <li><a href="hackathon/ajouter">Organiser</a></li>
-              <li><a href="hackathon">Mes hackathons</a></li>
+              <li><a href="{{ path('ajouter_hackathon') }}">Organiser</a></li>
+              <li><a href="{{ path('liste_hackathon') }}">Mes hackathons</a></li>
+
                <!-- participant -->
-              <li><a href="/hackathon">Participer</a></li>
-              <li><a href="/hackathon">Mes hackathons</a></li>
+              <li><a href="{{ path('liste_hackathon') }}">Mes hackathons</a></li>
+
             </ul>
           </li>
           <li><a href="/home#gallery">Gallery</a></li>

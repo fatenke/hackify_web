@@ -60,6 +60,7 @@
                     <a href="{{ path('hackathon_details', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Détails</a>
                     {% if hackathon.participations|length < hackathon.max_participants %}
                     <a href="{{ path('hackathon_participer', { id: hackathon.id_hackathon }) }}" class="btn btn-success">Participer</a>
+                      <!-- user-->
                       {#% set isAlreadyParticipant = false %}
                       {% for participation in participations %}
                         {% if participation.hackathon.id_hackathon == hackathon.id_hackathon %}
@@ -71,6 +72,7 @@
                       {% else %}
                         <span class="badge bg-secondary">Déjà inscrit</span>
                       {% endif %#}
+                      <!--user -->
                     {% else %}
                       <span class="badge bg-danger">Complet</span>
                     {% endif %}
@@ -110,27 +112,28 @@
     </div>
 
     <!-- Past Hackathons -->
-    <div class="tab-pane fade" id="hackathon-past">
-      <div class="tab-header text-center">
-        <h3>Nos anciens hackathons</h3>
-      </div>
+      <div class="tab-pane fade active show" id="hackathon-past">
+        <div class="tab-header text-center">
+          <h3>Nos anciens hackathons</h3>
+        </div>
 
-      <div class="row gy-5">
-        {% for hackathon in hackathons %}
-          {% if hackathon.date_fin < "now"|date("Y-m-d") %}
-            <div class="col-lg-4">
-              <div class="hackathon-card">
-                <div class="card-body">
-                  <h5 class="card-title">{{ hackathon.nom_hackathon }}</h5>
-                  <p class="card-text">{{ hackathon.description }}</p>
-                  <p class="card-date">{{ hackathon.date_debut|date("F j, Y") }} - {{ hackathon.date_fin|date("F j, Y") }}</p>
+        <div class="row gy-5">
+          {% for hackathon in hackathons %}
+            {% if hackathon.date_debut <= "now"|date("Y-m-d") %}
+              <div class="col-lg-4">
+                <div class="hackathon-card">
+                  <div class="card-body">
+                    <h5 class="card-title">{{ hackathon.nom_hackathon }}</h5>
+                    <p class="card-text">{{ hackathon.description }}</p>
+                    <p class="card-date">{{ hackathon.date_debut|date("F j, Y") }} - {{ hackathon.date_fin|date("F j, Y") }}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          {% endif %}
-        {% endfor %}
+            {% endif %}
+          {% endfor %}
+        </div>
       </div>
-    </div>
+      <!-- End Past Hackathons -->
 
     <!-- Mes Participations -->
     

@@ -86,19 +86,7 @@ class Participation
         return $this;
     }
 
-    #[ORM\Column(type: 'boolean', nullable: false)]
-    private ?bool $est_equipe = null;
-
-    public function isEst_equipe(): ?bool
-    {
-        return $this->est_equipe;
-    }
-
-    public function setEst_equipe(bool $est_equipe): self
-    {
-        $this->est_equipe = $est_equipe;
-        return $this;
-    }
+    
 
     public function getIdParticipation(): ?int
     {

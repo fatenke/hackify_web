@@ -19,7 +19,8 @@ public function participer(
 ): Response {
     $participation = new Participation();
     $participation->setHackathon($hackathon);
-    $participation->setDateParticipation(new \DateTime());
+    $participation->setDate_inscription(new \DateTime());
+    $participation->setStatut('En attente');
 
     $em->persist($participation);
     $em->flush();

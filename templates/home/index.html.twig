@@ -13,7 +13,7 @@
           Un espace unique pour découvrir, organiser et vivre des expériences innovantes autour de la technologie et de la créativité.
         </p>
         <div class="d-flex" data-aos="fade-up" data-aos-delay="200">
-          <a href="/hackathon" class="btn-get-started">Découvrir les hackathons</a>
+          <a href="{{ path('liste_hackathon') }}" class="btn-get-started">Découvrir les hackathons</a>
         </div>
       </div>
       <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
@@ -206,87 +206,24 @@
 </section><!-- /Team Section -->
 
 
+<section id="hackathons">
+  <h2>Nos derniers Hackathons</h2>
+  {% set derniersHackathons = hackathons|slice(0, 3) %}
 
- <!-- Hackathon Section -->
-<section id="hackathons" class="hackathon section">
-  <div class="container section-title" data-aos="fade-up">
-    <h2>Nos Hackathons</h2>
-    <p><span>Découvrez nos </span> <span class="description-title">hackathons passionnants</span></p>
-  </div><!-- End Section Title -->
-
-  <div class="container">
-    <ul class="nav nav-tabs d-flex justify-content-center" data-aos="fade-up" data-aos-delay="100">
-      <li class="nav-item">
-        <a class="nav-link active show" data-bs-toggle="tab" data-bs-target="#hackathon-upcoming">
-          <h4>à venir</h4>
-        </a>
-      </li><!-- End tab nav item -->
-      <li class="nav-item">
-        <a class="nav-link" data-bs-toggle="tab" data-bs-target="#hackathon-past">
-          <h4>Past</h4>
-        </a><!-- End tab nav item -->
-      </li>
-    </ul>
-
-    <div class="tab-content" data-aos="fade-up" data-aos-delay="200">
-      <!-- Upcoming Hackathons -->
-      <div class="tab-pane fade active show" id="hackathon-upcoming">
-        <div class="tab-header text-center">
-          <h3>Nos hackathons à ne pas manquer</h3>
-        </div>
-
-        <div class="row gy-5">
-          {% for hackathon in hackathons %}
-            {% if hackathon.date_debut > "now"|date("Y-m-d") %}
-              <div class="col-lg-4">
-                <div class="hackathon-card">
-                  <div class="card-body">
-                    <h5 class="card-title">{{ hackathon.nom_hackathon }}</h5>
-                    <p class="card-text">{{ hackathon.description }}</p>
-                    <p class="card-date">{{ hackathon.date_debut|date("F j, Y") }} - {{ hackathon.date_fin|date("F j, Y") }}</p>
-                    <div>
-                      <a href="{{ path('hackathon_details', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Détails</a>
-                    </div> 
-                  </div>
-                </div>
-              </div>
-            {% endif %}
-          {% endfor %}
-        </div>
-      </div>
-      
-      <!-- End Upcoming Hackathons -->
-
-      <!-- Past Hackathons -->
-      <div class="tab-pane fade" id="hackathon-past">
-        <div class="tab-header text-center">
-          <h3>Nos anciens hackathons</h3>
-        </div>
-
-        <div class="row gy-5">
-          {% for hackathon in hackathons %}
-            {% if hackathon.date_debut <= "now"|date("Y-m-d") %}
-              <div class="col-lg-4">
-                <div class="hackathon-card">
-                  <div class="card-body">
-                    <h5 class="card-title">{{ hackathon.nom_hackathon }}</h5>
-                    <p class="card-text">{{ hackathon.description }}</p>
-                    <p class="card-date">{{ hackathon.date_debut|date("F j, Y") }} - {{ hackathon.date_fin|date("F j, Y") }}</p>
-                  </div>
-                </div>
-              </div>
-            {% endif %}
-          {% endfor %}
-        </div>
- 
-      </div>
-      <!-- End Past Hackathons -->
-
+  {% for hackathon in derniersHackathons %}
+    <div class="hackathon-card">
+      <h3>{{ hackathon.nom_hackathon }}</h3>
+      <p>{{ hackathon.description }}</p>
+      <a href="{{ path('hackathon_details', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Détails</a>
     </div>
+  {% else %}
+    <p>Aucun hackathon disponible pour le moment.</p>
+  {% endfor %}
+
+  <div class="text-center mt-4">
+    <a href="{{ path('liste_hackathon') }}" class="btn-get-started">Voir tous les hackathons</a>
   </div>
 </section>
-<!-- /Hackathon Section -->
-
 
 <!-- Events Section -->
     <section id="events" class="events section">
