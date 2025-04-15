@@ -8,7 +8,8 @@
 <div class="container section-title" data-aos="fade-up">
   <h1>Liste des Hackathons</h1>
   <p><span>Découvrez nos </span> <span class="description-title">hackathons passionnants</span></p>
-</div><!-- End Section Title -->
+</div>
+<!-- End Section Title -->
 
 <div class="container">
   <ul class="nav nav-tabs d-flex justify-content-center" data-aos="fade-up" data-aos-delay="100">
@@ -30,6 +31,14 @@
       </a>
     </li>
 
+    {#% if is_granted('ROLE_ORGANISATEUR') %#}
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="tab" data-bs-target="#mes-hackathons">
+        <h4>Mes Hackathons</h4>
+      </a>
+    </li>
+    {#% endif %#}
+
     {#% if is_granted('ROLE_PARTICIPANT') %#}
     <li class="nav-item">
       <a class="nav-link" data-bs-toggle="tab" data-bs-target="#mes-participations">
@@ -37,6 +46,7 @@
       </a>
     </li>
     {#% endif %#}
+
   </ul>
 
   <div class="tab-content" data-aos="fade-up" data-aos-delay="200">
@@ -112,7 +122,7 @@
     </div>
 
     <!-- Past Hackathons -->
-      <div class="tab-pane fade active show" id="hackathon-past">
+      <div class="tab-pane fade" id="hackathon-past">
         <div class="tab-header text-center">
           <h3>Nos anciens hackathons</h3>
         </div>
@@ -135,12 +145,21 @@
       </div>
       <!-- End Past Hackathons -->
 
+
+      {#% if is_granted('ROLE_ORGANISATEUR') %#}
+      <div class="tab-pane fade" id="mes-hackathons">
+        <div class="tab-header text-center">
+          <h3>Mes Hackathons</h3>
+        </div>
+      </div>
+
+
     <!-- Mes Participations -->
     
     {#% if is_granted('ROLE_PARTICIPANT') %#}
       <div class="tab-pane fade" id="mes-participations">
         <div class="tab-header text-center">
-          <h3>Mes participations</h3>
+          <h3>Mes Participations</h3>
         </div>
 
         <div class="row gy-5">

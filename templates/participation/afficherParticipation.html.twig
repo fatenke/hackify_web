@@ -5,43 +5,80 @@
 {% block body %}
 <div class="container mt-5">
   <h2>Participants au hackathon : {{ hackathon.nom_hackathon }}</h2>
-  
+
   {% if participations is empty %}
     <p>Aucun participant pour le moment.</p>
   {% else %}
-      <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Image</th>
-          <th>Nom</th>
-          <th>Prénom</th>
-          <th>Email</th>
-          <th>Date d'inscription</th>
-          <th>Statut</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for participation in participations %}
-          <tr>
-            <td><img src="{{ asset('assets/img/default-use.png') }}" alt="Img_par_défaut" width="60" height="60" class="rounded-circle"></td>
-            <td>nom</td>
-            <td>pronom</td>
-            <td>email</td>
-            <td>{{ participation.date_inscription|date('d/m/Y H:i') }}</td>
-            <td>{{ participation.statut }}</td>
-            <td>
-            {% if participation.statut == 'En attente' %}
-              <a href="#" class="btn btn-success btn-sm">Accepter</a>
-              <a href="#" class="btn btn-danger btn-sm">Refuser</a>
-              {% else %}
-                <em>Aucune action disponible</em>
+    <ul class="nav nav-tabs d-flex justify-content-center" data-aos="fade-up" data-aos-delay="100">
+      <li class="nav-item">
+        <a class="nav-link active show" data-bs-toggle="tab" data-bs-target="#en-attente">
+          <h4>En attente</h4>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" data-bs-target="#valide">
+          <h4>Validé</h4>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" data-bs-target="#refuse">
+          <h4>Refusé</h4>
+        </a>
+      </li>
+    </ul>
+
+    <div class="tab-content mt-4">
+      {% set statuts = ['En attente', 'validé', 'refusé'] %}
+      {% for statut in statuts %}
+        <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="{{ statut|lower|replace({' ': '-'}) }}">
+          <h3 class="text-center mb-3">Participations : {{ statut }}</h3>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Email</th>
+                <th>Date d'inscription</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% set found = false %}
+              {% for participation in participations %}
+                {% if participation.statut == statut %}
+                  {% set found = true %}
+                  <tr>
+                    <td><img src="{{ asset('FrontOffice/assets/img/default-use.png') }}" alt="Img_par_défaut" width="60" height="60" class="rounded-circle"></td>
+                    <td>nom</td>
+                    <td>prenom</td>
+                    <td>email</td>
+                    <td>{{ participation.date_inscription|date('d/m/Y H:i') }}</td>
+                    <td>{{ participation.statut }}</td>
+                    <td>
+                      {% if participation.statut == 'En attente' %}
+                        <a href="{{ path('valider_participation', { id: participation.id_participation }) }}" class="btn btn-success btn-sm">Valider</a>
+                        <a href="{{ path('refuser_participation', { id: participation.id_participation }) }}" class="btn btn-danger btn-sm">Refuser</a>
+                      {% else %}
+                        <em>Aucune action disponible</em>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+              {% if not found %}
+                <tr>
+                  <td colspan="7" class="text-center">Aucune participation {{ statut|lower }}</td>
+                </tr>
               {% endif %}
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+            </tbody>
+          </table>
+        </div>
+      {% endfor %}
+    </div>
   {% endif %}
 </div>
 {% endblock %}
+
+

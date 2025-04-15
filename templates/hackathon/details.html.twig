@@ -12,15 +12,17 @@
     <p><strong>Description :</strong> {{ hackathon.description }}</p>
     {% if hackathon.participations|length < hackathon.max_participants %}
     <div>
+    <p>(Participants)</p>
     <a href="{{ path('hackathon_participer', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Participer</a>
     <a href="{{ path('app_projets', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Soummettre le projet</a>
     {% else %}
-  <span class="badge bg-danger">Complet</span>
+    <span class="badge bg-danger">Complet</span>
     {% endif %}
 
     </div>
     <br>
     <div>
+    <p>(organisateur)</p>
     <a href="{{ path('modifier_hackathon', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Modifier</a>
     <form method="post" action="{{ path('supprimer_hackathon', {id: hackathon.id_hackathon}) }}" style="display:inline;" onsubmit="return confirm('Es-tu sûr(e) ?');">
                     <input type="hidden" name="_token" value="{{ csrf_token('supprimer' ~ hackathon.id_hackathon) }}">

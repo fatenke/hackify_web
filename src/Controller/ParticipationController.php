@@ -47,13 +47,23 @@ public function annulerParticipation(
     $entityManager->remove($participation);
     $entityManager->flush();
 
-    return $this->redirectToRoute('liste_hackathon'); // ou le nom correct de ta page
+    return $this->redirectToRoute('liste_hackathon'); 
 }
-#[Route('/participation/{id}/valider', name: 'app_participation_valider')]
-public function accepter(Participation $participation): Response {
+#[Route('/participation/{id}/valider', name: 'valider_participation')]
+public function accepter(Participation $participation,EntityManagerInterface $entityManager): Response {
     $participation->setStatut('validé');
-    $this->entityManager->flush();
+    $entityManager->flush();
 
-    return $this->redirectToRoute('app_participants', ['id' => $participation->getHackathon()->getId_hackathon()]);
+    return $this->redirectToRoute('voir_participants', ['id' => $participation->getHackathon()->getId_hackathon()]);
 }
+
+#[Route('/participation/{id}/refuser', name: 'refuser_participation')]
+public function refuser(Participation $participation,EntityManagerInterface $entityManager): Response {
+    $participation->setStatut('refusé');
+    $entityManager->flush();
+
+    return $this->redirectToRoute('voir_participants', ['id' => $participation->getHackathon()->getId_hackathon()]);
+}
+
+
 }
