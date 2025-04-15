@@ -239,6 +239,7 @@ class Hackathon
     public function __construct()
     {
         $this->participations = new ArrayCollection();
+        $this->projets = new ArrayCollection();
     }
 
     /**
@@ -300,4 +301,40 @@ class Hackathon
 
     #[ORM\OneToMany(mappedBy: "idHackathon", targetEntity: Vote::class)]
     private Collection $votes;
+
+    /**
+     * @var Collection<int, Projets>
+     */
+    #[ORM\OneToMany(targetEntity: Projets::class, mappedBy: 'id_hack')]
+    private Collection $projets;
+
+    /**
+     * @return Collection<int, Projets>
+     */
+    public function getProjets(): Collection
+    {
+        return $this->projets;
+    }
+
+    public function addProjet(Projets $projet): static
+    {
+        if (!$this->projets->contains($projet)) {
+            $this->projets->add($projet);
+            $projet->setIdHack($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProjet(Projets $projet): static
+    {
+        if ($this->projets->removeElement($projet)) {
+            // set the owning side to null (unless already changed)
+            if ($projet->getIdHack() === $this) {
+                $projet->setIdHack(null);
+            }
+        }
+
+        return $this;
+    }
 }

@@ -2,23 +2,22 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
-use App\Entity\Technologies;
 use Doctrine\Common\Collections\Collection;
 use App\Entity\Vote;
 
 #[ORM\Entity]
 class Projets
 {
-
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
     private int $id;
+    
 
-        #[ORM\ManyToOne(targetEntity: Technologies::class, inversedBy: "projetss")]
-    #[ORM\JoinColumn(name: 'technologie_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Technologies $technologie_id;
+      
 
     #[ORM\Column(type: "string", length: 255)]
     private string $nom;
@@ -45,15 +44,7 @@ class Projets
         $this->id = $value;
     }
 
-    public function getTechnologie_id()
-    {
-        return $this->technologie_id;
-    }
-
-    public function setTechnologie_id($value)
-    {
-        $this->technologie_id = $value;
-    }
+   
 
     public function getNom()
     {
@@ -137,4 +128,56 @@ class Projets
 
     #[ORM\OneToMany(mappedBy: "idProjet", targetEntity: Vote::class)]
     private Collection $votes;
+
+    /**
+     * @var Collection<int, Technologies>
+     */
+    #[ORM\ManyToMany(targetEntity: Technologies::class, inversedBy: 'projets')]
+    private Collection $technologies;
+
+    #[ORM\ManyToOne(inversedBy: 'projets')]
+    #[ORM\JoinColumn(name: 'id_hackathon', referencedColumnName: 'id_hackathon')]
+    private ?Hackathon $id_hack = null;
+    
+
+    public function __construct()
+    {
+        $this->technologies = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection<int, Technologies>
+     */
+    public function getTechnologies(): Collection
+    {
+        return $this->technologies;
+    }
+
+    public function addTechnology(Technologies $technology): static
+    {
+        if (!$this->technologies->contains($technology)) {
+            $this->technologies->add($technology);
+        }
+
+        return $this;
+    }
+
+    public function removeTechnology(Technologies $technology): static
+    {
+        $this->technologies->removeElement($technology);
+
+        return $this;
+    }
+
+    public function getIdHack(): ?Hackathon
+    {
+        return $this->id_hack;
+    }
+
+    public function setIdHack(?Hackathon $id_hack): static
+    {
+        $this->id_hack = $id_hack;
+
+        return $this;
+    }
 }

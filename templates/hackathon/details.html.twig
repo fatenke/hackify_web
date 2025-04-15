@@ -13,6 +13,7 @@
     {% if hackathon.participations|length < hackathon.max_participants %}
     <div>
     <a href="{{ path('hackathon_participer', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Participer</a>
+    <a href="{{ path('app_projets', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Soummettre le projet</a>
     {% else %}
   <span class="badge bg-danger">Complet</span>
     {% endif %}
@@ -26,6 +27,7 @@
                      <button class="btn btn-primary">Supprimer</button>
                     </form>
                     <a href="{{ path('voir_participants', { id: hackathon.id_hackathon}) }}" class="btn btn-primary ms-2" style="background-color: #D291BC;">Voir les participants</a>
+                    <a href="{{ path('voir_projets', { id: hackathon.id_hackathon}) }}" class="btn btn-primary ms-2" style="background-color: #D291BC;">Voir les projets</a>
 
                     </div>
       

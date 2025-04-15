@@ -2,10 +2,10 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 use Doctrine\Common\Collections\Collection;
-use App\Entity\Projets;
 
 #[ORM\Entity]
 class Technologies
@@ -30,6 +30,17 @@ class Technologies
     #[ORM\Column(type: "string", length: 255)]
     private string $compatibilite;
 
+    /**
+     * @var Collection<int, Projets>
+     */
+    #[ORM\ManyToMany(targetEntity: Projets::class, mappedBy: 'technologies')]
+    private Collection $projets;
+
+    public function __construct()
+    {
+        $this->projets = new ArrayCollection();
+    }
+
     public function getId()
     {
         return $this->id;
@@ -40,12 +51,12 @@ class Technologies
         $this->id = $value;
     }
 
-    public function getNom_tech()
+    public function getNomTech()
     {
         return $this->nom_tech;
     }
 
-    public function setNom_tech($value)
+    public function setNomTech($value)
     {
         $this->nom_tech = $value;
     }
@@ -90,33 +101,35 @@ class Technologies
         $this->compatibilite = $value;
     }
 
-    #[ORM\OneToMany(mappedBy: "technologie_id", targetEntity: Projets::class)]
-    private Collection $projetss;
+    /**
+     * @return Collection<int, Projets>
+     */
+    public function getProjets(): Collection
+    {
+        return $this->projets;
+    }
 
-        public function getProjetss(): Collection
-        {
-            return $this->projetss;
+    public function addProjet(Projets $projet): static
+    {
+        if (!$this->projets->contains($projet)) {
+            $this->projets->add($projet);
+            $projet->addTechnology($this);
         }
-    
-        public function addProjets(Projets $projets): self
-        {
-            if (!$this->projetss->contains($projets)) {
-                $this->projetss[] = $projets;
-                $projets->setTechnologie_id($this);
-            }
-    
-            return $this;
+
+        return $this;
+    }
+
+    public function removeProjet(Projets $projet): static
+    {
+        if ($this->projets->removeElement($projet)) {
+            $projet->removeTechnology($this);
         }
+
+        return $this;
+    }
+
+
+      
     
-        public function removeProjets(Projets $projets): self
-        {
-            if ($this->projetss->removeElement($projets)) {
-                // set the owning side to null (unless already changed)
-                if ($projets->getTechnologie_id() === $this) {
-                    $projets->setTechnologie_id(null);
-                }
-            }
     
-            return $this;
-        }
 }

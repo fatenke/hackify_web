@@ -14,7 +14,7 @@ class Chapitres
     #[ORM\Column(type: "integer")]
     private int $id;
 
-        #[ORM\ManyToOne(targetEntity: Ressources::class, inversedBy: "chapitress")]
+        #[ORM\ManyToOne(targetEntity: Ressources::class, inversedBy: "Chapitres")]
     #[ORM\JoinColumn(name: 'id_ressources', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private Ressources $id_ressources;
 
