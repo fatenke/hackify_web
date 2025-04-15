@@ -1,94 +1,397 @@
-{# templates/home/index.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Accueil - Hackify{% endblock %}
 
 {% block body %}
-
-  <header id="header" class="header d-flex align-items-center sticky-top" style="background-color: #1b3347;">
-    <div class="container position-relative d-flex align-items-center justify-content-between">
-      <a href="{{ path('app_home') }}" class="logo d-flex align-items-center me-auto me-xl-0">
-        <img src="{{ asset('assets/img/logo.png') }}" alt="logo">
-        <h1 class="sitename">Hackify</h1>
-      </a>
-
-      <nav id="navmenu" class="navmenu">
-        <ul>
-          <li><a href="#hero" class="active">Accueil</a></li>
-          <li><a href="#about">À propos</a></li>
-          <li><a href="#menu">Hackathons</a></li>
-          <li><a href="#events">Organiser</a></li>
-          <li><a href="#chefs">Participer</a></li>
-          <li><a href="#gallery">Gallery</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-      </nav>
-
-      <a class="btn-getstarted" href="#book-a-table">Connexion / S'inscrire</a>
+ 
+  <section id="hero" class="hero section">
+  <div class="container">
+    <div class="row gy-4 justify-content-center justify-content-lg-between">
+      <div class="col-lg-5 order-2 order-lg-1 d-flex flex-column justify-content-center">
+        <h1 data-aos="fade-up">Des défis qui font la différence.</h1>
+        <p data-aos="fade-up" data-aos-delay="100">
+          Un espace unique pour découvrir, organiser et vivre des expériences innovantes autour de la technologie et de la créativité.
+        </p>
+        <div class="d-flex" data-aos="fade-up" data-aos-delay="200">
+          <a href="{{ path('liste_hackathon') }}" class="btn-get-started">Découvrir les hackathons</a>
+        </div>
+      </div>
+      <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
+        <img src="{{ asset('FrontOffice/assets/img/image1.png') }}" class="img-fluid animated" alt="">
+      </div>
     </div>
-  </header>
+  </div>
+</section>
 
-  <main class="main">
-    <!-- Hero Section -->
-    <section id="hero" class="hero section">
-      <div class="container">
-        <div class="row gy-4 justify-content-center justify-content-lg-between">
-          <div class="col-lg-5 order-2 order-lg-1 d-flex flex-column justify-content-center">
-            <h1 data-aos="fade-up">Des défis qui font la différence.</h1>
-            <p data-aos="fade-up" data-aos-delay="100">Un espace unique pour découvrir, organiser et vivre des expériences innovantes autour de la technologie et de la créativité.</p>
-            <div class="d-flex" data-aos="fade-up" data-aos-delay="200">
-              <a href="#book-a-table" class="btn-get-started">Découvrir les hackathons</a>
-            </div>
-          </div>
-          <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
-            <img src="{{ asset('assets/img/image.png') }}" class="img-fluid animated" alt="">
+
+<section id="about" class="about section">
+
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>À propos de nous</h2>
+    <p><span>Découvrez</span> <span class="description-title">notre mission</span></p>
+  </div><!-- End Section Title -->
+
+  <div class="container">
+    <div class="row gy-4">
+      <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
+        <img src="assets/img/about.png" class="img-fluid mb-4" alt="">
+        <div class="book-a-table">
+          <h3>Contact</h3>
+          <p>contact@hackify.tn</p>
+        </div>
+      </div>
+      <div class="col-lg-5" data-aos="fade-up" data-aos-delay="250">
+        <div class="content ps-0 ps-lg-5">
+          <p class="fst-italic">
+            Hackify est une plateforme dédiée à la découverte, l’organisation et la participation à des hackathons innovants. 
+          </p>
+          <ul>
+            <li><i class="bi bi-check-circle-fill"></i> <span>Encourager l'innovation à travers des défis technologiques.</span></li>
+            <li><i class="bi bi-check-circle-fill"></i> <span>Créer un espace collaboratif pour les talents, les passionnés et les entreprises.</span></li>
+            <li><i class="bi bi-check-circle-fill"></i> <span>Faciliter l'organisation et la gestion des hackathons avec des outils intuitifs.</span></li>
+          </ul>
+          <p>
+            Nous croyons en la force de la communauté et à la magie des idées qui se transforment en projets concrets. Chez Hackify, chaque ligne de code est une opportunité de changer le monde.
+          </p>
+
+          <div class="position-relative mt-4">
+            <img src="assets/img/about-2.jpg" class="img-fluid" alt="">
+            <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox pulsating-play-btn"></a>
           </div>
         </div>
       </div>
-    </section>
-    <!-- End Hero Section -->
+    </div>
+  </div>
 
-    <!-- About Section -->
-    <section id="about" class="about section">
-      <div class="container section-title" data-aos="fade-up">
-        <h2>About Us</h2>
-        <p><span>Learn More</span> <span class="description-title">About Us</span></p>
-      </div>
+</section>
 
-      <div class="container">
-        <div class="row gy-4">
-          <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
-            <img src="{{ asset('assets/img/about.jpg') }}" class="img-fluid mb-4" alt="">
-            <div class="book-a-table">
-              <h3>Book a Table</h3>
-              <p>+1 5589 55488 55</p>
+<!-- Team Section -->
+<section id="chefs" class="chefs section">
+
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Notre Équipe</h2>
+    <p><span>Rencontrez</span> <span class="description-title">Notre Équipe </span></p>
+  </div><!-- End Section Title -->
+
+  <div class="container">
+
+    <div class="row gy-4">
+
+      <!-- Team Member 1 -->
+      <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
+        <div class="team-member">
+          <div class="member-img">
+            <img src="assets/img/members/image.png" class="img-fluid" alt="">
+            <div class="social">
+              <a href=""><i class="bi bi-twitter-x"></i></a>
+              <a href=""><i class="bi bi-facebook"></i></a>
+              <a href=""><i class="bi bi-instagram"></i></a>
+              <a href=""><i class="bi bi-linkedin"></i></a>
             </div>
           </div>
-          <div class="col-lg-5" data-aos="fade-up" data-aos-delay="250">
-            <div class="content ps-0 ps-lg-5">
-              <p class="fst-italic">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          <div class="member-info">
+            <h4>Faten Kerrou</h4>
+            <span>Chef de Projet</span>
+            <p>Description du membre 1. Il est expert dans son domaine et apporte une expérience précieuse à l'équipe.</p>
+          </div>
+        </div>
+      </div><!-- End Team Member 1 -->
+
+      <!-- Team Member 2 -->
+      <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
+        <div class="team-member">
+          <div class="member-img">
+            <img src="assets/img/members/image.png" class="img-fluid" alt="">
+            <div class="social">
+              <a href=""><i class="bi bi-twitter-x"></i></a>
+              <a href=""><i class="bi bi-facebook"></i></a>
+              <a href=""><i class="bi bi-instagram"></i></a>
+              <a href=""><i class="bi bi-linkedin"></i></a>
+            </div>
+          </div>
+          <div class="member-info">
+            <h4>Amira Youssef</h4>
+            <span>Titre du Poste</span>
+            <p>Description du membre 2. Son expertise dans [domaine spécifique] fait d'elle un atout majeur pour notre équipe.</p>
+          </div>
+        </div>
+      </div><!-- End Team Member 2 -->
+
+      <!-- Team Member 3 -->
+      <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="300">
+        <div class="team-member">
+          <div class="member-img">
+            <img src="assets/img/members/farah.png" class="img-fluid" alt="">
+            <div class="social">
+              <a href=""><i class="bi bi-twitter-x"></i></a>
+              <a href=""><i class="bi bi-facebook"></i></a>
+              <a href=""><i class="bi bi-instagram"></i></a>
+              <a href=""><i class="bi bi-linkedin"></i></a>
+            </div>
+          </div>
+          <div class="member-info">
+            <h4>Farah Maiti</h4>
+            <span>Titre du Poste</span>
+            <p>Description du membre 3. Grâce à ses compétences en [domaine], il est indispensable pour la réussite de nos projets.</p>
+          </div>
+        </div>
+      </div><!-- End Team Member 3 -->
+
+      <!-- Team Member 4 -->
+      <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="400">
+        <div class="team-member">
+          <div class="member-img">
+            <img src="assets/img/members/image.png" class="img-fluid" alt="">
+            <div class="social">
+              <a href=""><i class="bi bi-twitter-x"></i></a>
+              <a href=""><i class="bi bi-facebook"></i></a>
+              <a href=""><i class="bi bi-instagram"></i></a>
+              <a href=""><i class="bi bi-linkedin"></i></a>
+            </div>
+          </div>
+          <div class="member-info">
+            <h4>Ali Belkadhi</h4>
+            <span>Titre du Poste</span>
+            <p>Description du membre 4. Son expérience dans [domaine] nous permet de rester à la pointe de l'innovation.</p>
+          </div>
+        </div>
+      </div><!-- End Team Member 4 -->
+
+      <!-- Team Member 5 -->
+      <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="500">
+        <div class="team-member">
+          <div class="member-img">
+            <img src="assets/img/members/image.png" class="img-fluid" alt="">
+            <div class="social">
+              <a href=""><i class="bi bi-twitter-x"></i></a>
+              <a href=""><i class="bi bi-facebook"></i></a>
+              <a href=""><i class="bi bi-instagram"></i></a>
+              <a href=""><i class="bi bi-linkedin"></i></a>
+            </div>
+          </div>
+          <div class="member-info">
+            <h4>Mohamed Bennour</h4>
+            <span>Titre du Poste</span>
+            <p>Description du membre 5. Il apporte des solutions novatrices et son esprit d'équipe est essentiel pour la collaboration.</p>
+          </div>
+        </div>
+      </div><!-- End Team Member 5 -->
+
+      <!-- Team Member 6 -->
+      <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="600">
+        <div class="team-member">
+          <div class="member-img">
+            <img src="assets/img/members/image.png" class="img-fluid" alt="">
+            <div class="social">
+              <a href=""><i class="bi bi-twitter-x"></i></a>
+              <a href=""><i class="bi bi-facebook"></i></a>
+              <a href=""><i class="bi bi-instagram"></i></a>
+              <a href=""><i class="bi bi-linkedin"></i></a>
+            </div>
+          </div>
+          <div class="member-info">
+            <h4>Hanin Saidi</h4>
+            <span>Titre du Poste</span>
+            <p>Description du membre 6. Avec son expertise en [domaine], il assure que chaque projet soit mené à bien.</p>
+          </div>
+        </div>
+      </div><!-- End Team Member 6 -->
+
+    </div>
+
+  </div>
+
+</section><!-- /Team Section -->
+
+
+<section id="hackathons">
+  <h2>Nos derniers Hackathons</h2>
+  {% set derniersHackathons = hackathons|slice(0, 3) %}
+
+  {% for hackathon in derniersHackathons %}
+    <div class="hackathon-card">
+      <h3>{{ hackathon.nom_hackathon }}</h3>
+      <p>{{ hackathon.description }}</p>
+      <a href="{{ path('hackathon_details', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Détails</a>
+    </div>
+  {% else %}
+    <p>Aucun hackathon disponible pour le moment.</p>
+  {% endfor %}
+
+  <div class="text-center mt-4">
+    <a href="{{ path('liste_hackathon') }}" class="btn-get-started">Voir tous les hackathons</a>
+  </div>
+</section>
+
+<!-- Events Section -->
+    <section id="events" class="events section">
+
+      <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="swiper init-swiper">
+          <script type="application/json" class="swiper-config">
+            {
+              "loop": true,
+              "speed": 600,
+              "autoplay": {
+                "delay": 5000
+              },
+              "slidesPerView": "auto",
+              "pagination": {
+                "el": ".swiper-pagination",
+                "type": "bullets",
+                "clickable": true
+              },
+              "breakpoints": {
+                "320": {
+                  "slidesPerView": 1,
+                  "spaceBetween": 40
+                },
+                "1200": {
+                  "slidesPerView": 3,
+                  "spaceBetween": 1
+                }
+              }
+            }
+          </script>
+          <div class="swiper-wrapper">
+
+            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/1.png)">
+              <h3>Custom Parties</h3>
+              <div class="price align-self-start">$99</div>
+              <p class="description">
+                Quo corporis voluptas ea ad. Consectetur inventore sapiente ipsum voluptas eos omnis facere. Enim facilis veritatis id est rem repudiandae nulla expedita quas.
               </p>
-              <ul>
-                <li><i class="bi bi-check-circle-fill"></i> <span>Ullamco laboris nisi ut aliquip ex ea commodo consequat.</span></li>
-                <li><i class="bi bi-check-circle-fill"></i> <span>Duis aute irure dolor in reprehenderit in voluptate velit.</span></li>
-                <li><i class="bi bi-check-circle-fill"></i> <span>Trideta storacalaperda mastiro dolore eu fugiat nulla pariatur.</span></li>
-              </ul>
-              <p>
-                Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+            </div>
+            <!-- End Event item -->
+
+            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/2.png)">
+              <h3>Private Parties</h3>
+              <div class="price align-self-start">$289</div>
+              <p class="description">
+                In delectus sint qui et enim. Et ab repudiandae inventore quaerat doloribus. Facere nemo vero est ut dolores ea assumenda et. Delectus saepe accusamus aspernatur.
               </p>
-              <div class="position-relative mt-4">
-                <img src="{{ asset('assets/img/about-2.jpg') }}" class="img-fluid" alt="">
-                <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox pulsating-play-btn"></a>
+            </div><!-- End Event item -->
+
+            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/3.png)">
+              <h3>Birthday Parties</h3>
+              <div class="price align-self-start">$499</div>
+              <p class="description">
+                Laborum aperiam atque omnis minus omnis est qui assumenda quos. Quis id sit quibusdam. Esse quisquam ducimus officia ipsum ut quibusdam maxime. Non enim perspiciatis.
+              </p>
+            </div><!-- End Event item -->
+
+            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/4.png)">
+              <h3>Wedding Parties</h3>
+              <div class="price align-self-start">$899</div>
+              <p class="description">
+                Laborum aperiam atque omnis minus omnis est qui assumenda quos. Quis id sit quibusdam. Esse quisquam ducimus officia ipsum ut quibusdam maxime. Non enim perspiciatis.
+              </p>
+            </div><!-- End Event item -->
+
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+
+      </div>
+
+    </section>
+    <!-- /Events Section -->
+
+
+
+<!-- Contact Section -->
+    <section id="contact" class="contact section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Contact</h2>
+        <p><span>Need Help?</span> <span class="description-title">Contact Us</span></p>
+      </div>
+      <!-- End Section Title -->
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row gy-4">
+
+          <div class="col-md-6">
+            <div class="info-item d-flex align-items-center" data-aos="fade-up" data-aos-delay="200">
+              <i class="icon bi bi-geo-alt flex-shrink-0"></i>
+              <div>
+                <h3>Address</h3>
+                <p>A108 Adam Street, New York, NY 535022</p>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- End About Section -->
+          </div><!-- End Info Item -->
 
-  </main>
+          <div class="col-md-6">
+            <div class="info-item d-flex align-items-center" data-aos="fade-up" data-aos-delay="300">
+              <i class="icon bi bi-telephone flex-shrink-0"></i>
+              <div>
+                <h3>Call Us</h3>
+                <p>+1 5589 55488 55</p>
+              </div>
+            </div>
+          </div><!-- End Info Item -->
+
+          <div class="col-md-6">
+            <div class="info-item d-flex align-items-center" data-aos="fade-up" data-aos-delay="400">
+              <i class="icon bi bi-envelope flex-shrink-0"></i>
+              <div>
+                <h3>Email Us</h3>
+                <p>info@example.com</p>
+              </div>
+            </div>
+          </div><!-- End Info Item -->
+
+          <div class="col-md-6">
+            <div class="info-item d-flex align-items-center" data-aos="fade-up" data-aos-delay="500">
+              <i class="icon bi bi-clock flex-shrink-0"></i>
+              <div>
+                <h3>Opening Hours<br></h3>
+                <p><strong>Mon-Sat:</strong> 11AM - 23PM; <strong>Sunday:</strong> Closed</p>
+              </div>
+            </div>
+          </div><!-- End Info Item -->
+
+        </div>
+
+        <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="600">
+          <div class="row gy-4">
+
+            <div class="col-md-6">
+              <input type="text" name="name" class="form-control" placeholder="Your Name" required="">
+            </div>
+
+            <div class="col-md-6 ">
+              <input type="email" class="form-control" name="email" placeholder="Your Email" required="">
+            </div>
+
+            <div class="col-md-12">
+              <input type="text" class="form-control" name="subject" placeholder="Subject" required="">
+            </div>
+
+            <div class="col-md-12">
+              <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
+            </div>
+
+            <div class="col-md-12 text-center">
+              <div class="loading">Loading</div>
+              <div class="error-message"></div>
+              <div class="sent-message">Your message has been sent. Thank you!</div>
+
+              <button type="submit">Send Message</button>
+            </div>
+
+          </div>
+        </form><!-- End Contact Form -->
+
+      </div>
+
+    </section><!-- /Contact Section -->
+
+
 
 {% endblock %}

@@ -2,79 +2,120 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
-use App\Entity\User;
+use App\Repository\ParticipationRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: ParticipationRepository::class)]
+#[ORM\Table(name: 'participation')]
 class Participation
 {
-
     #[ORM\Id]
-    #[ORM\Column(type: "integer")]
-    private int $id_participation;
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id_participation = null;
 
-        #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: "participations")]
-    #[ORM\JoinColumn(name: 'id_hackathon', referencedColumnName: 'id_hackathon', onDelete: 'CASCADE')]
-    private Hackathon $id_hackathon;
-
-        #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "participations")]
-    #[ORM\JoinColumn(name: 'id_participant', referencedColumnName: 'id_user', onDelete: 'CASCADE')]
-    private User $id_participant;
-
-    #[ORM\Column(type: "datetime")]
-    private \DateTimeInterface $date_inscription;
-
-    #[ORM\Column(type: "string", length: 20)]
-    private string $statut;
-
-    public function getId_participation()
+    public function getId_participation(): ?int
     {
         return $this->id_participation;
     }
 
-    public function setId_participation($value)
+    public function setId_participation(int $id_participation): self
     {
-        $this->id_participation = $value;
+        $this->id_participation = $id_participation;
+        return $this;
     }
 
-    public function getId_hackathon()
+    #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: 'participations')]
+    #[ORM\JoinColumn(name: 'id_hackathon', referencedColumnName: 'id_hackathon')]
+    private ?Hackathon $hackathon = null;
+
+    public function getHackathon(): ?Hackathon
     {
-        return $this->id_hackathon;
+        return $this->hackathon;
     }
 
-    public function setId_hackathon($value)
+    public function setHackathon(?Hackathon $hackathon): self
     {
-        $this->id_hackathon = $value;
+        $this->hackathon = $hackathon;
+        return $this;
     }
 
-    public function getId_participant()
+    #[ORM\Column(type: 'integer', nullable: false)]
+    private ?int $id_participant = null;
+
+    public function getId_participant(): ?int
     {
         return $this->id_participant;
     }
 
-    public function setId_participant($value)
+    public function setId_participant(int $id_participant): self
     {
-        $this->id_participant = $value;
+        $this->id_participant = $id_participant;
+        return $this;
     }
 
-    public function getDate_inscription()
+    #[ORM\Column(type: 'datetime', nullable: false)]
+    private ?\DateTimeInterface $date_inscription = null;
+
+    public function getDate_inscription(): ?\DateTimeInterface
     {
         return $this->date_inscription;
     }
 
-    public function setDate_inscription($value)
+    public function setDate_inscription(\DateTimeInterface $date_inscription): self
     {
-        $this->date_inscription = $value;
+        $this->date_inscription = $date_inscription;
+        return $this;
     }
 
-    public function getStatut()
+    #[ORM\Column(type: 'string', nullable: false)]
+    private ?string $statut = null;
+
+    public function getStatut(): ?string
     {
         return $this->statut;
     }
 
-    public function setStatut($value)
+    public function setStatut(string $statut): self
     {
-        $this->statut = $value;
+        $this->statut = $statut;
+        return $this;
     }
+
+    
+
+    public function getIdParticipation(): ?int
+    {
+        return $this->id_participation;
+    }
+
+    public function getIdParticipant(): ?int
+    {
+        return $this->id_participant;
+    }
+
+    public function setIdParticipant(int $id_participant): static
+    {
+        $this->id_participant = $id_participant;
+
+        return $this;
+    }
+
+    public function getDateInscription(): ?\DateTimeInterface
+    {
+        return $this->date_inscription;
+    }
+
+    public function setDateInscription(\DateTimeInterface $date_inscription): static
+    {
+        $this->date_inscription = $date_inscription;
+
+        return $this;
+    }
+
+
 }

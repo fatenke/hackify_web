@@ -7,135 +7,266 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Entity\User;
 use Doctrine\Common\Collections\Collection;
 use App\Entity\Communaute;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\Common\Collections\ArrayCollection;
+use App\Repository\HackathonRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: HackathonRepository::class)]
+#[ORM\Table(name: 'hackathon')]
 class Hackathon
 {
 
     #[ORM\Id]
-    #[ORM\Column(type: "integer")]
-    private int $id_hackathon;
-
-        #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "hackathons")]
-    #[ORM\JoinColumn(name: 'id_organisateur', referencedColumnName: 'id_user', onDelete: 'CASCADE')]
-    private User $id_organisateur;
-
-    #[ORM\Column(type: "string", length: 255)]
-    private string $nom_hackathon;
-
-    #[ORM\Column(type: "text")]
-    private string $description;
-
-    #[ORM\Column(type: "datetime")]
-    private \DateTimeInterface $date_debut;
-
-    #[ORM\Column(type: "datetime")]
-    private \DateTimeInterface $date_fin;
-
-    #[ORM\Column(type: "string", length: 255)]
-    private string $lieu;
-
-    #[ORM\Column(type: "string", length: 255)]
-    private string $theme;
-
-    #[ORM\Column(type: "integer")]
-    private int $max_participants;
-
-    public function getId_hackathon()
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id_hackathon = null;
+    public function getId_hackathon(): ?int
     {
         return $this->id_hackathon;
     }
 
-    public function setId_hackathon($value)
+    public function setId_hackathon(int $id_hackathon): self
     {
-        $this->id_hackathon = $value;
+        $this->id_hackathon = $id_hackathon;
+        return $this;
     }
 
-    public function getId_organisateur()
+    
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "hackathons")]
+    #[ORM\JoinColumn(name: 'id_organisateur', referencedColumnName: 'id_user', onDelete: 'CASCADE')]
+    private User $id_organisateur;
+    public function getId_organisateur(): ?int
     {
         return $this->id_organisateur;
     }
 
-    public function setId_organisateur($value)
+    public function setId_organisateur(int $id_organisateur): self
     {
-        $this->id_organisateur = $value;
+        $this->id_organisateur = $id_organisateur;
+        return $this;
     }
 
-    public function getNom_hackathon()
+    #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message: 'Le nom du hackathon est requis.')]
+    #[Assert\Length(
+        min: 3,
+        max: 100,
+        minMessage: 'Le nom doit comporter au moins {{ limit }} caractères.',
+        maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères.'
+    )]
+    private ?string $nom_hackathon = null;
+
+    public function getNom_hackathon(): ?string
     {
         return $this->nom_hackathon;
     }
 
-    public function setNom_hackathon($value)
+    public function setNom_hackathon(string $nom_hackathon): self
     {
-        $this->nom_hackathon = $value;
+        $this->nom_hackathon = $nom_hackathon;
+        return $this;
     }
 
-    public function getDescription()
+    #[ORM\Column(type: 'text', nullable: false)]
+    #[Assert\NotBlank(message: 'La description est requise.')]
+    #[Assert\Length(
+        min: 10,
+        minMessage: 'La description doit contenir au moins {{ limit }} caractères.'
+)]
+    private ?string $description = null;
+
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    public function setDescription($value)
+    public function setDescription(string $description): self
     {
-        $this->description = $value;
+        $this->description = $description;
+        return $this;
     }
 
-    public function getDate_debut()
+    #[ORM\Column(type: 'datetime', nullable: false)]
+    private ?\DateTimeInterface $date_debut = null;
+
+    public function getDate_debut(): ?\DateTimeInterface
     {
         return $this->date_debut;
     }
 
-    public function setDate_debut($value)
+    public function setDate_debut(\DateTimeInterface $date_debut): self
     {
-        $this->date_debut = $value;
+        $this->date_debut = $date_debut;
+        return $this;
     }
 
-    public function getDate_fin()
+    #[ORM\Column(type: 'datetime', nullable: false)]
+    private ?\DateTimeInterface $date_fin = null;
+
+    public function getDate_fin(): ?\DateTimeInterface
     {
         return $this->date_fin;
     }
 
-    public function setDate_fin($value)
+    public function setDate_fin(\DateTimeInterface $date_fin): self
     {
-        $this->date_fin = $value;
+        $this->date_fin = $date_fin;
+        return $this;
     }
 
-    public function getLieu()
+    #[ORM\Column(type: 'string', nullable: false)]
+    private ?string $lieu = null;
+
+    public function getLieu(): ?string
     {
         return $this->lieu;
     }
 
-    public function setLieu($value)
+    public function setLieu(string $lieu): self
     {
-        $this->lieu = $value;
+        $this->lieu = $lieu;
+        return $this;
     }
 
-    public function getTheme()
+    #[ORM\Column(type: 'string', nullable: false)]
+    private ?string $theme = null;
+
+    public function getTheme(): ?string
     {
         return $this->theme;
     }
 
-    public function setTheme($value)
+    public function setTheme(string $theme): self
     {
-        $this->theme = $value;
+        $this->theme = $theme;
+        return $this;
     }
 
-    public function getMax_participants()
+    #[ORM\Column(type: 'integer', nullable: false)]
+    private ?int $max_participants = null;
+
+    public function getMax_participants(): ?int
     {
         return $this->max_participants;
     }
 
-    public function setMax_participants($value)
+    public function setMax_participants(int $max_participants): self
     {
-        $this->max_participants = $value;
+        $this->max_participants = $max_participants;
+        return $this;
     }
+
+
+    
+
+    public function getIdHackathon(): ?int
+    {
+        return $this->id_hackathon;
+    }
+
+    public function getIdOrganisateur(): ?int
+    {
+        return $this->id_organisateur;
+    }
+
+    public function setIdOrganisateur(int $id_organisateur): static
+    {
+        $this->id_organisateur = $id_organisateur;
+
+        return $this;
+    }
+
+    public function getNomHackathon(): ?string
+    {
+        return $this->nom_hackathon;
+    }
+
+    public function setNomHackathon(string $nom_hackathon): static
+    {
+        $this->nom_hackathon = $nom_hackathon;
+
+        return $this;
+    }
+
+    public function getDateDebut(): ?\DateTimeInterface
+    {
+        return $this->date_debut;
+    }
+
+    public function setDateDebut(\DateTimeInterface $date_debut): static
+    {
+        $this->date_debut = $date_debut;
+
+        return $this;
+    }
+
+    public function getDateFin(): ?\DateTimeInterface
+    {
+        return $this->date_fin;
+    }
+
+    public function setDateFin(\DateTimeInterface $date_fin): static
+    {
+        $this->date_fin = $date_fin;
+
+        return $this;
+    }
+
+    public function getMaxParticipants(): ?int
+    {
+        return $this->max_participants;
+    }
+
+    public function setMaxParticipants(int $max_participants): static
+    {
+        $this->max_participants = $max_participants;
+
+        return $this;
+    }
+
+    
+    
+
+
 
     #[ORM\OneToMany(mappedBy: "id_hackathon", targetEntity: Communaute::class)]
     private Collection $communautes;
 
-    #[ORM\OneToMany(mappedBy: "id_hackathon", targetEntity: Participation::class)]
+    
+    #[ORM\OneToMany(targetEntity: Participation::class, mappedBy: 'hackathon')]
     private Collection $participations;
+
+    public function __construct()
+    {
+        $this->participations = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection<int, Participation>
+     */
+    public function getParticipations(): Collection
+    {
+        if (!$this->participations instanceof Collection) {
+            $this->participations = new ArrayCollection();
+        }
+        return $this->participations;
+    }
+
+    public function addParticipation(Participation $participation): self
+    {
+        if (!$this->getParticipations()->contains($participation)) {
+            $this->getParticipations()->add($participation);
+        }
+        return $this;
+    }
+
+    public function removeParticipation(Participation $participation): self
+    {
+        $this->getParticipations()->removeElement($participation);
+        return $this;
+    }
+
+
 
     #[ORM\OneToMany(mappedBy: "idHackathon", targetEntity: Evaluation::class)]
     private Collection $evaluations;
