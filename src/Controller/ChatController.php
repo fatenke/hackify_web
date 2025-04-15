@@ -116,4 +116,54 @@ class ChatController extends AbstractController
 
         return $this->redirectToRoute('app_chat_show', ['id' => $poll->getChat_id()->getId()]);
     }
+
+    #[Route('/{id}/messages', name: 'app_chat_messages', methods: ['GET'])]
+    public function getMessages(Chat $chat): Response
+    {
+        $messages = $chat->getMessages();
+        $data = [];
+        
+        foreach ($messages as $message) {
+            $data[] = [
+                'id' => $message->getId(),
+                'contenu' => $message->getContenu(),
+                'type' => $message->getType(),
+                'post_time' => $message->getPost_time()->format('Y-m-d H:i:s'),
+                'posted_by' => [
+                    'nom' => $message->getPosted_by()->getNom(),
+                    'prenom' => $message->getPosted_by()->getPrenom()
+                ]
+            ];
+        }
+        
+        return $this->json(['messages' => $data]);
+    }
+
+    #[Route('/{id}/polls', name: 'app_chat_polls', methods: ['GET'])]
+    public function getPolls(Chat $chat): Response
+    {
+        $polls = $chat->getPolls();
+        $data = [];
+        
+        foreach ($polls as $poll) {
+            $pollData = [
+                'id' => $poll->getId(),
+                'question' => $poll->getQuestion(),
+                'is_closed' => $poll->getIs_closed(),
+                'poll_option' => []
+            ];
+            
+            foreach ($poll->getPoll_option() as $option) {
+                $pollData['poll_option'][] = [
+                    'id' => $option->getId(),
+                    'text' => $option->getText(),
+                    'votes' => $option->getVotes()
+                ];
+            }
+            
+            $data[] = $pollData;
+        }
+        
+        return $this->json(['polls' => $data]);
+    }
 } 
