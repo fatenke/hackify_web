@@ -182,7 +182,7 @@ h6 {
 
 /* PHP Email Form Messages
 ------------------------------*/
-.php-email-form .error-message {
+/*.php-email-form .error-message {
   display: none;
   background: #df1529;
   color: #ffffff;
@@ -220,7 +220,7 @@ h6 {
   border: 3px solid var(--accent-color);
   border-top-color: var(--surface-color);
   animation: php-email-form-loading 1s linear infinite;
-}
+}*/
 
 @keyframes php-email-form-loading {
   0% {
@@ -1862,14 +1862,14 @@ section,
 }
 
 /*les message d'erreur*/
-.form-error {
+.error {
   color: #dc3545;
   font-size: 0.9rem;
   margin-top: 5px;
   font-weight: 500;
-  background-color: #f8d7da;
+  background-color: #e6d4d5;
   /* Rouge clair */
   padding: 8px 12px;
-  border: 1px solid #f5c2c7;
+  border: 1px solid #f8e9ea;
   border-radius: 6px;
 }

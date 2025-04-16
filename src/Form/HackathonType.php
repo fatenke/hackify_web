@@ -6,24 +6,47 @@ use App\Entity\Hackathon;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 
 class HackathonType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            /*->add('id_organisateur')*/
-            ->add('nom_hackathon')
-            ->add('description')
-            ->add('date_debut', null, [
-                'widget' => 'single_text',
+            ->add('nom_hackathon', TextType::class, [
+                'attr' => [
+                    'placeholder' => 'Entrez le nom du hackathon'
+                ]
             ])
-            ->add('date_fin', null, [
-                'widget' => 'single_text',
+            ->add('description', TextareaType::class, [
+                'attr' => [
+                    'placeholder' => 'Décrivez votre hackathon'
+                ]
             ])
-            ->add('lieu')
-            ->add('theme')
-            ->add('max_participants')
+            ->add('date_debut', DateTimeType::class, [
+                'widget' => 'single_text'
+            ])
+            ->add('date_fin', DateTimeType::class, [
+                'widget' => 'single_text'
+            ])
+            ->add('lieu', TextType::class, [
+                'attr' => [
+                    'placeholder' => 'Lieu du hackathon'
+                ]
+            ])
+            ->add('theme', TextType::class, [
+                'attr' => [
+                    'placeholder' => 'Thème du hackathon'
+                ]
+            ])
+            ->add('max_participants', IntegerType::class, [
+                'attr' => [
+                    'placeholder' => 'Nombre maximum de participants'
+                ]
+            ])
         ;
     }
 
