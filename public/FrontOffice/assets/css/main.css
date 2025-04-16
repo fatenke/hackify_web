@@ -12,29 +12,41 @@
 --------------------------------------------------------------*/
 /* Fonts */
 :root {
-  --default-font: "Roboto",  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --heading-font: "Amatic SC",  sans-serif;
-  --nav-font: "Inter",  sans-serif;
+  --default-font: "Roboto", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --heading-font: "Amatic SC", sans-serif;
+  --nav-font: "Inter", sans-serif;
 }
 
 /* Global Colors - The following color variables are used throughout the website. Updating them here will change the color scheme of the entire website */
-:root { 
-  --background-color: #1e0425;/*#1b3347; /* Background color for the entire website, including individual sections */
-  --default-color: #2986cc; /* Default color used for the majority of the text content across the entire website */
-  --heading-color: #D291BC;/*#2986cc; /* Color for headings, subheadings and title throughout the website */
-  --accent-color: #2986cc; /*#1e0425; /*#D291BC; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
-  --surface-color: #ffffff; /* The surface color is used as a background of boxed elements within sections, such as cards, icon boxes, or other elements that require a visual separation from the global background. */
-  --contrast-color: #ffffff; /* Contrast color for text, ensuring readability against backgrounds of accent, heading, or default colors. */
+:root {
+  --background-color: #1e0425;
+  /*#1b3347; /* Background color for the entire website, including individual sections */
+  --default-color: #2986cc;
+  /* Default color used for the majority of the text content across the entire website */
+  --heading-color: #D291BC;
+  /*#2986cc; /* Color for headings, subheadings and title throughout the website */
+  --accent-color: #2986cc;
+  /*#1e0425; /*#D291BC; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
+  --surface-color: #ffffff;
+  /* The surface color is used as a background of boxed elements within sections, such as cards, icon boxes, or other elements that require a visual separation from the global background. */
+  --contrast-color: #ffffff;
+  /* Contrast color for text, ensuring readability against backgrounds of accent, heading, or default colors. */
 }
 
 /* Nav Menu Colors - The following color variables are used specifically for the navigation menu. They are separate from the global colors to allow for more customization options */
 :root {
-  --nav-color: #ffffff;/* #7f7f90;  /* The default color of the main navmenu links */
-  --nav-hover-color: #1e0425; /* Applied to main navmenu links when they are hovered over or active */
-  --nav-mobile-background-color: #ffffff; /* Used as the background color for mobile navigation menu */
-  --nav-dropdown-background-color: #ffffff; /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
-  --nav-dropdown-color: #7f7f90; /* Used for navigation links of the dropdown items in the navigation menu. */
-  --nav-dropdown-hover-color: #1e0425; /* Similar to --nav-hover-color, this color is applied to dropdown navigation links when they are hovered over. */
+  --nav-color: #ffffff;
+  /* #7f7f90;  /* The default color of the main navmenu links */
+  --nav-hover-color: #1e0425;
+  /* Applied to main navmenu links when they are hovered over or active */
+  --nav-mobile-background-color: #ffffff;
+  /* Used as the background color for mobile navigation menu */
+  --nav-dropdown-background-color: #ffffff;
+  /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
+  --nav-dropdown-color: #7f7f90;
+  /* Used for navigation links of the dropdown items in the navigation menu. */
+  --nav-dropdown-hover-color: #1e0425;
+  /* Similar to --nav-hover-color, this color is applied to dropdown navigation links when they are hovered over. */
 }
 
 /* Color Presets - These classes override global colors when applied to any section or element, providing reuse of the sam color scheme. */
@@ -64,7 +76,7 @@ body {
   color: var(--default-color);
   background-color: var(--background-color);
   font-family: var(--default-font);
-  
+
 }
 
 a {
@@ -236,7 +248,7 @@ h6 {
 }
 
 .header .logo img {
-  max-height: 36px;
+  max-height: 60px;
   margin-right: 8px;
 }
 
@@ -1694,7 +1706,7 @@ section,
   font-size: 1.75rem;
   font-weight: 600;
   color: #1e0425;
-  margin-bottom: 10px;
+
 }
 
 /* Description des hackathons */
@@ -1757,6 +1769,40 @@ section,
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
+
+
+.btn-secondary {
+  background-color: #db5ab0;
+  border: 1px solid #db5ab0;
+  color: white;
+  font-size: 1rem;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.btn-secondary:hover {
+  background-color: #cd54a5;
+  border-color: #cd54a5;
+  transform: translateY(-3px);
+}
+
+.btn-secondary:active {
+  background-color: #c43895;
+  border-color: #c43895;
+  transform: translateY(1px);
+}
+
+.btn-secondary:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+
+
 /* Style général des cartes pour s'assurer que le bouton est bien positionné */
 .card-body {
   display: flex;
@@ -1769,3 +1815,61 @@ section,
   margin-top: auto;
 }
 
+
+.badge bg-secondary {
+  background-color: #004085;
+
+}
+
+/*details*/
+.icon {
+  margin-right: 8px;
+  font-size: 1.2rem;
+  vertical-align: middle;
+}
+
+/*les badges*/
+
+.badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.bg1 {
+  background-color: #bc1183;
+  color: white;
+}
+
+.bg2 {
+  background-color: #0755a3;
+  color: white;
+}
+
+.bg3 {
+  background-color: #1e0425;
+  color: white;
+}
+
+.bg-danger {
+  background-color: #c43895;
+
+}
+
+.bg-secondary {
+  background-color: #1e0425;
+}
+
+/*les message d'erreur*/
+.form-error {
+  color: #dc3545;
+  font-size: 0.9rem;
+  margin-top: 5px;
+  font-weight: 500;
+  background-color: #f8d7da;
+  /* Rouge clair */
+  padding: 8px 12px;
+  border: 1px solid #f5c2c7;
+  border-radius: 6px;
+}

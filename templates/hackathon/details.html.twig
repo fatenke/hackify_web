@@ -5,11 +5,11 @@
 {% block body %}
 <section class="section">
   <div class="container">
-    <h2 class="mb-4">{{ hackathon.nom_hackathon }}</h2>
-    <p><strong>Lieu :</strong> {{ hackathon.lieu }}</p>
-    <p><strong>Date de début :</strong> {{ hackathon.date_debut ? hackathon.date_debut|date('d/m/Y') : 'N/A' }}</p>
-    <p><strong>Date de fin :</strong> {{ hackathon.date_fin ? hackathon.date_fin|date('d/m/Y') : 'N/A' }}</p>
-    <p><strong>Description :</strong> {{ hackathon.description }}</p>
+    <h1 class="mb-4">{{ hackathon.nom_hackathon }}</h1>
+    <p><span class="icon">📍</span><strong>Lieu :</strong> {{ hackathon.lieu }}</p>
+    <p><span class="icon">🗓️</span><strong>Date de début :</strong> {{ hackathon.date_debut ? hackathon.date_debut|date('d/m/Y') : 'N/A' }}</p>
+    <p><span class="icon">🗓️</span><strong>Date de fin :</strong> {{ hackathon.date_fin ? hackathon.date_fin|date('d/m/Y') : 'N/A' }}</p>
+    <p><span class="icon">📝</span><strong>Description :</strong> {{ hackathon.description }}</p>
     {% if hackathon.participations|length < hackathon.max_participants %}
     <div>
     <p>(Participants)</p>
@@ -28,8 +28,8 @@
                     <input type="hidden" name="_token" value="{{ csrf_token('supprimer' ~ hackathon.id_hackathon) }}">
                      <button class="btn btn-primary">Supprimer</button>
                     </form>
-                    <a href="{{ path('voir_participants', { id: hackathon.id_hackathon}) }}" class="btn btn-primary ms-2" style="background-color: #D291BC;">Voir les participants</a>
-                    <a href="{{ path('voir_projets', { id: hackathon.id_hackathon}) }}" class="btn btn-primary ms-2" style="background-color: #D291BC;">Voir les projets</a>
+                    <a href="{{ path('voir_participants', { id: hackathon.id_hackathon}) }}" class="btn btn-secondary" >Voir les participants</a>
+                    <a href="{{ path('voir_projets', { id: hackathon.id_hackathon}) }}" class="btn btn-secondary">Voir les projets</a>
 
                     </div>
       

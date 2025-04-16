@@ -203,17 +203,22 @@
 
   </div>
 
-</section><!-- /Team Section -->
+</section>
+<!-- /Team Section -->
 
 
 <section id="hackathons">
   <h2>Nos derniers Hackathons</h2>
+  
   {% set derniersHackathons = hackathons|slice(0, 3) %}
 
   {% for hackathon in derniersHackathons %}
     <div class="hackathon-card">
-      <h3>{{ hackathon.nom_hackathon }}</h3>
-      <p>{{ hackathon.description }}</p>
+      <h3 class="card-title">{{ hackathon.nom_hackathon }}</h3>
+                  <h5 class="card-text">📍 {{ hackathon.lieu }}</h5>
+                  <p class="card-date">📅 Du {{ hackathon.date_debut|date("j F , Y") }} 🕒 {{ hackathon.date_debut|date("H:i")}} 
+                  <br>
+                  📅 Au {{ hackathon.date_fin|date("j F , Y") }}  🕒 {{ hackathon.date_fin|date("H:i") }}</p>
       <a href="{{ path('hackathon_details', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Détails</a>
     </div>
   {% else %}
