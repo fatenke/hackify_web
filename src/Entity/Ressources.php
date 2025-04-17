@@ -3,32 +3,47 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use Doctrine\Common\Collections\Collection;
 use App\Entity\Chapitres;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 class Ressources
 {
-
     #[ORM\Id]
     #[ORM\Column(type: "integer")]
     private int $id;
 
     #[ORM\Column(type: "string", length: 255)]
+    #[Assert\NotBlank(message: "Le titre est obligatoire.")]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: "Le titre doit faire au moins {{ limit }} caractères.",
+        maxMessage: "Le titre ne peut pas dépasser {{ limit }} caractères."
+    )]
     private string $titre;
 
     #[ORM\Column(type: "string", length: 255)]
+    #[Assert\NotBlank(message: "Le type est requis.")]
     private string $type;
 
     #[ORM\Column(type: "text")]
+    #[Assert\NotBlank(message: "La description est obligatoire.")]
     private string $description;
 
-    #[ORM\Column(type: "datetime")]
-    private \DateTimeInterface $date_ajout;
+    #[ORM\Column(name: "date_ajout", type: "datetime")]
+    #[Assert\NotNull(message: "La date d’ajout est requise.")]
+    #[Assert\Type(type: \DateTimeInterface::class, message: "Format de date invalide.")]
+
+    private \DateTimeInterface $dateAjout;
 
     #[ORM\Column(type: "boolean")]
+    #[Assert\Type(type: 'bool', message: 'Valeur invalide pour la validation.')]
     private bool $valide;
+
+    #[ORM\OneToMany(mappedBy: "id_ressources", targetEntity: Chapitres::class)]
+    private Collection $chapitress;
 
     public function getId()
     {
@@ -70,14 +85,14 @@ class Ressources
         $this->description = $value;
     }
 
-    public function getDate_ajout()
+    public function getDateAjout()
     {
-        return $this->date_ajout;
+        return $this->dateAjout;
     }
 
-    public function setDate_ajout($value)
+    public function setDateAjout($value)
     {
-        $this->date_ajout = $value;
+        $this->dateAjout = $value;
     }
 
     public function getValide()
@@ -90,33 +105,29 @@ class Ressources
         $this->valide = $value;
     }
 
-    #[ORM\OneToMany(mappedBy: "id_ressources", targetEntity: Chapitres::class)]
-    private Collection $chapitress;
+    public function getChapitress(): Collection
+    {
+        return $this->chapitress;
+    }
 
-        public function getChapitress(): Collection
-        {
-            return $this->chapitress;
+    public function addChapitres(Chapitres $chapitres): self
+    {
+        if (!$this->chapitress->contains($chapitres)) {
+            $this->chapitress[] = $chapitres;
+            $chapitres->setId_ressources($this);
         }
-    
-        public function addChapitres(Chapitres $chapitres): self
-        {
-            if (!$this->chapitress->contains($chapitres)) {
-                $this->chapitress[] = $chapitres;
-                $chapitres->setId_ressources($this);
+
+        return $this;
+    }
+
+    public function removeChapitres(Chapitres $chapitres): self
+    {
+        if ($this->chapitress->removeElement($chapitres)) {
+            if ($chapitres->getId_ressources() === $this) {
+                $chapitres->setId_ressources(null);
             }
-    
-            return $this;
         }
-    
-        public function removeChapitres(Chapitres $chapitres): self
-        {
-            if ($this->chapitress->removeElement($chapitres)) {
-                // set the owning side to null (unless already changed)
-                if ($chapitres->getId_ressources() === $this) {
-                    $chapitres->setId_ressources(null);
-                }
-            }
-    
-            return $this;
-        }
+
+        return $this;
+    }
 }

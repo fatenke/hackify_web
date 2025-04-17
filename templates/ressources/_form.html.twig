@@ -1,0 +1,52 @@
+{{ form_start(form, {'attr': {'class': 'needs-validation'}}) }} 
+
+<div class="row g-3">
+
+  {% if form.id is defined %}
+    <div class="col-md-2">
+        {{ form_label(form.id, 'ID', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+        {{ form_widget(form.id, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.id) }}
+    </div>
+  {% endif %}
+
+  <div class="col-md-6">
+      {{ form_label(form.titre, 'Titre', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+      {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
+      <div class="text-danger mt-1 small">{{ form_errors(form.titre) }}</div>
+  </div>
+
+  <div class="col-md-6">
+      {{ form_label(form.type, 'Type', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+      {{ form_widget(form.type, {'attr': {'class': 'form-control'}}) }}
+      <div class="text-danger mt-1 small">{{ form_errors(form.type) }}</div>
+  </div>
+
+  <div class="col-12">
+      {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+      {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 4}}) }}
+      <div class="text-danger mt-1 small">{{ form_errors(form.description) }}</div>
+  </div>
+
+  <div class="col-md-6">
+      {{ form_label(form.dateAjout, 'Date d\'ajout', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+      {{ form_widget(form.dateAjout, {'attr': {'class': 'form-control'}}) }}
+      <div class="text-danger mt-1 small">{{ form_errors(form.dateAjout) }}</div>
+  </div>
+
+  <div class="col-md-6 mt-4">
+      <div class="form-check form-switch mt-4">
+          {{ form_widget(form.valide, {'attr': {'class': 'form-check-input'}}) }}
+          {{ form_label(form.valide, 'Valide ?', {'label_attr': {'class': 'form-check-label'}}) }}
+          <div class="text-danger mt-1 small">{{ form_errors(form.valide) }}</div>
+      </div>
+  </div>
+
+  <div class="col-12 mt-4">
+      <button class="btn btn-primary px-4">{{ button_label|default('Enregistrer') }}</button>
+  </div>
+
+</div>
+
+
+{{ form_end(form) }}

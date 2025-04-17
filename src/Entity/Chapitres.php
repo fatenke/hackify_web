@@ -3,90 +3,102 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use App\Entity\Ressources;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 class Chapitres
 {
-
     #[ORM\Id]
     #[ORM\Column(type: "integer")]
     private int $id;
 
-        #[ORM\ManyToOne(targetEntity: Ressources::class, inversedBy: "chapitress")]
+    #[ORM\ManyToOne(targetEntity: Ressources::class, inversedBy: "chapitress")]
     #[ORM\JoinColumn(name: 'id_ressources', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private Ressources $id_ressources;
 
     #[ORM\Column(type: "string", length: 500)]
-    private string $url_fichier;
+    #[Assert\NotBlank(message: "L'URL du fichier est obligatoire.")]
+    #[Assert\Url(message: "L'URL doit être valide.")]
+    private string $urlFichier;
 
     #[ORM\Column(type: "string", length: 255)]
+    #[Assert\NotBlank(message: "Le titre est requis.")]
     private string $titre;
 
     #[ORM\Column(type: "text")]
+    #[Assert\NotBlank(message: "Le contenu ne peut pas être vide.")]
     private string $contenu;
 
     #[ORM\Column(type: "string", length: 50)]
-    private string $format_fichier;
+    #[Assert\NotBlank(message: "Le format de fichier est requis.")]
+    private string $formatFichier;
 
-    public function getId()
+    // --- Getters & Setters ---
+
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId($value)
+    public function setId(int $value): self
     {
         $this->id = $value;
+        return $this;
     }
 
-    public function getId_ressources()
+    public function getIdRessources(): Ressources
     {
         return $this->id_ressources;
     }
 
-    public function setId_ressources($value)
+    public function setIdRessources(Ressources $ressource): self
     {
-        $this->id_ressources = $value;
+        $this->id_ressources = $ressource;
+        return $this;
     }
 
-    public function getUrl_fichier()
+    public function getUrlFichier(): string
     {
-        return $this->url_fichier;
+        return $this->urlFichier;
     }
 
-    public function setUrl_fichier($value)
+    public function setUrlFichier(string $value): self
     {
-        $this->url_fichier = $value;
+        $this->urlFichier = $value;
+        return $this;
     }
 
-    public function getTitre()
+    public function getTitre(): string
     {
         return $this->titre;
     }
 
-    public function setTitre($value)
+    public function setTitre(string $value): self
     {
         $this->titre = $value;
+        return $this;
     }
 
-    public function getContenu()
+    public function getContenu(): string
     {
         return $this->contenu;
     }
 
-    public function setContenu($value)
+    public function setContenu(string $value): self
     {
         $this->contenu = $value;
+        return $this;
     }
 
-    public function getFormat_fichier()
+    public function getFormatFichier(): string
     {
-        return $this->format_fichier;
+        return $this->formatFichier;
     }
 
-    public function setFormat_fichier($value)
+    public function setFormatFichier(string $value): self
     {
-        $this->format_fichier = $value;
+        $this->formatFichier = $value;
+        return $this;
     }
 }

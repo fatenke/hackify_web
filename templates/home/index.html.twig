@@ -21,6 +21,7 @@
           <li><a href="#chefs">Participer</a></li>
           <li><a href="#gallery">Gallery</a></li>
           <li><a href="#contact">Contact</a></li>
+          <li><a href="#contact">ressources</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
@@ -39,6 +40,12 @@
             <p data-aos="fade-up" data-aos-delay="100">Un espace unique pour découvrir, organiser et vivre des expériences innovantes autour de la technologie et de la créativité.</p>
             <div class="d-flex" data-aos="fade-up" data-aos-delay="200">
               <a href="#book-a-table" class="btn-get-started">Découvrir les hackathons</a>
+              <div class="d-flex gap-3 mt-3" data-aos="fade-up" data-aos-delay="300">
+    <a href="{{ path('app_ressources_new') }}" class="btn btn-outline-light btn-lg">
+           ressources
+    </a>
+</div>
+
             </div>
           </div>
           <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
@@ -90,5 +97,13 @@
     <!-- End About Section -->
 
   </main>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const hero = document.getElementById('hero');
+        if (hero) {
+            hero.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+  </script>
 
 {% endblock %}

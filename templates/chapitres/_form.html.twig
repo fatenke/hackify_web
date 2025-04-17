@@ -1,0 +1,45 @@
+{{ form_start(form) }}
+
+<div class="row g-3">
+
+    <div class="col-md-6">
+        {{ form_label(form.id, 'ID', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.id, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.id) }}
+    </div>
+
+    <div class="col-md-6">
+        {{ form_label(form.id_ressources, 'Ressource liée', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.id_ressources, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.id_ressources) }}
+    </div>
+
+    <div class="col-md-6">
+        {{ form_label(form.titre, 'Titre', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.titre) }}
+    </div>
+
+    <div class="col-md-12">
+        {{ form_label(form.contenu, 'Contenu', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.contenu, {'attr': {'class': 'form-control', 'rows': 4}}) }}
+        {{ form_errors(form.contenu) }}
+    </div>
+
+    <div class="col-md-6">
+        {{ form_label(form.url_fichier, 'URL du fichier', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.url_fichier, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.url_fichier) }}
+    </div>
+
+    <div class="col-md-6">
+        {{ form_label(form.format_fichier, 'Format du fichier', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.format_fichier, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.format_fichier) }}
+    </div>
+
+</div>
+
+<button class="btn btn-primary mt-4">💾 Enregistrer</button>
+
+{{ form_end(form) }}
