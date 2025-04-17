@@ -1,0 +1,282 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Hackathons{% endblock %}
+
+
+  {% block body %}
+
+<div class="container section-title" data-aos="fade-up">
+  <h1>Liste des Hackathons</h1>
+  <p><span>Découvrez nos </span> <span class="description-title">hackathons passionnants</span></p>
+</div>
+<!-- End Section Title -->
+
+<div class="container">
+  <ul class="nav nav-tabs d-flex justify-content-center" data-aos="fade-up" data-aos-delay="100">
+    <li class="nav-item">
+      <a class="nav-link active show" data-bs-toggle="tab" data-bs-target="#hackathons">
+        <h4>tous les hackathons</h4>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link " data-bs-toggle="tab" data-bs-target="#hackathon-upcoming">
+        <h4>À venir</h4>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="tab" data-bs-target="#hackathon-ongoing">
+        <h4>En cours</h4>
+      </a>
+    </li>  
+    {#% if is_granted('ROLE_ORGANISATEUR') %#}
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="tab" data-bs-target="#mes-hackathons">
+        <h4>Mes Hackathons</h4>
+      </a>
+    </li>
+    {#% endif %#}
+
+    {#% if is_granted('ROLE_PARTICIPANT') %#}
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="tab" data-bs-target="#mes-participations">
+        <h4>Mes Participations</h4>
+      </a>
+    </li>
+    {#% endif %#}
+
+  </ul>
+
+  <div class="tab-content" data-aos="fade-up" data-aos-delay="200">
+  {% set now = "now"|date("U") %}
+    <!-- tous les  Hackathons -->
+    <div class="tab-pane fade active show" id="hackathons">
+      <div class="tab-header text-center">
+        <h3>Nos hackathons à ne pas manquer</h3>
+      </div>
+      <div class="row gy-5">
+        {% for hackathon in hackathons %}
+        {% set debut = hackathon.date_debut|date("U") %}
+{% set fin = hackathon.date_fin|date("U") %}
+            <div class="col-lg-4">
+              <div class="hackathon-card">
+                <div class="card-body">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                  <h3 class="card-title">{{ hackathon.nom_hackathon }}</h3>
+                  {% if debut <= now and fin >= now %}
+  <span class="badge bg1">En cours</span>
+{% elseif debut > now %}
+  <span class="badge bg2">À venir</span>
+{% elseif fin < now %}
+  <span class="badge bg3">Terminé</span>
+{% endif %}
+                  </div>
+                  <h5 class="card-text">📍 {{ hackathon.lieu }}</h5>
+                  <p class="card-date">📅 Du {{ hackathon.date_debut|date("j F , Y") }} 🕒 {{ hackathon.date_debut|date("H:i")}} 
+                  <br>
+                  📅 Au {{ hackathon.date_fin|date("j F , Y") }}  🕒 {{ hackathon.date_fin|date("H:i") }}</p>
+                  <div>
+                    <a href="{{ path('hackathon_details', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Détails</a>
+                    {% if hackathon.participations|length < hackathon.max_participants %}
+                    <a href="{{ path('hackathon_participer', { id: hackathon.id_hackathon }) }}" class="btn btn-secondary style="background-color: #1e0425;">Participer</a>
+                    <span class="badge bg-secondary">Déjà inscrit</span>
+                      <!-- user-->
+                      {#% set isAlreadyParticipant = false %}
+                      {% for participation in participations %}
+                        {% if participation.hackathon.id_hackathon == hackathon.id_hackathon %}
+                          {% set isAlreadyParticipant = true %}
+                        {% endif %}
+                      {% endfor %}
+                      {% if not isAlreadyParticipant %}
+                        <a href="{{ path('hackathon_participer', { id: hackathon.id_hackathon }) }}" class="btn btn-success">Participer</a>
+                      {% else %}
+                        <span class="badge bg-secondary">Déjà inscrit</span>
+                      {% endif %#}
+                      <!--user -->
+                    {% else %}
+                      <span class="badge bg-danger">Complet</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+        {% endfor %}
+      </div>
+    </div>
+
+
+
+    <div class="tab-pane fade" id="hackathon-upcoming">
+      <div class="tab-header text-center">
+        <h3>Nos hackathons à ne pas manquer</h3>
+      </div>
+      <div class="row gy-5">
+        {% for hackathon in hackathons %}
+        {% set debut = hackathon.date_debut|date("U") %}
+        {% set fin = hackathon.date_fin|date("U") %}  
+            {% if debut > now %}
+            <div class="col-lg-4">
+              <div class="hackathon-card">
+                <div class="card-body">
+                  <h3 class="card-title">{{ hackathon.nom_hackathon }}</h3>
+                  <h5 class="card-text">📍 {{ hackathon.lieu }}</h5>
+                  <p class="card-date">📅 Du {{ hackathon.date_debut|date("j F , Y") }} 🕒 {{ hackathon.date_debut|date("H:i")}} 
+                  <br>
+                  📅 Au {{ hackathon.date_fin|date("j F , Y") }}  🕒 {{ hackathon.date_fin|date("H:i") }}</p>
+                  <div>
+                    <a href="{{ path('hackathon_details', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Détails</a>
+                    {% if hackathon.participations|length < hackathon.max_participants %}
+                    <a href="{{ path('hackathon_participer', { id: hackathon.id_hackathon }) }}" class="btn btn-secondary style="background-color: #1e0425;">Participer</a>
+                    <span class="badge bg-secondary">Déjà inscrit</span>
+                      <!-- user-->
+                      {#% set isAlreadyParticipant = false %}
+                      {% for participation in participations %}
+                        {% if participation.hackathon.id_hackathon == hackathon.id_hackathon %}
+                          {% set isAlreadyParticipant = true %}
+                        {% endif %}
+                      {% endfor %}
+                      {% if not isAlreadyParticipant %}
+                        <a href="{{ path('hackathon_participer', { id: hackathon.id_hackathon }) }}" class="btn btn-success">Participer</a>
+                      {% else %}
+                        <span class="badge bg-secondary">Déjà inscrit</span>
+                      {% endif %#}
+                      <!--user -->
+                    {% else %}
+                      <span class="badge bg-danger">Complet</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            
+        {% endfor %}
+      </div>
+    </div>
+
+
+   <!-- hackathon en cours -->
+    <div class="tab-pane fade" id="hackathon-ongoing">
+      <div class="tab-header text-center">
+        <h3>Hackathons en cours</h3>
+      </div>
+      <div class="row gy-5">
+        {% for hackathon in hackathons %}
+        {% set debut = hackathon.date_debut|date("U") %}
+        {% set fin = hackathon.date_fin|date("U") %}  
+            <div class="col-lg-4">
+            {% if debut <= now and fin >= now %}
+              <div class="hackathon-card">
+                <div class="card-body">
+                  <h3 class="card-title">{{ hackathon.nom_hackathon }}</h3>
+                  <h5 class="card-text">📍 {{ hackathon.lieu }}</h5>
+                  <p class="card-date">📅 Du {{ hackathon.date_debut|date("j F , Y") }} 🕒 {{ hackathon.date_debut|date("H:i")}} 
+                  <br>
+                  📅 Au {{ hackathon.date_fin|date("j F , Y") }}  🕒 {{ hackathon.date_fin|date("H:i") }}</p>
+                  <div>
+                    <a href="{{ path('hackathon_details', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Détails</a>
+                    {% if hackathon.participations|length < hackathon.max_participants %}
+                    <a href="{{ path('hackathon_participer', { id: hackathon.id_hackathon }) }}" class="btn btn-secondary style="background-color: #1e0425;">Participer</a>
+                    <span class="badge bg-secondary">Déjà inscrit</span>
+                      <!-- user-->
+                      {#% set isAlreadyParticipant = false %}
+                      {% for participation in participations %}
+                        {% if participation.hackathon.id_hackathon == hackathon.id_hackathon %}
+                          {% set isAlreadyParticipant = true %}
+                        {% endif %}
+                      {% endfor %}
+                      {% if not isAlreadyParticipant %}
+                        <a href="{{ path('hackathon_participer', { id: hackathon.id_hackathon }) }}" class="btn btn-success">Participer</a>
+                      {% else %}
+                        <span class="badge bg-secondary">Déjà inscrit</span>
+                      {% endif %#}
+                      <!--user -->
+                    {% else %}
+                      <span class="badge bg-danger">Complet</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            
+            {% endif %}
+            </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- hackathon en cours -->
+   
+   
+      {#% if is_granted('ROLE_ORGANISATEUR') %#}
+      <div class="tab-pane fade" id="mes-hackathons">
+        <div class="tab-header text-center">
+          <h3>Mes Hackathons</h3>
+        </div>
+        <div class="row gy-5">
+        {% for hackathon in hackathons %}
+            <div class="col-lg-4">
+              <div class="hackathon-card">
+                <div class="card-body">
+                  <h3 class="card-title">{{ hackathon.nom_hackathon }}</h3>
+                  <h5 class="card-text">📍 {{ hackathon.lieu }}</h5>
+                  <p class="card-date">📅 Du {{ hackathon.date_debut|date("j F , Y") }} 🕒 {{ hackathon.date_debut|date("H:i")}} 
+                  <br>
+                  📅 Au {{ hackathon.date_fin|date("j F , Y") }}  🕒 {{ hackathon.date_fin|date("H:i") }}</p>
+                  <div>
+                    <a href="{{ path('hackathon_details', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Détails</a>
+                      <span class="badge bg-danger">Complet</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+        {% endfor %}
+
+      </div>
+      </div>
+
+
+    <!-- Mes Participations -->
+    
+    {#% if is_granted('ROLE_PARTICIPANT') %#}
+      <div class="tab-pane fade" id="mes-participations">
+        <div class="tab-header text-center">
+          <h3>Mes Participations</h3>
+        </div>
+
+        <div class="row gy-5">
+          {% for participation in participations %}
+            <div class="col-lg-4">
+              <div class="hackathon-card">
+                <div class="card-body">
+                  <h3 class="card-title">{{ participation.hackathon.nom_hackathon }}</h3>
+                  <h5 class="card-text">📍 {{ participation.hackathon.lieu }}</h5>
+                  <p class="card-date">📅 Du {{ participation.hackathon.date_debut|date("F j, Y") }} 🕒 {{ participation.hackathon.date_debut|date("H:i")}} 
+                  <br>
+                  📅 Au {{ participation.hackathon.date_fin|date("j F , Y") }}  🕒 {{ participation.hackathon.date_fin|date("H:i") }}</p>
+                  
+                 <div>
+                  <a href="{{ path('hackathon_details', { id: participation.hackathon.id_hackathon }) }}" class="btn btn-primary">Détails</a>
+                  <a href="{{ path('annuler_participation', { id: participation.id_participation }) }}" 
+         class="btn btn-danger" 
+         onclick="return confirm('Es-tu sûr de vouloir annuler ta participation ?');">
+        Annuler la participation
+      </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% else %}
+            <div class="col-12 text-center">
+              <p class="text-muted">Aucune participation pour le moment.</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {#% endif %#}
+
+  </div>
+</div>
+
+{% endblock %}
+
