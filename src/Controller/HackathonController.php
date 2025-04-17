@@ -28,15 +28,22 @@ final class HackathonController extends AbstractController
     public function ajouter(Request $request, EntityManagerInterface $em): Response
     {
         $hackathon = new Hackathon();
-        $form = $this->createForm(HackathonType::class, $hackathon);
+        $form = $this->createForm(HackathonType::class, $hackathon, [
+            'validation_groups' => ['Default']
+        ]);
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em->persist($hackathon);
-            $em->flush();
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $em->persist($hackathon);
+                $em->flush();
 
-            return $this->redirectToRoute('liste_hackathon'); 
+                $this->addFlash('success', 'Le hackathon a été créé avec succès.');
+                return $this->redirectToRoute('liste_hackathon');
+            } else {
+                $this->addFlash('error', 'Veuillez corriger les erreurs dans le formulaire.');
+            }
         }
 
         return $this->render('hackathon/ajouter.html.twig', [

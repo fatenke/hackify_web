@@ -19,28 +19,34 @@ class HackathonType extends AbstractType
             ->add('nom_hackathon', TextType::class, [
                 'attr' => [
                     'placeholder' => 'Entrez le nom du hackathon'
-                ]
+                ],
+                'required' => true
             ])
             ->add('description', TextareaType::class, [
                 'attr' => [
                     'placeholder' => 'Décrivez votre hackathon'
-                ]
+                ],
+                'required' => true
             ])
             ->add('date_debut', DateTimeType::class, [
-                'widget' => 'single_text'
+                'widget' => 'single_text',
+                'required' => true
             ])
             ->add('date_fin', DateTimeType::class, [
-                'widget' => 'single_text'
+                'widget' => 'single_text',
+                'required' => true
             ])
             ->add('lieu', TextType::class, [
                 'attr' => [
                     'placeholder' => 'Lieu du hackathon'
-                ]
+                ],
+                'required' => true
             ])
             ->add('theme', TextType::class, [
                 'attr' => [
                     'placeholder' => 'Thème du hackathon'
-                ]
+                ],
+                'required' => true
             ])
             ->add('max_participants', IntegerType::class, [
                 'attr' => [

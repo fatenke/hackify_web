@@ -58,7 +58,7 @@
       <div class="row gy-5">
         {% for hackathon in hackathons %}
         {% set debut = hackathon.date_debut|date("U") %}
-{% set fin = hackathon.date_fin|date("U") %}
+        {% set fin = hackathon.date_fin|date("U") %}
             <div class="col-lg-4">
               <div class="hackathon-card">
                 <div class="card-body">
@@ -106,17 +106,16 @@
     </div>
 
 
-
-    <div class="tab-pane fade" id="hackathon-upcoming">
+<div class="tab-pane fade" id="hackathon-upcoming">
       <div class="tab-header text-center">
-        <h3>Nos hackathons à ne pas manquer</h3>
+        <h3>Hackathons à venir</h3>
       </div>
       <div class="row gy-5">
         {% for hackathon in hackathons %}
         {% set debut = hackathon.date_debut|date("U") %}
         {% set fin = hackathon.date_fin|date("U") %}  
-            {% if debut > now %}
             <div class="col-lg-4">
+            {% if debut <= now and fin >= now %}
               <div class="hackathon-card">
                 <div class="card-body">
                   <h3 class="card-title">{{ hackathon.nom_hackathon }}</h3>
@@ -148,9 +147,9 @@
                   </div>
                 </div>
               </div>
-            </div>
-            {% endif %}
             
+            {% endif %}
+            </div>
         {% endfor %}
       </div>
     </div>

@@ -180,9 +180,9 @@ h6 {
   }
 }
 
-/* PHP Email Form Messages
+/*PHP Email Form Messages
 ------------------------------*/
-/*.php-email-form .error-message {
+.php-email-form .error-message {
   display: none;
   background: #df1529;
   color: #ffffff;
@@ -220,7 +220,7 @@ h6 {
   border: 3px solid var(--accent-color);
   border-top-color: var(--surface-color);
   animation: php-email-form-loading 1s linear infinite;
-}*/
+}
 
 @keyframes php-email-form-loading {
   0% {
@@ -248,7 +248,7 @@ h6 {
 }
 
 .header .logo img {
-  max-height: 60px;
+  max-height: 50px;
   margin-right: 8px;
 }
 
@@ -673,6 +673,7 @@ h6 {
 /*--------------------------------------------------------------
 # Scroll Top Button
 --------------------------------------------------------------*/
+
 .scroll-top {
   position: fixed;
   visibility: hidden;
@@ -707,6 +708,8 @@ h6 {
 /*--------------------------------------------------------------
 # Disable aos animation delay on mobile devices
 --------------------------------------------------------------*/
+
+
 @media screen and (max-width: 768px) {
   [data-aos-delay] {
     transition-delay: 0 !important;
@@ -716,6 +719,11 @@ h6 {
 /*--------------------------------------------------------------
 # Global Page Titles & Breadcrumbs
 --------------------------------------------------------------*/
+
+.index-page {
+  flex: 1;
+}
+
 .page-title {
   --background-color: color-mix(in srgb, var(--default-color), transparent 96%);
   color: var(--default-color);

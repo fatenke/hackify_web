@@ -2,16 +2,54 @@
 
 {% block title %}Ajouter un Hackathon{% endblock %}
 
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .invalid-feedback,
+    .error-message {
+        display: block !important;
+        width: 100%;
+        margin-top: 0.25rem;
+        font-size: 0.875rem;
+        color: #dc3545;
+    }
+    .form-error-message {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+        padding: 0.75rem 1.25rem;
+        margin-bottom: 1rem;
+        border-radius: 0.25rem;
+    }
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+</style>
+{% endblock %}
+
 {% block body %}
 <section id="ajout-hackathon" class="section">
   <div class="container mt-5">
     <h2 class="mb-4 text-center">Ajouter un Hackathon</h2>
     <div class="row justify-content-center">
       <div class="col-md-8">
+      {% for label, messages in app.flashes %}
+      {% for message in messages %}
+        <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endfor %}
         {{ form_start(form) }}
+          {% if not form.vars.valid %}
+              <div class="form-error-message">
+                  {{ form_errors(form) }}
+              </div>
+          {% endif %}
           <div class="mb-3">
             {{ form_label(form.nom_hackathon) }}
-            {{ form_widget(form.nom_hackathon, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le nom du hackathon'}}) }}
+            {{ form_widget(form.nom_hackathon, {'attr': {'class': 'form-control' ~ (form_errors(form.nom_hackathon) ? ' is-invalid' : ''), 'placeholder': 'Entrez le nom du hackathon'}}) }}
             {% if form_errors(form.nom_hackathon) %}
                 <div class="error-message">
                     {{ form_errors(form.nom_hackathon) }}
@@ -21,7 +59,7 @@
           
           <div class="mb-3">
             {{ form_label(form.description) }}
-            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'placeholder': 'Décrivez votre hackathon'}}) }}
+            {{ form_widget(form.description, {'attr': {'class': 'form-control' ~ (form_errors(form.description) ? ' is-invalid' : ''), 'placeholder': 'Décrivez votre hackathon'}}) }}
             {% if form_errors(form.description) %}
                 <div class="error-message">
                     {{ form_errors(form.description) }}
@@ -31,7 +69,7 @@
 
           <div class="mb-3">
             {{ form_label(form.theme) }}
-            {{ form_widget(form.theme, {'attr': {'class': 'form-control', 'placeholder': 'Thème du hackathon'}}) }}
+            {{ form_widget(form.theme, {'attr': {'class': 'form-control' ~ (form_errors(form.theme) ? ' is-invalid' : ''), 'placeholder': 'Thème du hackathon'}}) }}
             {% if form_errors(form.theme) %}
                 <div class="error-message">
                     {{ form_errors(form.theme) }}
@@ -41,7 +79,7 @@
 
           <div class="mb-3">
             {{ form_label(form.lieu) }}
-            {{ form_widget(form.lieu, {'attr': {'class': 'form-control', 'placeholder': 'Lieu du hackathon'}}) }}
+            {{ form_widget(form.lieu, {'attr': {'class': 'form-control' ~ (form_errors(form.lieu) ? ' is-invalid' : ''), 'placeholder': 'Lieu du hackathon'}}) }}
             {% if form_errors(form.lieu) %}
                 <div class="error-message">
                     {{ form_errors(form.lieu) }}
@@ -51,7 +89,7 @@
 
           <div class="mb-3">
             {{ form_label(form.date_debut) }}
-            {{ form_widget(form.date_debut, {'attr': {'class': 'form-control'}}) }}
+            {{ form_widget(form.date_debut, {'attr': {'class': 'form-control' ~ (form_errors(form.date_debut) ? ' is-invalid' : '')}}) }}
             {% if form_errors(form.date_debut) %}
                 <div class="error-message">
                     {{ form_errors(form.date_debut) }}
@@ -61,7 +99,7 @@
 
           <div class="mb-3">
             {{ form_label(form.date_fin) }}
-            {{ form_widget(form.date_fin, {'attr': {'class': 'form-control'}}) }}
+            {{ form_widget(form.date_fin, {'attr': {'class': 'form-control' ~ (form_errors(form.date_fin) ? ' is-invalid' : '')}}) }}
             {% if form_errors(form.date_fin) %}
                 <div class="error-message">
                     {{ form_errors(form.date_fin) }}
