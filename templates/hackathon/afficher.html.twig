@@ -1,0 +1,197 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Hackathons{% endblock %}
+
+
+  {% block body %}
+
+<div class="container section-title" data-aos="fade-up">
+  <h1>Liste des Hackathons</h1>
+  <p><span>Découvrez nos </span> <span class="description-title">hackathons passionnants</span></p>
+</div>
+<!-- End Section Title -->
+
+<div class="container">
+  <ul class="nav nav-tabs d-flex justify-content-center" data-aos="fade-up" data-aos-delay="100">
+    <li class="nav-item">
+      <a class="nav-link active show" data-bs-toggle="tab" data-bs-target="#hackathon-upcoming">
+        <h4>À venir</h4>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="tab" data-bs-target="#hackathon-ongoing">
+        <h4>En cours</h4>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="tab" data-bs-target="#hackathon-past">
+        <h4>Passés</h4>
+      </a>
+    </li>
+
+    {#% if is_granted('ROLE_ORGANISATEUR') %#}
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="tab" data-bs-target="#mes-hackathons">
+        <h4>Mes Hackathons</h4>
+      </a>
+    </li>
+    {#% endif %#}
+
+    {#% if is_granted('ROLE_PARTICIPANT') %#}
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="tab" data-bs-target="#mes-participations">
+        <h4>Mes Participations</h4>
+      </a>
+    </li>
+    {#% endif %#}
+
+  </ul>
+
+  <div class="tab-content" data-aos="fade-up" data-aos-delay="200">
+
+    <!-- Upcoming Hackathons -->
+    <div class="tab-pane fade active show" id="hackathon-upcoming">
+      <div class="tab-header text-center">
+        <h3>Nos hackathons à ne pas manquer</h3>
+      </div>
+
+      <div class="row gy-5">
+        {% for hackathon in hackathons %}
+          {% if hackathon.date_debut > "now"|date("Y-m-d") %}
+            <div class="col-lg-4">
+              <div class="hackathon-card">
+                <div class="card-body">
+                  <h5 class="card-title">{{ hackathon.nom_hackathon }}</h5>
+                  <p class="card-text">{{ hackathon.description }}</p>
+                  <p class="card-date">{{ hackathon.date_debut|date("F j, Y") }} - {{ hackathon.date_fin|date("F j, Y") }}</p>
+                  <div>
+                    <a href="{{ path('hackathon_details', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Détails</a>
+                    {% if hackathon.participations|length < hackathon.max_participants %}
+                    <a href="{{ path('hackathon_participer', { id: hackathon.id_hackathon }) }}" class="btn btn-success">Participer</a>
+                      <!-- user-->
+                      {#% set isAlreadyParticipant = false %}
+                      {% for participation in participations %}
+                        {% if participation.hackathon.id_hackathon == hackathon.id_hackathon %}
+                          {% set isAlreadyParticipant = true %}
+                        {% endif %}
+                      {% endfor %}
+                      {% if not isAlreadyParticipant %}
+                        <a href="{{ path('hackathon_participer', { id: hackathon.id_hackathon }) }}" class="btn btn-success">Participer</a>
+                      {% else %}
+                        <span class="badge bg-secondary">Déjà inscrit</span>
+                      {% endif %#}
+                      <!--user -->
+                    {% else %}
+                      <span class="badge bg-danger">Complet</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Ongoing Hackathons -->
+    <div class="tab-pane fade" id="hackathon-ongoing">
+      <div class="tab-header text-center">
+        <h3>Hackathons en cours</h3>
+      </div>
+
+      <div class="row gy-5">
+        {% for hackathon in hackathons %}
+          {% if hackathon.date_debut <= "now"|date("Y-m-d") and hackathon.date_fin >= "now"|date("Y-m-d") %}
+            <div class="col-lg-4">
+              <div class="hackathon-card">
+                <div class="card-body">
+                  <h5 class="card-title">{{ hackathon.nom_hackathon }}</h5>
+                  <p class="card-text">{{ hackathon.description }}</p>
+                  <p class="card-date">{{ hackathon.date_debut|date("F j, Y") }} - {{ hackathon.date_fin|date("F j, Y") }}</p>
+                  <div>
+                    <a href="{{ path('hackathon_details', { id: hackathon.id_hackathon }) }}" class="btn btn-warning">Voir en direct</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Past Hackathons -->
+      <div class="tab-pane fade" id="hackathon-past">
+        <div class="tab-header text-center">
+          <h3>Nos anciens hackathons</h3>
+        </div>
+
+        <div class="row gy-5">
+          {% for hackathon in hackathons %}
+            {% if hackathon.date_debut <= "now"|date("Y-m-d") %}
+              <div class="col-lg-4">
+                <div class="hackathon-card">
+                  <div class="card-body">
+                    <h5 class="card-title">{{ hackathon.nom_hackathon }}</h5>
+                    <p class="card-text">{{ hackathon.description }}</p>
+                    <p class="card-date">{{ hackathon.date_debut|date("F j, Y") }} - {{ hackathon.date_fin|date("F j, Y") }}</p>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+      <!-- End Past Hackathons -->
+
+
+      {#% if is_granted('ROLE_ORGANISATEUR') %#}
+      <div class="tab-pane fade" id="mes-hackathons">
+        <div class="tab-header text-center">
+          <h3>Mes Hackathons</h3>
+        </div>
+      </div>
+
+
+    <!-- Mes Participations -->
+    
+    {#% if is_granted('ROLE_PARTICIPANT') %#}
+      <div class="tab-pane fade" id="mes-participations">
+        <div class="tab-header text-center">
+          <h3>Mes Participations</h3>
+        </div>
+
+        <div class="row gy-5">
+          {% for participation in participations %}
+            <div class="col-lg-4">
+              <div class="hackathon-card">
+                <div class="card-body">
+                  <h5 class="card-title">{{ participation.hackathon.nom_hackathon }}</h5>
+                  <p class="card-text">{{ participation.hackathon.description }}</p>
+                  <p class="card-date">{{ participation.hackathon.date_debut|date("F j, Y") }} - {{ participation.hackathon.date_fin|date("F j, Y") }}</p>
+                  <div>
+                  <a href="{{ path('hackathon_details', { id: participation.hackathon.id_hackathon }) }}" class="btn btn-primary">Détails</a>
+                  <a href="{{ path('annuler_participation', { id: participation.id_participation }) }}" 
+         class="btn btn-danger" 
+         onclick="return confirm('Es-tu sûr de vouloir annuler ta participation ?');">
+        Annuler la participation
+      </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% else %}
+            <div class="col-12 text-center">
+              <p class="text-muted">Aucune participation pour le moment.</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {#% endif %#}
+
+  </div>
+</div>
+
+{% endblock %}
+
