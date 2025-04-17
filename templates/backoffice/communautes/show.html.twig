@@ -1,0 +1,67 @@
+{% extends 'backoffice/baseback.html.twig' %}
+
+{% block title %}Communautés - Backoffice{% endblock %}
+
+{% block page_title %}Gestion des Communautés{% endblock %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb float-sm-right">
+        <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
+        <li class="breadcrumb-item active">Communautés</li>
+    </ol>
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Liste des Communautés</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if communautes is empty %}
+                            <div class="alert alert-info">
+                                <p>Aucune communauté pour le moment.</p>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <p>Toutes les communautés.</p>
+                            </div>
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Description</th>
+                                        <th>Date de Création</th>
+                                        <th>Hackathon</th>
+                                        <th>Actif</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for communaute in communautes %}
+                                        <tr>
+                                            <td>{{ communaute.nom }}</td>
+                                            <td>{{ communaute.description|length > 50 ? communaute.description|slice(0, 50) ~ '...' : communaute.description }}</td>
+                                            <td>{{ communaute.date_creation|date('Y-m-d H:i:s') }}</td>
+                                            <td>{{ communaute.id_hackathon ? communaute.id_hackathon.nom_hackathon : 'Aucun' }}</td>
+                                            <td>{{ communaute.isActive ? 'Oui' : 'Non' }}</td>
+                                            <td>
+                                                <a href="{{ path('app_communaute_backoffice_edit', { id: communaute.id }) }}" class="btn btn-primary btn-sm mr-2">Modifier</a>
+                                                <form method="post" action="{{ path('app_communaute_backoffice_delete', { id: communaute.id }) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette communauté ?');" style="display: inline-block;">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ communaute.id) }}">
+                                                    <button class="btn btn-danger btn-sm">Supprimer</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

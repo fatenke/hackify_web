@@ -5,8 +5,8 @@ namespace App\Controller;
 use App\Entity\Chat;
 use App\Entity\Message;
 use App\Entity\Poll;
-use App\Entity\Poll_option;
-use App\Entity\Poll_votes;
+use App\Entity\PollVote;
+use App\Entity\PollOption;
 use App\Entity\User;
 use App\Repository\ChatRepository;
 use App\Repository\UserRepository;
@@ -73,7 +73,7 @@ class ChatController extends AbstractController
         // Add poll options
         $options = $request->request->all('options');
         foreach ($options as $optionText) {
-            $option = new Poll_option();
+            $option = new PollOption();
             $option->setPoll_id($poll);
             $option->setText($optionText);
             $option->setVote_count(0);
@@ -90,10 +90,10 @@ class ChatController extends AbstractController
     public function vote(Request $request, Poll $poll, EntityManagerInterface $entityManager): Response
     {
         $optionId = $request->request->get('option_id');
-        $option = $entityManager->getRepository(Poll_option::class)->find($optionId);
+        $option = $entityManager->getRepository(PollOption::class)->find($optionId);
 
         if ($option && !$poll->getIs_closed()) {
-            $poll_vote = new Poll_votes();
+            $poll_vote = new PollVote();
             $poll_vote->setPoll_id($poll);
             $poll_vote->setOption_id($option);
             // Assuming you have a way to get the current user

@@ -69,32 +69,55 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_communaute_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Communaute $communaute, EntityManagerInterface $entityManager): Response
+    #[Route('/backoffice', name: 'app_communaute_backoffice_index', methods: ['GET'])]
+    public function showBack(CommunauteRepository $communauteRepository): Response
     {
-        if ($request->isMethod('POST')) {
-            $communaute->setId_hackathon($request->request->get('id_hackathon'));
-            $communaute->setNom($request->request->get('nom'));
-            $communaute->setDescription($request->request->get('description'));
+        $communautes = $communauteRepository->findAll();
 
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_communaute_index');
-        }
-
-        return $this->render('communaute/edit.html.twig', [
-            'communaute' => $communaute,
+        return $this->render('backoffice/communautes/show.html.twig', [
+            'communautes' => $communautes,
         ]);
     }
 
-    #[Route('/{id}', name: 'app_communaute_delete', methods: ['POST'])]
-    public function delete(Request $request, Communaute $communaute, EntityManagerInterface $entityManager): Response
+    #[Route('/backoffice/{id}/edit', name: 'app_communaute_backoffice_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Communaute $communaute, CommunauteRepository $communauteRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$communaute->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($communaute);
-            $entityManager->flush();
+        $form = $this->createForm(CommunauteType::class, $communaute);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $communauteRepository->save($communaute, true);
+            $this->addFlash('success', 'Communauté modifiée avec succès.');
+            return $this->redirectToRoute('app_communaute_backoffice_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->redirectToRoute('app_communaute_index');
+        return $this->render('backoffice/communautes/edit.html.twig', [
+            'communaute' => $communaute,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/backoffice/{id}/delete', name: 'app_communaute_backoffice_delete', methods: ['POST'])]
+    public function delete(Request $request, Communaute $communaute, CommunauteRepository $communauteRepository): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$communaute->getId(), $request->request->get('_token'))) {
+            $communauteRepository->remove($communaute, true);
+            $this->addFlash('success', 'Communauté supprimée avec succès.');
+        } else {
+            $this->addFlash('error', 'Token CSRF invalide.');
+        }
+
+        return $this->redirectToRoute('app_communaute_backoffice_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/user/{id}/communities', name: 'app_communaute_by_user', methods: ['GET'])]
+    public function getCommunitiesByUser(int $id, CommunauteRepository $communauteRepository): Response
+    {
+        $communautes = $communauteRepository->findByUserId($id);
+
+        return $this->render('communaute/by_user.html.twig', [
+            'communautes' => $communautes,
+            'user_id' => $id,
+        ]);
     }
 } 
