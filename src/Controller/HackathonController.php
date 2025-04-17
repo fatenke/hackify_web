@@ -12,6 +12,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\HackathonRepository;
 use App\Repository\ParticipationRepository;
+use App\Entity\Chat ;
+use App\Entity\Communaute ;
+use App\Form\CommunauteType ;
+
+
 
 
 
@@ -24,7 +29,7 @@ final class HackathonController extends AbstractController
             'controller_name' => 'HackathonController',
         ]);
     }*/
-    #[Route('hackathon/ajouter', name: 'ajouter_hackathon')]
+    #[Route('/hackathon/ajouter', name: 'ajouter_hackathon')]
     public function ajouter(Request $request, EntityManagerInterface $em): Response
     {
         $hackathon = new Hackathon();
@@ -33,16 +38,69 @@ final class HackathonController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em->persist($hackathon);
-            $em->flush();
+            $em->getConnection()->beginTransaction();
+            try {
+                // Persist Hackathon
+                $em->persist($hackathon);
+                $em->flush();
 
-            return $this->redirectToRoute('liste_hackathon'); 
+                // Create associated Communaute
+                $communaute = new Communaute();
+                $communauteData = [
+                    'nom' => $hackathon->getNomHackathon(),
+                    'description' => $hackathon->getDescription(),
+                    'id_hackathon' => $hackathon,
+                    'is_active' => true,
+                ];
+
+                // Validate Communaute data using form
+                $communauteForm = $this->createForm(CommunauteType::class, $communaute);
+                $communauteForm->submit($communauteData);
+
+                if ($communauteForm->isValid()) {
+                    $communaute->setDate_creation(new \DateTime());
+                    $em->persist($communaute);
+
+                    // Create 5 default chats
+                    $chatTypes = ['ANNOUNCEMENT', 'QUESTION', 'FEEDBACK', 'COACH', 'BOT_SUPPORT'];
+                    $chatNames = ['Announcements', 'Questions', 'Feedback', 'Coaching', 'Bot Support'];
+
+                    foreach ($chatTypes as $index => $type) {
+                        $chat = new Chat();
+                        $chat->setCommunaute_id($communaute);
+                        $chat->setNom($chatNames[$index]);
+                        $chat->setType($type);
+                        $chat->setDate_creation(new \DateTime());
+                        $chat->setIs_active(true);
+                        $em->persist($chat);
+                    }
+
+                    $em->flush();
+                    $em->getConnection()->commit();
+
+                    $this->addFlash('success', 'Hackathon and associated community created successfully.');
+                    return $this->redirectToRoute('liste_hackathon');
+                }
+
+                // If Communaute form is invalid, rollback
+                throw new \Exception('Invalid community data: ' . $communauteForm->getErrors(true));
+            } catch (\Exception $e) {
+                $em->getConnection()->rollBack();
+                $this->addFlash('error', 'Failed to create hackathon and community: ' . $e->getMessage());
+                return $this->render('hackathon/ajouter.html.twig', [
+                    'form' => $form->createView(),
+                ]);
+            }
         }
 
         return $this->render('hackathon/ajouter.html.twig', [
             'form' => $form->createView(),
         ]);
     }
+
+
+
+
     #[Route('hackathon', name: 'liste_hackathon')]
     public function liste(
     HackathonRepository $hackathonRepository,

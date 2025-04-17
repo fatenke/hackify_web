@@ -3,102 +3,110 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
-use App\Entity\Communaute;
-use Doctrine\Common\Collections\Collection;
-use App\Entity\Message;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity]
 class Chat
 {
-
     #[ORM\Id]
-    #[ORM\Column(type: "integer")]
-    private int $id;
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-        #[ORM\ManyToOne(targetEntity: Communaute::class, inversedBy: "chats")]
+    #[ORM\ManyToOne(targetEntity: Communaute::class, inversedBy: 'chats')]
     #[ORM\JoinColumn(name: 'communaute_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Communaute $communaute_id;
+    private ?Communaute $communaute_id = null;
 
-    #[ORM\Column(type: "string", length: 255)]
+    #[ORM\Column(type: 'string', length: 255)]
     private string $nom;
 
-    #[ORM\Column(type: "string")]
+    #[ORM\Column(type: 'string')]
     private string $type;
 
-    #[ORM\Column(type: "datetime")]
+    #[ORM\Column(type: 'datetime')]
     private \DateTimeInterface $date_creation;
 
-    #[ORM\Column(type: "boolean")]
+    #[ORM\Column(type: 'boolean')]
     private bool $is_active;
 
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setId($value)
-    {
-        $this->id = $value;
-    }
-
-    public function getCommunaute_id()
-    {
-        return $this->communaute_id;
-    }
-
-    public function setCommunaute_id($value)
-    {
-        $this->communaute_id = $value;
-    }
-
-    public function getNom()
-    {
-        return $this->nom;
-    }
-
-    public function setNom($value)
-    {
-        $this->nom = $value;
-    }
-
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    public function setType($value)
-    {
-        $this->type = $value;
-    }
-
-    public function getDate_creation()
-    {
-        return $this->date_creation;
-    }
-
-    public function setDate_creation($value)
-    {
-        $this->date_creation = $value;
-    }
-
-    public function getIs_active()
-    {
-        return $this->is_active;
-    }
-
-    public function setIs_active($value)
-    {
-        $this->is_active = $value;
-    }
-
-    #[ORM\OneToMany(mappedBy: "chat_id", targetEntity: Polls::class)]
+    #[ORM\OneToMany(mappedBy: 'chat_id', targetEntity: Poll::class, cascade: ['persist', 'remove'])]
     private Collection $polls;
+
+    #[ORM\OneToMany(mappedBy: 'chat_id', targetEntity: Message::class, cascade: ['persist', 'remove'])]
+    private Collection $messages;
 
     public function __construct()
     {
         $this->polls = new ArrayCollection();
+        $this->messages = new ArrayCollection();
+        $this->is_active = true;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $value): self
+    {
+        $this->id = $value;
+        return $this;
+    }
+
+    public function getCommunaute_id(): ?Communaute
+    {
+        return $this->communaute_id;
+    }
+
+    public function setCommunaute_id(?Communaute $value): self
+    {
+        $this->communaute_id = $value;
+        return $this;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $value): self
+    {
+        $this->nom = $value;
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $value): self
+    {
+        $this->type = $value;
+        return $this;
+    }
+
+    public function getDate_creation(): ?\DateTimeInterface
+    {
+        return $this->date_creation;
+    }
+
+    public function setDate_creation(\DateTimeInterface $value): self
+    {
+        $this->date_creation = $value;
+        return $this;
+    }
+
+    public function getIs_active(): bool
+    {
+        return $this->is_active;
+    }
+
+    public function setIs_active(bool $value): self
+    {
+        $this->is_active = $value;
+        return $this;
     }
 
     public function getPolls(): Collection
@@ -106,30 +114,24 @@ class Chat
         return $this->polls;
     }
 
-    public function addPoll(Polls $poll): self
+    public function addPoll(Poll $poll): self
     {
         if (!$this->polls->contains($poll)) {
             $this->polls->add($poll);
             $poll->setChat_id($this);
         }
-
         return $this;
     }
 
-    public function removePoll(Polls $poll): self
+    public function removePoll(Poll $poll): self
     {
         if ($this->polls->removeElement($poll)) {
-            // set the owning side to null (unless already changed)
             if ($poll->getChat_id() === $this) {
                 $poll->setChat_id(null);
             }
         }
-
         return $this;
     }
-
-    #[ORM\OneToMany(mappedBy: "chat_id", targetEntity: Message::class)]
-    private Collection $messages;
 
     public function getMessages(): Collection
     {
@@ -142,19 +144,16 @@ class Chat
             $this->messages->add($message);
             $message->setChat_id($this);
         }
-
         return $this;
     }
 
     public function removeMessage(Message $message): self
     {
         if ($this->messages->removeElement($message)) {
-            // set the owning side to null (unless already changed)
             if ($message->getChat_id() === $this) {
                 $message->setChat_id(null);
             }
         }
-
         return $this;
     }
 }

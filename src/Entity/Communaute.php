@@ -3,102 +3,106 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
-use App\Entity\Hackathon;
-use Doctrine\Common\Collections\Collection;
-use App\Entity\Chat;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity]
 class Communaute
 {
-
     #[ORM\Id]
-    #[ORM\Column(type: "integer")]
-    private int $id;
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-        #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: "communautes")]
+    #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: 'communautes')]
     #[ORM\JoinColumn(name: 'id_hackathon', referencedColumnName: 'id_hackathon', onDelete: 'CASCADE')]
-    private Hackathon $id_hackathon;
+    private ?Hackathon $id_hackathon = null;
 
-    #[ORM\Column(type: "string", length: 255)]
+    #[ORM\Column(type: 'string', length: 255)]
     private string $nom;
 
-    #[ORM\Column(type: "text")]
+    #[ORM\Column(type: 'text')]
     private string $description;
 
-    #[ORM\Column(type: "datetime")]
+    #[ORM\Column(type: 'datetime')]
     private \DateTimeInterface $date_creation;
 
-    #[ORM\Column(type: "boolean")]
+    #[ORM\Column(type: 'boolean')]
     private bool $is_active;
 
-    #[ORM\OneToMany(mappedBy: "communaute_id", targetEntity: Chat::class)]
+    #[ORM\OneToMany(mappedBy: 'communaute_id', targetEntity: Chat::class, cascade: ['persist', 'remove'])]
     private Collection $chats;
 
     public function __construct()
     {
         $this->chats = new ArrayCollection();
+        $this->is_active = true; // Default to active
     }
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId($value)
+    public function setId(int $value): self
     {
         $this->id = $value;
+        return $this;
     }
 
-    public function getId_hackathon()
+    public function getId_hackathon(): ?Hackathon
     {
         return $this->id_hackathon;
     }
 
-    public function setId_hackathon($value)
+    public function setId_hackathon(?Hackathon $value): self
     {
         $this->id_hackathon = $value;
+        return $this;
     }
 
-    public function getNom()
+    public function getNom(): ?string
     {
         return $this->nom;
     }
 
-    public function setNom($value)
+    public function setNom(string $value): self
     {
         $this->nom = $value;
+        return $this;
     }
 
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    public function setDescription($value)
+    public function setDescription(string $value): self
     {
         $this->description = $value;
+        return $this;
     }
 
-    public function getDate_creation()
+    public function getDate_creation(): ?\DateTimeInterface
     {
         return $this->date_creation;
     }
 
-    public function setDate_creation($value)
+    public function setDate_creation(\DateTimeInterface $value): self
     {
         $this->date_creation = $value;
+        return $this;
     }
 
-    public function getIs_active()
+    public function getIs_active(): bool
     {
         return $this->is_active;
     }
 
-    public function setIs_active($value)
+    public function setIs_active(bool $value): self
     {
         $this->is_active = $value;
+        return $this;
     }
 
     public function getChats(): Collection
@@ -112,19 +116,16 @@ class Communaute
             $this->chats->add($chat);
             $chat->setCommunaute_id($this);
         }
-
         return $this;
     }
 
     public function removeChat(Chat $chat): self
     {
         if ($this->chats->removeElement($chat)) {
-            // set the owning side to null (unless already changed)
             if ($chat->getCommunaute_id() === $this) {
                 $chat->setCommunaute_id(null);
             }
         }
-
         return $this;
     }
 }
