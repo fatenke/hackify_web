@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Hackathon;
 use Doctrine\Common\Collections\Collection;
 use App\Entity\Chat;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity]
 class Communaute
@@ -31,6 +32,14 @@ class Communaute
 
     #[ORM\Column(type: "boolean")]
     private bool $is_active;
+
+    #[ORM\OneToMany(mappedBy: "communaute_id", targetEntity: Chat::class)]
+    private Collection $chats;
+
+    public function __construct()
+    {
+        $this->chats = new ArrayCollection();
+    }
 
     public function getId()
     {
@@ -92,6 +101,30 @@ class Communaute
         $this->is_active = $value;
     }
 
-    #[ORM\OneToMany(mappedBy: "communaute_id", targetEntity: Chat::class)]
-    private Collection $chats;
+    public function getChats(): Collection
+    {
+        return $this->chats;
+    }
+
+    public function addChat(Chat $chat): self
+    {
+        if (!$this->chats->contains($chat)) {
+            $this->chats->add($chat);
+            $chat->setCommunaute_id($this);
+        }
+
+        return $this;
+    }
+
+    public function removeChat(Chat $chat): self
+    {
+        if ($this->chats->removeElement($chat)) {
+            // set the owning side to null (unless already changed)
+            if ($chat->getCommunaute_id() === $this) {
+                $chat->setCommunaute_id(null);
+            }
+        }
+
+        return $this;
+    }
 }

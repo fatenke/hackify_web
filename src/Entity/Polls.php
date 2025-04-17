@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Chat;
 use Doctrine\Common\Collections\Collection;
 use App\Entity\Poll_votes;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity]
 class Polls
@@ -80,34 +81,39 @@ class Polls
     }
 
     #[ORM\OneToMany(mappedBy: "poll_id", targetEntity: Poll_options::class)]
-    private Collection $poll_optionss;
+    private Collection $poll_options;
 
-        public function getPoll_optionss(): Collection
-        {
-            return $this->poll_optionss;
+    public function __construct()
+    {
+        $this->poll_options = new ArrayCollection();
+    }
+
+    public function getPoll_option(): Collection
+    {
+        return $this->poll_options;
+    }
+
+    public function addPoll_option(Poll_options $poll_option): self
+    {
+        if (!$this->poll_options->contains($poll_option)) {
+            $this->poll_options->add($poll_option);
+            $poll_option->setPoll_id($this);
         }
-    
-        public function addPoll_options(Poll_options $poll_options): self
-        {
-            if (!$this->poll_optionss->contains($poll_options)) {
-                $this->poll_optionss[] = $poll_options;
-                $poll_options->setPoll_id($this);
+
+        return $this;
+    }
+
+    public function removePoll_option(Poll_options $poll_option): self
+    {
+        if ($this->poll_options->removeElement($poll_option)) {
+            // set the owning side to null (unless already changed)
+            if ($poll_option->getPoll_id() === $this) {
+                $poll_option->setPoll_id(null);
             }
-    
-            return $this;
         }
-    
-        public function removePoll_options(Poll_options $poll_options): self
-        {
-            if ($this->poll_optionss->removeElement($poll_options)) {
-                // set the owning side to null (unless already changed)
-                if ($poll_options->getPoll_id() === $this) {
-                    $poll_options->setPoll_id(null);
-                }
-            }
-    
-            return $this;
-        }
+
+        return $this;
+    }
 
     #[ORM\OneToMany(mappedBy: "poll_id", targetEntity: Poll_votes::class)]
     private Collection $poll_votess;

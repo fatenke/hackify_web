@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Communaute;
 use Doctrine\Common\Collections\Collection;
 use App\Entity\Message;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity]
 class Chat
@@ -93,35 +94,67 @@ class Chat
     }
 
     #[ORM\OneToMany(mappedBy: "chat_id", targetEntity: Polls::class)]
-    private Collection $pollss;
+    private Collection $polls;
 
-        public function getPollss(): Collection
-        {
-            return $this->pollss;
+    public function __construct()
+    {
+        $this->polls = new ArrayCollection();
+    }
+
+    public function getPolls(): Collection
+    {
+        return $this->polls;
+    }
+
+    public function addPoll(Polls $poll): self
+    {
+        if (!$this->polls->contains($poll)) {
+            $this->polls->add($poll);
+            $poll->setChat_id($this);
         }
-    
-        public function addPolls(Polls $polls): self
-        {
-            if (!$this->pollss->contains($polls)) {
-                $this->pollss[] = $polls;
-                $polls->setChat_id($this);
+
+        return $this;
+    }
+
+    public function removePoll(Polls $poll): self
+    {
+        if ($this->polls->removeElement($poll)) {
+            // set the owning side to null (unless already changed)
+            if ($poll->getChat_id() === $this) {
+                $poll->setChat_id(null);
             }
-    
-            return $this;
         }
-    
-        public function removePolls(Polls $polls): self
-        {
-            if ($this->pollss->removeElement($polls)) {
-                // set the owning side to null (unless already changed)
-                if ($polls->getChat_id() === $this) {
-                    $polls->setChat_id(null);
-                }
-            }
-    
-            return $this;
-        }
+
+        return $this;
+    }
 
     #[ORM\OneToMany(mappedBy: "chat_id", targetEntity: Message::class)]
     private Collection $messages;
+
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): self
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages->add($message);
+            $message->setChat_id($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Message $message): self
+    {
+        if ($this->messages->removeElement($message)) {
+            // set the owning side to null (unless already changed)
+            if ($message->getChat_id() === $this) {
+                $message->setChat_id(null);
+            }
+        }
+
+        return $this;
+    }
 }
