@@ -17,10 +17,12 @@ public function participer(
     Hackathon $hackathon,
     EntityManagerInterface $em
 ): Response {
+    $user = $this->getUser();
     $participation = new Participation();
     $participation->setHackathon($hackathon);
     $participation->setDate_inscription(new \DateTime());
     $participation->setStatut('En attente');
+    $participation->setId_participant($user->getId());
 
     $em->persist($participation);
     $em->flush();

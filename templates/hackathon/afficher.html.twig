@@ -79,21 +79,19 @@
                   <div>
                     <a href="{{ path('hackathon_details', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Détails</a>
                     {% if hackathon.participations|length < hackathon.max_participants %}
-                    <a href="{{ path('hackathon_participer', { id: hackathon.id_hackathon }) }}" class="btn btn-secondary style="background-color: #1e0425;">Participer</a>
-                    <span class="badge bg-secondary">Déjà inscrit</span>
-                      <!-- user-->
-                      {#% set isAlreadyParticipant = false %}
+                      {% if 'ROLE_PARTICIPANT' in app.user.roles %}
+                      {% set isAlreadyParticipant = false %}
                       {% for participation in participations %}
                         {% if participation.hackathon.id_hackathon == hackathon.id_hackathon %}
                           {% set isAlreadyParticipant = true %}
                         {% endif %}
                       {% endfor %}
                       {% if not isAlreadyParticipant %}
-                        <a href="{{ path('hackathon_participer', { id: hackathon.id_hackathon }) }}" class="btn btn-success">Participer</a>
+                        <a href="{{ path('hackathon_participer', { id: hackathon.id_hackathon }) }}" class="btn btn-secondary">Participer</a>
                       {% else %}
                         <span class="badge bg-secondary">Déjà inscrit</span>
-                      {% endif %#}
-                      <!--user -->
+                      {% endif %}
+                      {% endif %}
                     {% else %}
                       <span class="badge bg-danger">Complet</span>
                     {% endif %}

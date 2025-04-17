@@ -44,17 +44,18 @@ class Participation
         return $this;
     }
 
-    #[ORM\Column(type: 'integer', nullable: false)]
-    private ?int $id_participant = null;
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: 'id_participant', referencedColumnName: 'id')]
+    private ?User $participant = null;
 
-    public function getId_participant(): ?int
+    public function getParticipant(): ?User
     {
-        return $this->id_participant;
+        return $this->participant;
     }
 
-    public function setId_participant(int $id_participant): self
+    public function setParticipant(?User $participant): self
     {
-        $this->id_participant = $id_participant;
+        $this->participant = $participant;
         return $this;
     }
 

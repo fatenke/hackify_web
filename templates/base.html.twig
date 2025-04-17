@@ -57,11 +57,9 @@
           <li><a href="/home#about">À propos</a></li>
           <li><a href="/home#chefs">Notre équipe</a></li>
           <li class="dropdown"><a href="/home#hackathons"><span>Hackathons</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-  
             <ul> 
-            {% if 'ROLE_ORGANISATEUR' in app.user.roles %}
+               <!-- Organisateur -->
               <li><a href="{{ path('ajouter_hackathon') }}">Organiser</a></li>
-              {% endif %}
 
                <!-- participant -->
               <li><a href="{{ path('liste_hackathon') }}">Mes hackathons</a></li>
@@ -77,18 +75,15 @@
       {% if app.user %}
           {% if app.user.photoUser is defined and app.user.photoUser %}
               <img src="{{ asset('uploads/profile_pictures/' ~ app.user.photoUser) }}" 
-                   alt="Photo de profil" 
-                   class="rounded-circle"
-                   style="width: 50px; height: 50px; object-fit: cover; border: 3px solid #1b3347;">
-          {% else %}
-              <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto"
-                   style="width: 50px; height: 50px;">
-                  <i class="bi bi-person-fill text-white" style="font-size: 4rem;"></i>
-              </div>
-          {% endif %}
-      {% else %}
-          <a class="btn-getstarted" href="/register">Connexion / S'inscrire</a>
-      {% endif %}
+                                 alt="Photo de profil" 
+                                 class="rounded-circle"
+                                 style="width: 50px; height: 50px; object-fit: cover; border: 3px solid #1b3347;">
+                        {% else %}
+                            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto"
+                                 style="width: 50px; height: 50px;">
+                                <i class="bi bi-person-fill text-white" style="font-size: 4rem;"></i>
+                            </div>
+                        {% endif %}
 
     </div>
   </header>
