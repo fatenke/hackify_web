@@ -4,15 +4,13 @@ namespace App\Form;
 
 use App\Entity\Communaute;
 use App\Entity\Hackathon;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Length;
 
 class CommunauteType extends AbstractType
 {
@@ -20,35 +18,32 @@ class CommunauteType extends AbstractType
     {
         $builder
             ->add('nom', TextType::class, [
-                'constraints' => [
-                    new NotBlank(['message' => 'Le nom de la communauté est requis.']),
-                    new Length([
-                        'min' => 3,
-                        'max' => 255,
-                        'minMessage' => 'Le nom doit comporter au moins {{ limit }} caractères.',
-                        'maxMessage' => 'Le nom ne peut pas dépasser {{ limit }} caractères.',
-                    ]),
-                ],
+                'label' => 'Nom de la communauté',
             ])
             ->add('description', TextareaType::class, [
-                'constraints' => [
-                    new NotBlank(['message' => 'La description est requise.']),
-                    new Length([
-                        'min' => 10,
-                        'minMessage' => 'La description doit contenir au moins {{ limit }} caractères.',
-                    ]),
-                ],
+                'label' => 'Description',
+                'attr' => [
+                    'rows' => 4
+                ]
             ])
-            ->add('id_hackathon', EntityType::class, [
+            ->add('idHackathon', EntityType::class, [
                 'class' => Hackathon::class,
                 'choice_label' => 'nom_hackathon',
-                'constraints' => [
-                    new NotBlank(['message' => 'Un hackathon doit être associé.']),
-                ],
+                'label' => 'Hackathon associé',
+                'required' => false,
+                'placeholder' => 'Aucun hackathon',
+                'property_path' => 'id_hackathon',
+                'disabled' => true,
+                'attr' => [
+                    'class' => 'form-control disabled',
+                    'readonly' => true
+                ]
             ])
-            ->add('is_active', CheckboxType::class, [
+            ->add('isActive', CheckboxType::class, [
+                'label' => 'Actif',
                 'required' => false,
                 'data' => true, // Default to active
+                'property_path' => 'is_active',
             ]);
     }
 
@@ -58,4 +53,4 @@ class CommunauteType extends AbstractType
             'data_class' => Communaute::class,
         ]);
     }
-}
+} 

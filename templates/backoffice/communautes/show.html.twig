@@ -65,12 +65,12 @@
                                             </td>
                                             <td>
                                                 <div class="btn-group">
-                                                <a href="#" class="btn btn-primary btn-sm edit-communaute" data-id="{{ communaute.id }}" data-toggle="modal" data-target="#editCommunauteModal">                                                
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                    <form method="post" action="{{ path('app_communaute_delete', { id: communaute.id }) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette communauté ?');" style="display: inline-block;">
+                                                    <a href="{{ path('app_communaute_edit', {'id': communaute.id}) }}" class="btn btn-primary btn-sm">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <form method="post" action="{{ path('app_communaute_delete', {'id': communaute.id}) }}" onsubmit="return confirm('ATTENTION: Supprimer cette communauté supprimera également tous les chats associés, messages, sondages et votes. Cette action est irréversible. Êtes-vous sûr de vouloir continuer?');" style="display: inline-block;">
                                                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ communaute.id) }}">
-                                                        <button class="btn btn-danger btn-sm">
+                                                        <button type="submit" class="btn btn-danger btn-sm">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
                                                     </form>
@@ -82,22 +82,6 @@
                             </table>
                         {% endif %}
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modaaal -->
-    <div class="modal fade" id="editCommunauteModal" tabindex="-1" role="dialog" aria-labelledby="editCommunauteModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editCommunauteModalLabel">Modifier une Communauté</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body" id="edit-communaute-form">
-                    <!-- Form will be loaded here via AJAX -->
                 </div>
             </div>
         </div>
@@ -115,6 +99,7 @@
     <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
     <script>
         $(document).ready(function() {
+            // Initialize DataTable
             $('#communautes-table').DataTable({
                 "responsive": true,
                 "lengthChange": true,
@@ -122,68 +107,6 @@
                 "language": {
                     "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/French.json"
                 }
-            });
-        });
-
-       // Load edit form into modal when edit button is clicked
-            $('.edit-communaute').on('click', function(e) {
-                e.preventDefault();
-                const communauteId = $(this).data('id');
-                const editUrl = '{{ path('app_communaute_edit', { id: 'COMMUNAUTE_ID' }) }}'.replace('COMMUNAUTE_ID', communauteId);
-
-                // Load the form via AJAX
-                $.ajax({
-                    url: editUrl,
-                    method: 'GET',
-                    success: function(data) {
-                        $('#edit-communaute-form').html(data);
-                        $('#editCommunauteModal').modal('show');
-                    },
-                    error: function(xhr, status, error) {
-                        alert('Erreur lors du chargement du formulaire : ' + error);
-                    }
-                });
-            });
-
-            // Handle form submission via AJAX
-            $(document).on('submit', '#edit-communaute-form form', function(e) {
-                e.preventDefault();
-                const form = $(this);
-                const formData = form.serialize();
-                const actionUrl = form.attr('action');
-
-                $.ajax({
-                    url: actionUrl,
-                    method: 'POST',
-                    data: formData,
-                    success: function(response) {
-                        // Close the modal
-                        $('#editCommunauteModal').modal('hide');
-
-                        // Show success message
-                        const successMessage = $('<div class="alert alert-success">Communauté modifiée avec succès.</div>');
-                        $('.card-body').prepend(successMessage);
-                        successMessage.fadeOut(5000);
-
-                        // Refresh the table row
-                        const communauteId = form.find('input[name="communaute[_token]"]').val().split('-')[1];
-                        const row = $(`tr[data-id="${communauteId}"]`);
-                        $.ajax({
-                            url: '{{ path('app_communaute_back') }}',
-                            method: 'GET',
-                            success: function(data) {
-                                const newRow = $(data).find(`tr[data-id="${communauteId}"]`);
-                                if (newRow.length) {
-                                    row.replaceWith(newRow);
-                                    table.row(newRow).invalidate().draw(false);
-                                }
-                            }
-                        });
-                    },
-                    error: function(xhr, status, error) {
-                        alert('Erreur lors de la mise à jour : ' + xhr.responseText);
-                    }
-                });
             });
         });
     </script>
