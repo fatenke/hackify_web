@@ -2,11 +2,20 @@
 
 {% block title %}Communautés - Backoffice{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <!-- DataTables -->
+    <link rel="stylesheet" href="{{ asset('plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+{% endblock %}
+
 {% block page_title %}Gestion des Communautés{% endblock %}
 
 {% block breadcrumb %}
     <ol class="breadcrumb float-sm-right">
-        <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
+        <li class="breadcrumb-item"><a href="{{ path('app_backoffice') }}">Backoffice</a></li>
         <li class="breadcrumb-item active">Communautés</li>
     </ol>
 {% endblock %}
@@ -18,24 +27,26 @@
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Liste des Communautés</h3>
+                        <div class="card-tools">
+                            <a href="{{ path('app_communaute_new') }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i> Nouvelle Communauté
+                            </a>
+                        </div>
                     </div>
                     <div class="card-body">
                         {% if communautes is empty %}
                             <div class="alert alert-info">
-                                <p>Aucune communauté pour le moment.</p>
+                                <i class="icon fas fa-info"></i> Aucune communauté n'a été créée pour le moment.
                             </div>
                         {% else %}
-                            <div class="alert alert-info">
-                                <p>Toutes les communautés.</p>
-                            </div>
-                            <table class="table table-bordered table-hover">
+                            <table id="communautes-table" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
                                         <th>Nom</th>
                                         <th>Description</th>
                                         <th>Date de Création</th>
                                         <th>Hackathon</th>
-                                        <th>Actif</th>
+                                        <th>Statut</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -44,15 +55,27 @@
                                         <tr>
                                             <td>{{ communaute.nom }}</td>
                                             <td>{{ communaute.description|length > 50 ? communaute.description|slice(0, 50) ~ '...' : communaute.description }}</td>
-                                            <td>{{ communaute.date_creation|date('Y-m-d H:i:s') }}</td>
+                                            <td>{{ communaute.date_creation|date('d/m/Y H:i') }}</td>
                                             <td>{{ communaute.id_hackathon ? communaute.id_hackathon.nom_hackathon : 'Aucun' }}</td>
-                                            <td>{{ communaute.isActive ? 'Oui' : 'Non' }}</td>
                                             <td>
-                                                <a href="{{ path('app_communaute_edit', { id: communaute.id }) }}" class="btn btn-primary btn-sm mr-2">Modifier</a>
-                                                <form method="post" action="{{ path('app_communaute_delete', { id: communaute.id }) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette communauté ?');" style="display: inline-block;">
-                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ communaute.id) }}">
-                                                    <button class="btn btn-danger btn-sm">Supprimer</button>
-                                                </form>
+                                                {% if communaute.isActive %}
+                                                    <span class="badge badge-success">Actif</span>
+                                                {% else %}
+                                                    <span class="badge badge-danger">Inactif</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <a href="{{ path('app_communaute_edit', { id: communaute.id }) }}" class="btn btn-primary btn-sm">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <form method="post" action="{{ path('app_communaute_delete', { id: communaute.id }) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette communauté ?');" style="display: inline-block;">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ communaute.id) }}">
+                                                        <button class="btn btn-danger btn-sm">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -64,4 +87,27 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <!-- DataTables & Plugins -->
+    <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $('#communautes-table').DataTable({
+                "responsive": true,
+                "lengthChange": true,
+                "autoWidth": false,
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/French.json"
+                }
+            });
+        });
+    </script>
 {% endblock %}
