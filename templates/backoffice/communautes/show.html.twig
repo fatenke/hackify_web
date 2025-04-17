@@ -48,8 +48,8 @@
                                             <td>{{ communaute.id_hackathon ? communaute.id_hackathon.nom_hackathon : 'Aucun' }}</td>
                                             <td>{{ communaute.isActive ? 'Oui' : 'Non' }}</td>
                                             <td>
-                                                <a href="{{ path('app_communaute_backoffice_edit', { id: communaute.id }) }}" class="btn btn-primary btn-sm mr-2">Modifier</a>
-                                                <form method="post" action="{{ path('app_communaute_backoffice_delete', { id: communaute.id }) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette communauté ?');" style="display: inline-block;">
+                                                <a href="{{ path('app_communaute_edit', { id: communaute.id }) }}" class="btn btn-primary btn-sm mr-2">Modifier</a>
+                                                <form method="post" action="{{ path('app_communaute_delete', { id: communaute.id }) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette communauté ?');" style="display: inline-block;">
                                                     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ communaute.id) }}">
                                                     <button class="btn btn-danger btn-sm">Supprimer</button>
                                                 </form>

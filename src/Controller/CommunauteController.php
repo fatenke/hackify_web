@@ -69,17 +69,17 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
         ]);
     }
 
-    #[Route('/backoffice', name: 'app_communaute_backoffice_index', methods: ['GET'])]
+    #[Route('/backoffice', name: 'app_communaute_show', methods: ['GET'])]
     public function showBack(CommunauteRepository $communauteRepository): Response
     {
         $communautes = $communauteRepository->findAll();
 
-        return $this->render('backoffice/communautes/show.html.twig', [
+        return $this->render('backoffice/communaute/show.html.twig', [
             'communautes' => $communautes,
         ]);
     }
 
-    #[Route('/backoffice/{id}/edit', name: 'app_communaute_backoffice_edit', methods: ['GET', 'POST'])]
+    #[Route('/backoffice/{id}/edit', name: 'app_communaute_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Communaute $communaute, CommunauteRepository $communauteRepository): Response
     {
         $form = $this->createForm(CommunauteType::class, $communaute);
@@ -88,16 +88,15 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
         if ($form->isSubmitted() && $form->isValid()) {
             $communauteRepository->save($communaute, true);
             $this->addFlash('success', 'Communauté modifiée avec succès.');
-            return $this->redirectToRoute('app_communaute_backoffice_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_communaute_show', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('backoffice/communautes/edit.html.twig', [
+        return $this->render('backoffice/communaute/edit.html.twig', [
             'communaute' => $communaute,
             'form' => $form->createView(),
         ]);
     }
-
-    #[Route('/backoffice/{id}/delete', name: 'app_communaute_backoffice_delete', methods: ['POST'])]
+    #[Route('/backoffice/{id}/delete', name: 'app_communaute_delete', methods: ['POST'])]
     public function delete(Request $request, Communaute $communaute, CommunauteRepository $communauteRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$communaute->getId(), $request->request->get('_token'))) {
@@ -107,7 +106,7 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
             $this->addFlash('error', 'Token CSRF invalide.');
         }
 
-        return $this->redirectToRoute('app_communaute_backoffice_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_communaute_show', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/user/{id}/communities', name: 'app_communaute_by_user', methods: ['GET'])]
