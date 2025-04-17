@@ -249,7 +249,7 @@ class User
             return $this;
         }
 
-    #[ORM\OneToMany(mappedBy: "user_id", targetEntity: Poll_votes::class)]
+    #[ORM\OneToMany(mappedBy: "user_id", targetEntity: PollVote::class)]
     private Collection $poll_votess;
 
         public function getPoll_votess(): Collection
@@ -257,7 +257,7 @@ class User
             return $this->poll_votess;
         }
     
-        public function addPoll_votes(Poll_votes $poll_votes): self
+        public function addPoll_votes(PollVote $poll_votes): self
         {
             if (!$this->poll_votess->contains($poll_votes)) {
                 $this->poll_votess[] = $poll_votes;
@@ -267,7 +267,7 @@ class User
             return $this;
         }
     
-        public function removePoll_votes(Poll_votes $poll_votes): self
+        public function removePoll_votes(PollVote $poll_votes): self
         {
             if ($this->poll_votess->removeElement($poll_votes)) {
                 // set the owning side to null (unless already changed)
