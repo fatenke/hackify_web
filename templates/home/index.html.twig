@@ -3,7 +3,7 @@
 {% block title %}Accueil - Hackify{% endblock %}
 
 {% block body %}
-  
+ 
   <section id="hero" class="hero section">
   <div class="container">
     <div class="row gy-4 justify-content-center justify-content-lg-between">
@@ -13,11 +13,11 @@
           Un espace unique pour découvrir, organiser et vivre des expériences innovantes autour de la technologie et de la créativité.
         </p>
         <div class="d-flex" data-aos="fade-up" data-aos-delay="200">
-          <a href="/hackathon" class="btn-get-started">Découvrir les hackathons</a>
+          <a href="{{ path('liste_hackathon') }}" class="btn-get-started">Découvrir les hackathons</a>
         </div>
       </div>
       <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
-        <img src="{{ asset('assets/img/image1.png') }}" class="img-fluid animated" alt="">
+        <img src="{{ asset('FrontOffice/assets/img/image1.png') }}" class="img-fluid animated" alt="">
       </div>
     </div>
   </div>
@@ -35,7 +35,7 @@
   <div class="container">
     <div class="row gy-4">
       <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
-        <img src="assets/img/about.png" class="img-fluid mb-4" alt="">
+        <img src="FrontOffice/assets/img/about.png" class="img-fluid mb-4" alt="">
         <div class="book-a-table">
           <h3>Contact</h3>
           <p>contact@hackify.tn</p>
@@ -83,7 +83,7 @@
       <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
         <div class="team-member">
           <div class="member-img">
-            <img src="assets/img/members/image.png" class="img-fluid" alt="">
+            <img src="FrontOffice/assets/img/members/faten.png" class="img-fluid" alt="">
             <div class="social">
               <a href=""><i class="bi bi-twitter-x"></i></a>
               <a href=""><i class="bi bi-facebook"></i></a>
@@ -103,7 +103,7 @@
       <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
         <div class="team-member">
           <div class="member-img">
-            <img src="assets/img/members/image.png" class="img-fluid" alt="">
+            <img src="FrontOffice/assets/img/members/image.png" class="img-fluid" alt="">
             <div class="social">
               <a href=""><i class="bi bi-twitter-x"></i></a>
               <a href=""><i class="bi bi-facebook"></i></a>
@@ -123,7 +123,7 @@
       <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="300">
         <div class="team-member">
           <div class="member-img">
-            <img src="assets/img/members/image.png" class="img-fluid" alt="">
+            <img src="/FrontOffice/assets/img/members/farah.png" class="img-fluid" alt="">
             <div class="social">
               <a href=""><i class="bi bi-twitter-x"></i></a>
               <a href=""><i class="bi bi-facebook"></i></a>
@@ -143,7 +143,7 @@
       <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="400">
         <div class="team-member">
           <div class="member-img">
-            <img src="assets/img/members/image.png" class="img-fluid" alt="">
+            <img src="/FrontOffice/assets/img/members/image.png" class="img-fluid" alt="">
             <div class="social">
               <a href=""><i class="bi bi-twitter-x"></i></a>
               <a href=""><i class="bi bi-facebook"></i></a>
@@ -163,7 +163,7 @@
       <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="500">
         <div class="team-member">
           <div class="member-img">
-            <img src="assets/img/members/image.png" class="img-fluid" alt="">
+            <img src="/FrontOffice/assets/img/members/image.png" class="img-fluid" alt="">
             <div class="social">
               <a href=""><i class="bi bi-twitter-x"></i></a>
               <a href=""><i class="bi bi-facebook"></i></a>
@@ -183,7 +183,7 @@
       <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="600">
         <div class="team-member">
           <div class="member-img">
-            <img src="assets/img/members/image.png" class="img-fluid" alt="">
+            <img src="/FrontOffice/assets/img/members/image.png" class="img-fluid" alt="">
             <div class="social">
               <a href=""><i class="bi bi-twitter-x"></i></a>
               <a href=""><i class="bi bi-facebook"></i></a>
@@ -203,7 +203,107 @@
 
   </div>
 
-</section><!-- /Team Section -->
+</section>
+<!-- /Team Section -->
+
+
+<section id="hackathons">
+  <h2>Nos derniers Hackathons</h2>
+  
+  {% set derniersHackathons = hackathons|slice(0, 3) %}
+
+  {% for hackathon in derniersHackathons %}
+    <div class="hackathon-card">
+      <h3 class="card-title">{{ hackathon.nom_hackathon }}</h3>
+                  <h5 class="card-text">📍 {{ hackathon.lieu }}</h5>
+                  <p class="card-date">📅 Du {{ hackathon.date_debut|date("j F , Y") }} 🕒 {{ hackathon.date_debut|date("H:i")}} 
+                  <br>
+                  📅 Au {{ hackathon.date_fin|date("j F , Y") }}  🕒 {{ hackathon.date_fin|date("H:i") }}</p>
+      <a href="{{ path('hackathon_details', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Détails</a>
+    </div>
+  {% else %}
+    <p>Aucun hackathon disponible pour le moment.</p>
+  {% endfor %}
+
+  <div class="text-center mt-4">
+    <a href="{{ path('liste_hackathon') }}" class="btn-get-started">Voir tous les hackathons</a>
+  </div>
+</section>
+
+<!-- Events Section -->
+    <section id="events" class="events section">
+
+      <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="swiper init-swiper">
+          <script type="application/json" class="swiper-config">
+            {
+              "loop": true,
+              "speed": 600,
+              "autoplay": {
+                "delay": 5000
+              },
+              "slidesPerView": "auto",
+              "pagination": {
+                "el": ".swiper-pagination",
+                "type": "bullets",
+                "clickable": true
+              },
+              "breakpoints": {
+                "320": {
+                  "slidesPerView": 1,
+                  "spaceBetween": 40
+                },
+                "1200": {
+                  "slidesPerView": 3,
+                  "spaceBetween": 1
+                }
+              }
+            }
+          </script>
+          <div class="swiper-wrapper">
+
+            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/1.png)">
+              <h3>Custom Parties</h3>
+              <div class="price align-self-start">$99</div>
+              <p class="description">
+                Quo corporis voluptas ea ad. Consectetur inventore sapiente ipsum voluptas eos omnis facere. Enim facilis veritatis id est rem repudiandae nulla expedita quas.
+              </p>
+            </div>
+            <!-- End Event item -->
+
+            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/2.png)">
+              <h3>Private Parties</h3>
+              <div class="price align-self-start">$289</div>
+              <p class="description">
+                In delectus sint qui et enim. Et ab repudiandae inventore quaerat doloribus. Facere nemo vero est ut dolores ea assumenda et. Delectus saepe accusamus aspernatur.
+              </p>
+            </div><!-- End Event item -->
+
+            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/3.png)">
+              <h3>Birthday Parties</h3>
+              <div class="price align-self-start">$499</div>
+              <p class="description">
+                Laborum aperiam atque omnis minus omnis est qui assumenda quos. Quis id sit quibusdam. Esse quisquam ducimus officia ipsum ut quibusdam maxime. Non enim perspiciatis.
+              </p>
+            </div><!-- End Event item -->
+
+            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/4.png)">
+              <h3>Wedding Parties</h3>
+              <div class="price align-self-start">$899</div>
+              <p class="description">
+                Laborum aperiam atque omnis minus omnis est qui assumenda quos. Quis id sit quibusdam. Esse quisquam ducimus officia ipsum ut quibusdam maxime. Non enim perspiciatis.
+              </p>
+            </div><!-- End Event item -->
+
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+
+      </div>
+
+    </section>
+    <!-- /Events Section -->
 
 
 
@@ -214,13 +314,10 @@
       <div class="container section-title" data-aos="fade-up">
         <h2>Contact</h2>
         <p><span>Need Help?</span> <span class="description-title">Contact Us</span></p>
-      </div><!-- End Section Title -->
+      </div>
+      <!-- End Section Title -->
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="mb-5">
-          <iframe style="width: 100%; height: 400px;" src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d12097.433213460943!2d-74.0062269!3d40.7101282!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xb89d1fe6bc499443!2sDowntown+Conference+Center!5e0!3m2!1smk!2sbg!4v1539943755621" frameborder="0" allowfullscreen=""></iframe>
-        </div><!-- End Google Maps -->
 
         <div class="row gy-4">
 

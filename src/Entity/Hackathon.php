@@ -10,6 +10,7 @@ use App\Entity\Communaute;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Repository\HackathonRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: HackathonRepository::class)]
 #[ORM\Table(name: 'hackathon')]
@@ -87,6 +88,12 @@ class Hackathon
     }
 
     #[ORM\Column(type: 'datetime', nullable: false)]
+    #[Assert\NotBlank(message: 'La date de début est requise.')]
+    #[Assert\Type(\DateTimeInterface::class, message: 'Format de date invalide.')]
+    #[Assert\GreaterThanOrEqual(
+        'today',
+        message: 'La date de début doit être ultérieure ou égale à aujourd\'hui'
+    )]
     private ?\DateTimeInterface $date_debut = null;
 
     public function getDate_debut(): ?\DateTimeInterface
@@ -101,6 +108,12 @@ class Hackathon
     }
 
     #[ORM\Column(type: 'datetime', nullable: false)]
+    #[Assert\NotBlank(message: 'La date de fin est requise.')]
+    #[Assert\Type(\DateTimeInterface::class, message: 'Format de date invalide.')]
+    #[Assert\GreaterThan(
+        propertyPath: 'date_debut',
+        message: 'La date de fin doit être après la date de début.'
+    )]
     private ?\DateTimeInterface $date_fin = null;
 
     public function getDate_fin(): ?\DateTimeInterface
@@ -115,6 +128,13 @@ class Hackathon
     }
 
     #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message: 'Le lieu est requis.')]
+    #[Assert\Length(
+        min: 2,
+        max: 100,
+        minMessage: 'Le lieu doit comporter au moins {{ limit }} caractères.',
+        maxMessage: 'Le lieu ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $lieu = null;
 
     public function getLieu(): ?string
@@ -129,6 +149,13 @@ class Hackathon
     }
 
     #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message: 'Le thème est requis.')]
+    #[Assert\Length(
+        min: 2,
+        max: 100,
+        minMessage: 'Le thème doit comporter au moins {{ limit }} caractères.',
+        maxMessage: 'Le thème ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $theme = null;
 
     public function getTheme(): ?string
@@ -143,6 +170,13 @@ class Hackathon
     }
 
     #[ORM\Column(type: 'integer', nullable: false)]
+    #[Assert\NotBlank(message: 'Le nombre maximum de participants est requis.')]
+    #[Assert\Type(type: 'integer', message: 'Le nombre de participants doit être un nombre entier.')]
+    #[Assert\Range(
+        min: 2,
+        max: 1000,
+        notInRangeMessage: 'Le nombre de participants doit être entre {{ min }} et {{ max }}'
+    )]
     private ?int $max_participants = null;
 
     public function getMax_participants(): ?int

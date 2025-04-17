@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 use App\Repository\ParticipationRepository;
-use App\Entity\User;
 
 #[ORM\Entity(repositoryClass: ParticipationRepository::class)]
 #[ORM\Table(name: 'participation')]
@@ -17,16 +16,16 @@ class Participation
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private ?int $idParticipation = null;
+    private ?int $id_participation = null;
 
-    public function getIdParticipation(): ?int
+    public function getId_participation(): ?int
     {
-        return $this->idParticipation;
+        return $this->id_participation;
     }
 
-    public function setIdParticipation(int $idParticipation): self
+    public function setId_participation(int $id_participation): self
     {
-        $this->idParticipation = $idParticipation;
+        $this->id_participation = $id_participation;
         return $this;
     }
 
@@ -45,33 +44,31 @@ class Participation
         return $this;
     }
 
+    #[ORM\Column(type: 'integer', nullable: false)]
+    private ?int $id_participant = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'participations')]
-    #[ORM\JoinColumn(name: 'id_participant', referencedColumnName: 'idUser')]
-    private ?User $participant = null;
-
-    public function getParticipant(): ?User
+    public function getId_participant(): ?int
     {
-        return $this->participant;
+        return $this->id_participant;
     }
 
-    public function setParticipant(?User $participant): self
+    public function setId_participant(int $id_participant): self
     {
-        $this->participant = $participant;
+        $this->id_participant = $id_participant;
         return $this;
     }
 
     #[ORM\Column(type: 'datetime', nullable: false)]
-    private ?\DateTimeInterface $dateInscription = null;
+    private ?\DateTimeInterface $date_inscription = null;
 
-    public function getDateInscription(): ?\DateTimeInterface
+    public function getDate_inscription(): ?\DateTimeInterface
     {
-        return $this->dateInscription;
+        return $this->date_inscription;
     }
 
-    public function setDateInscription(\DateTimeInterface $dateInscription): self
+    public function setDate_inscription(\DateTimeInterface $date_inscription): self
     {
-        $this->dateInscription = $dateInscription;
+        $this->date_inscription = $date_inscription;
         return $this;
     }
 
@@ -91,7 +88,34 @@ class Participation
 
     
 
+    public function getIdParticipation(): ?int
+    {
+        return $this->id_participation;
+    }
 
+    public function getIdParticipant(): ?int
+    {
+        return $this->id_participant;
+    }
+
+    public function setIdParticipant(int $id_participant): static
+    {
+        $this->id_participant = $id_participant;
+
+        return $this;
+    }
+
+    public function getDateInscription(): ?\DateTimeInterface
+    {
+        return $this->date_inscription;
+    }
+
+    public function setDateInscription(\DateTimeInterface $date_inscription): static
+    {
+        $this->date_inscription = $date_inscription;
+
+        return $this;
+    }
 
 
 }
