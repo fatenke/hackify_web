@@ -109,28 +109,23 @@
             {% block sidebar_menu %}
     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
         <li class="nav-item">
-            <a 
-            
-            class="nav-link">
-                <i class="nav-icon fas fa-folder-open"></i>
-                <p>Projets</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a 
-            
-             class="nav-link">
-                <i class="nav-icon fas fa-microchip"></i>
-                <p>Technologies</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ path('app_communaute_index') }}" 
-            class="nav-link {{ app.request.attributes.get('_route') == 'app_communaute_index' ? 'active' : '' }}">
-                <i class="nav-icon fas fa-users"></i>
-                <p>Communautés</p>
-            </a>
-        </li>
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-folder-open"></i>
+                                <p>Projets</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-microchip"></i>
+                                <p>Technologies</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ path('app_communaute_back') }}">
+                                <i class="nav-icon fas fa-users"></i>
+                                <p>Communautés</p>
+                            </a>
+                        </li>
     </ul>
 {% endblock %}
 
