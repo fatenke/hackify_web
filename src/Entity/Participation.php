@@ -45,7 +45,7 @@ class Participation
     }
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(name: 'id_participant', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'id_participant', referencedColumnName: 'id_user')]
     private ?User $participant = null;
 
     public function getParticipant(): ?User

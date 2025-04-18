@@ -56,14 +56,13 @@
           <li><a href="/home#hero" class="active">Accueil<br></a></li>
           <li><a href="/home#about">À propos</a></li>
           <li><a href="/home#chefs">Notre équipe</a></li>
-          <li class="dropdown"><a href="/home#hackathons"><span>Hackathons</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+          <li class="dropdown"><a href="/home#hackathons"><span>Hackathons</span>  <i class="bi bi-chevron-down toggle-dropdown"></i> </a>
             <ul> 
-               <!-- Organisateur -->
+               {% if app.user and 'ROLE_ORGANISATEUR' in app.user.roles %}
               <li><a href="{{ path('ajouter_hackathon') }}">Organiser</a></li>
-
-               <!-- participant -->
+              {% endif %}
               <li><a href="{{ path('liste_hackathon') }}">Mes hackathons</a></li>
-
+         
             </ul>
           </li>
           <li><a href="/home#gallery">Gallery</a></li>
@@ -71,9 +70,13 @@
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
+{% if not app.user %}
+      <a class="btn-getstarted" href="/register">Connexion / S'inscrire</a>
+      {% endif %}
 
       {% if app.user %}
           {% if app.user.photoUser is defined and app.user.photoUser %}
+          <a  href="/profile">
               <img src="{{ asset('uploads/profile_pictures/' ~ app.user.photoUser) }}" 
                                  alt="Photo de profil" 
                                  class="rounded-circle"
@@ -81,10 +84,11 @@
                         {% else %}
                             <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto"
                                  style="width: 50px; height: 50px;">
-                                <i class="bi bi-person-fill text-white" style="font-size: 4rem;"></i>
+                                <i class="bi bi-person-fill text-white" style="font-size: 2rem;"></i>
                             </div>
                         {% endif %}
-
+                        {% endif %}
+</a>
     </div>
   </header>
   <main>

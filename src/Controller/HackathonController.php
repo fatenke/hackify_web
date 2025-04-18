@@ -15,19 +15,15 @@ use App\Repository\ParticipationRepository;
 
 
 
+
 final class HackathonController extends AbstractController
 {
-    /*#[Route('/hackathon', name: 'app_hackathon')]
-    public function index(): Response
-    {
-        return $this->render('hackathon/index.html.twig', [
-            'controller_name' => 'HackathonController',
-        ]);
-    }*/
+    
     #[Route('hackathon/ajouter', name: 'ajouter_hackathon')]
     public function ajouter(Request $request, EntityManagerInterface $em): Response
     {
         $hackathon = new Hackathon();
+        $hackathon->setId_organisateur($this->getUser());
         $form = $this->createForm(HackathonType::class, $hackathon);
 
         $form->handleRequest($request);
@@ -58,18 +54,22 @@ final class HackathonController extends AbstractController
 }
 
     #[Route('hackathon/{id}', name:'hackathon_details')]
-    public function details($id, HackathonRepository $hackathonRepository): Response
+    public function details($id, HackathonRepository $hackathonRepository, ParticipationRepository $participationRepository): Response
     {
         // Trouver le hackathon par son ID
         $hackathon = $hackathonRepository->find($id);
 
         // Si le hackathon n'est pas trouvé, rediriger vers la liste des hackathons
         if (!$hackathon) {
-            return $this->redirectToRoute('hackathons_index');
+            return $this->redirectToRoute('liste_hackathon');
         }
-
+        $participations = $participationRepository->findBy([
+            'participant' => $this->getUser(),
+            'hackathon' => $hackathon
+        ]);
         return $this->render('hackathon/details.html.twig', [
             'hackathon' => $hackathon,
+            'participations' => $participations,
         ]);
     }
     

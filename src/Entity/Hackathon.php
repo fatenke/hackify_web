@@ -36,12 +36,12 @@ class Hackathon
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "hackathons")]
     #[ORM\JoinColumn(name: 'id_organisateur', referencedColumnName: 'id_user', onDelete: 'CASCADE')]
     private User $id_organisateur;
-    public function getId_organisateur(): ?int
+    public function getId_organisateur(): ?User
     {
         return $this->id_organisateur;
     }
 
-    public function setId_organisateur(int $id_organisateur): self
+    public function setId_organisateur(?User $id_organisateur): self
     {
         $this->id_organisateur = $id_organisateur;
         return $this;

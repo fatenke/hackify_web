@@ -22,12 +22,11 @@ public function participer(
     $participation->setHackathon($hackathon);
     $participation->setDate_inscription(new \DateTime());
     $participation->setStatut('En attente');
-    $participation->setId_participant($user->getId());
+    $participation->setParticipant($user);
 
     $em->persist($participation);
     $em->flush();
 
-    $this->addFlash('success', 'Vous êtes inscrit(e) à ce hackathon !');
 
     return $this->redirectToRoute('hackathon_details', ['id' => $hackathon->getId_hackathon()]);
 }
