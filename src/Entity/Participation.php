@@ -87,23 +87,9 @@ class Participation
         return $this;
     }
 
-    
-
     public function getIdParticipation(): ?int
     {
         return $this->id_participation;
-    }
-
-    public function getIdParticipant(): ?int
-    {
-        return $this->id_participant;
-    }
-
-    public function setIdParticipant(int $id_participant): static
-    {
-        $this->id_participant = $id_participant;
-
-        return $this;
     }
 
     public function getDateInscription(): ?\DateTimeInterface
@@ -117,6 +103,4 @@ class Participation
 
         return $this;
     }
-
-
 }

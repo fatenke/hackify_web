@@ -13,5 +13,31 @@ class CommunauteRepository extends ServiceEntityRepository
         parent::__construct($registry, Communaute::class);
     }
 
-    // Add custom methods as needed
+    public function save(Communaute $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function remove(Communaute $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($entity);
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function findByUserId(int $userId): array
+    {
+        return $this->createQueryBuilder('c')
+            ->innerJoin('c.id_hackathon', 'h')
+            ->innerJoin('App\Entity\Participation', 'p', 'WITH', 'p.id_hackathon = h')
+            ->innerJoin('p.id_participant', 'u')
+            ->where('u.id_user = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getResult();
+    }
 }

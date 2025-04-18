@@ -57,6 +57,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: "posted_by", targetEntity: Message::class)]
     private Collection $messages;
 
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): self
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages[] = $message;
+            $message->setPosted_by($this);
+        }
+        return $this;
+    }
+
+    public function removeMessage(Message $message): self
+    {
+        if ($this->messages->removeElement($message)) {
+            if ($message->getPosted_by() === $this) {
+                $message->setPosted_by(null);
+            }
+        }
+        return $this;
+    }
+
     #[ORM\OneToMany(mappedBy: "id_participant", targetEntity: Participation::class)]
     private Collection $participations;
 

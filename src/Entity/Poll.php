@@ -9,14 +9,16 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Entity\PollOption;
 use App\Entity\PollVote;
+use App\Entity\User;
 
 #[ORM\Entity]
 class Poll
 {
 
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
-    private int $id;
+    private $id;
 
     #[ORM\ManyToOne(targetEntity: Chat::class, inversedBy: "polls")]
     #[ORM\JoinColumn(name: 'chat_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
@@ -30,16 +32,16 @@ class Poll
 
     #[ORM\Column(type: "datetime")]
     private \DateTimeInterface $created_at;
-
+    
     #[ORM\OneToMany(mappedBy: "poll_id", targetEntity: PollOption::class)]
-    private Collection $pollOptions;
+    private Collection $poll_options;
 
     #[ORM\OneToMany(mappedBy: "poll_id", targetEntity: PollVote::class)]
     private Collection $poll_votes;
 
     public function __construct()
     {
-        $this->pollOptions = new ArrayCollection();
+        $this->poll_options = new ArrayCollection();
         $this->poll_votes = new ArrayCollection();
     }
 
@@ -95,13 +97,13 @@ class Poll
 
     public function getPollOptions(): Collection
     {
-        return $this->pollOptions;
+        return $this->poll_options;
     }
 
     public function addPollOption(PollOption $pollOption): self
     {
-        if (!$this->pollOptions->contains($pollOption)) {
-            $this->pollOptions[] = $pollOption;
+        if (!$this->poll_options->contains($pollOption)) {
+            $this->poll_options[] = $pollOption;
             if ($pollOption->getPoll_id() !== $this) {
                 $pollOption->setPoll_id($this);
             }
@@ -112,7 +114,7 @@ class Poll
 
     public function removePollOption(PollOption $pollOption): self
     {
-        if ($this->pollOptions->removeElement($pollOption)) {
+        if ($this->poll_options->removeElement($pollOption)) {
             if ($pollOption->getPoll_id() === $this) {
                 $pollOption->setPoll_id(null);
             }

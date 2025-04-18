@@ -13,17 +13,23 @@ class HackathonType extends AbstractType
     {
         $builder
             /*->add('id_organisateur')*/
-            ->add('nom_hackathon')
+            ->add('nom_hackathon', null, [
+                'property_path' => 'nomHackathon',
+            ])
             ->add('description')
             ->add('date_debut', null, [
                 'widget' => 'single_text',
+                'property_path' => 'dateDebut',
             ])
             ->add('date_fin', null, [
                 'widget' => 'single_text',
+                'property_path' => 'dateFin',
             ])
             ->add('lieu')
             ->add('theme')
-            ->add('max_participants')
+            ->add('max_participants', null, [
+                'property_path' => 'maxParticipants',
+            ])
         ;
     }
 

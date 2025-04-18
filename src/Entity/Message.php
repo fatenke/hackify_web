@@ -5,14 +5,16 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 use App\Entity\User;
+use App\Entity\Chat;
 
 #[ORM\Entity]
 class Message
 {
 
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
-    private int $id;
+    private $id;
 
         #[ORM\ManyToOne(targetEntity: Chat::class, inversedBy: "messages")]
     #[ORM\JoinColumn(name: 'chat_id', referencedColumnName: 'id', onDelete: 'CASCADE')]

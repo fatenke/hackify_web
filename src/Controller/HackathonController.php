@@ -4,6 +4,8 @@ namespace App\Controller;
 
 
 use App\Entity\Hackathon;
+use App\Entity\Communaute;
+use App\Entity\Chat;
 use App\Form\HackathonType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,6 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\HackathonRepository;
 use App\Repository\ParticipationRepository;
+use App\Entity\Participation;
 
 
 
@@ -29,7 +32,40 @@ final class HackathonController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Persist the hackathon
             $em->persist($hackathon);
+            $em->flush();
+            
+            // Create a matching community
+            $communaute = new Communaute();
+            $communaute->setId_hackathon($hackathon);
+            $communaute->setNom($hackathon->getNom_hackathon());
+            $communaute->setDescription($hackathon->getDescription());
+            
+            $em->persist($communaute);
+            $em->flush();
+            
+            // Create default chats for the community
+            $chatTypes = ['ANNOUNCEMENT', 'QUESTION', 'FEEDBACK', 'COACH', 'BOT_SUPPORT'];
+            $chatNames = [
+                'Annonces',
+                'Questions',
+                'Retour',
+                'Coaching',
+                'Support'
+            ];
+
+            foreach ($chatTypes as $index => $type) {
+                $chat = new Chat();
+                $chat->setCommunaute_id($communaute);
+                $chat->setNom($chatNames[$index]);
+                $chat->setType($type);
+                $chat->setDate_creation(new \DateTime());
+                $chat->setIs_active(true);
+                
+                $em->persist($chat);
+            }
+            
             $em->flush();
 
             return $this->redirectToRoute('liste_hackathon'); 
@@ -40,18 +76,45 @@ final class HackathonController extends AbstractController
         ]);
     }
     #[Route('hackathon', name: 'liste_hackathon')]
-    public function liste(
-    HackathonRepository $hackathonRepository,
-    ParticipationRepository $participationRepository
-    ): Response {
-    $hackathons = $hackathonRepository->findAll();
-    $participations = $participationRepository->findAll();
+    public function liste(EntityManagerInterface $entityManager): Response {
+        $currentUser = $this->getUser();
+        $hackathons = $entityManager->getRepository(Hackathon::class)->findAll();
+        $participations = $currentUser ? $entityManager->getRepository(Participation::class)->findBy(['participant' => $currentUser]) : [];
 
-    return $this->render('hackathon/afficher.html.twig', [
-        'hackathons' => $hackathons,
-        'participations' => $participations
-    ]);
-}
+        // Fetch communities for organizers
+        if ($currentUser && in_array('ROLE_ORGANISATEUR', $currentUser->getRoles())) {
+            $communautesOrganisateur = $entityManager->getRepository(Communaute::class)
+                ->createQueryBuilder('c')
+                ->join('c.id_hackathon', 'h')
+                ->where('h.id_organisateur = :user')
+                ->setParameter('user', $currentUser)
+                ->getQuery()
+                ->getResult();
+        } else {
+            $communautesOrganisateur = [];
+        }
+
+        // Fetch communities for participants
+        if ($currentUser && in_array('ROLE_PARTICIPANT', $currentUser->getRoles())) {
+            $communautesParticipant = $entityManager->getRepository(Communaute::class)
+                ->createQueryBuilder('c')
+                ->join('c.id_hackathon', 'h')
+                ->join('h.participations', 'p')
+                ->where('p.participant = :user')
+                ->setParameter('user', $currentUser)
+                ->getQuery()
+                ->getResult();
+        } else {
+            $communautesParticipant = [];
+        }
+
+        return $this->render('hackathon/afficher.html.twig', [
+            'hackathons' => $hackathons,
+            'participations' => $participations,
+            'communautesOrganisateur' => $communautesOrganisateur,
+            'communautesParticipant' => $communautesParticipant,
+        ]);
+    }
 
     #[Route('hackathon/{id}', name:'hackathon_details')]
     public function details($id, HackathonRepository $hackathonRepository, ParticipationRepository $participationRepository): Response

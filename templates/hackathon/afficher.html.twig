@@ -37,6 +37,13 @@
       </a>
     </li>
     {% endif %}
+    {% if app.user %}
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="tab" data-bs-target="#mes-communautes">
+        <h4>Mes Communautés</h4>
+      </a>
+    </li>
+    {% endif %}
 
     {% if app.user and 'ROLE_PARTICIPANT' in app.user.roles %}
     <li class="nav-item">
@@ -45,7 +52,6 @@
       </a>
     </li>
     {% endif %}
-
   </ul>
 
   <div class="tab-content" data-aos="fade-up" data-aos-delay="200">
@@ -247,6 +253,67 @@
         {% endfor %}
 
       </div>
+      </div>
+
+      <!-- Mes Communautés Tab -->
+      <div class="tab-pane fade" id="mes-communautes">
+        <div class="tab-header text-center">
+          <h3>Mes Communautés</h3>
+        </div>
+        <div class="row gy-5">
+          {% if app.user and 'ROLE_ORGANISATEUR' in app.user.roles and communautesOrganisateur is defined %}
+            {% for communaute in communautesOrganisateur %}
+              <div class="col-lg-4">
+                <div class="hackathon-card">
+                  <div class="card-body">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                      <h3 class="card-title">{{ communaute.nom }}</h3>
+                      {% if communaute.is_active %}
+                        <span class="badge bg1">Actif</span>
+                      {% else %}
+                        <span class="badge bg3">Inactif</span>
+                      {% endif %}
+                    </div>
+                    <p>{{ communaute.description|slice(0, 100) }}{% if communaute.description|length > 100 %}...{% endif %}</p>
+                    <div>
+                      <a href="{{ path('app_communaute_show', { id: communaute.id }) }}" class="btn btn-primary">Voir les chats</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          {% endif %}
+          
+          {% if app.user and 'ROLE_PARTICIPANT' in app.user.roles and communautesParticipant is defined %}
+            {% for communaute in communautesParticipant %}
+              <div class="col-lg-4">
+                <div class="hackathon-card">
+                  <div class="card-body">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                      <h3 class="card-title">{{ communaute.nom }}</h3>
+                      {% if communaute.is_active %}
+                        <span class="badge bg1">Actif</span>
+                      {% else %}
+                        <span class="badge bg3">Inactif</span>
+                      {% endif %}
+                    </div>
+                    <p>{{ communaute.description|slice(0, 100) }}{% if communaute.description|length > 100 %}...{% endif %}</p>
+                    <div>
+                      <a href="{{ path('app_communaute_show', { id: communaute.id }) }}" class="btn btn-primary">Voir les chats</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          {% endif %}
+          
+          {% if (app.user and 'ROLE_ORGANISATEUR' in app.user.roles and communautesOrganisateur is defined and communautesOrganisateur|length == 0) 
+              or (app.user and 'ROLE_PARTICIPANT' in app.user.roles and communautesParticipant is defined and communautesParticipant|length == 0) %}
+            <div class="col-12 text-center">
+              <p class="text-muted">Vous n'avez pas encore de communautés.</p>
+            </div>
+          {% endif %}
+        </div>
       </div>
 
       <div class="tab-pane fade" id="mes-participations">
