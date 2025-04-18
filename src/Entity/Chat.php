@@ -92,30 +92,30 @@ class Chat
         $this->is_active = $value;
     }
 
-    #[ORM\OneToMany(mappedBy: "chat_id", targetEntity: Polls::class)]
-    private Collection $pollss;
+    #[ORM\OneToMany(mappedBy: "chat_id", targetEntity: Poll::class)]
+    private Collection $polls;
 
-        public function getPollss(): Collection
+        public function getPolls(): Collection
         {
-            return $this->pollss;
+            return $this->polls;
         }
     
-        public function addPolls(Polls $polls): self
+        public function addPolls(Poll $poll): self
         {
-            if (!$this->pollss->contains($polls)) {
-                $this->pollss[] = $polls;
-                $polls->setChat_id($this);
+            if (!$this->polls->contains($poll)) {
+                $this->polls[] = $poll;
+                $poll->setChat_id($this);
             }
     
             return $this;
         }
     
-        public function removePolls(Polls $polls): self
+        public function removePolls(Poll $poll): self
         {
-            if ($this->pollss->removeElement($polls)) {
+            if ($this->polls->removeElement($poll)) {
                 // set the owning side to null (unless already changed)
-                if ($polls->getChat_id() === $this) {
-                    $polls->setChat_id(null);
+                if ($poll->getChat_id() === $this) {
+                    $poll->setChat_id(null);
                 }
             }
     
