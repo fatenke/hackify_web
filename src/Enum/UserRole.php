@@ -8,6 +8,7 @@ enum UserRole: string
     case PARTICIPANT = 'ROLE_PARTICIPANT';
     case JURY = 'ROLE_JURY';
     case COACH = 'ROLE_COACH';
+    case ADMIN = 'ROLE_ADMIN';
 
     public function getLabel(): string
     {
@@ -15,7 +16,8 @@ enum UserRole: string
             self::ORGANISATEUR => 'Rôle Organisateur',
             self::PARTICIPANT => 'Rôle Participant',
             self::JURY => 'Rôle Jury',
-            self::COACH => 'Rôle Coach'
+            self::COACH => 'Rôle Coach',
+            self::ADMIN => 'Rôle Admin'
         };
     }
 }
