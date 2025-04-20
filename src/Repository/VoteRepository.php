@@ -15,7 +15,15 @@ class VoteRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Vote::class);
     }
+    public function save(Vote $vote, bool $flush = true): void
+    {
+        $entityManager = $this->getEntityManager();
+        $entityManager->persist($vote);
 
+        if ($flush) {
+            $entityManager->flush();
+        }
+    }
     //    /**
     //     * @return Vote[] Returns an array of Vote objects
     //     */

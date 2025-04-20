@@ -39,6 +39,8 @@ class Vote
 
     #[ORM\Column(name: 'valeurVote')]
     #[Assert\NotBlank(message: "Vote value must not be blank.")]
+    #[Assert\Positive(message: "Vote value must be a positive value.")]
+    #[Assert\Type(type: 'numeric', message: "Technical note must be a number.")]
     private ?float $valeurVote = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]

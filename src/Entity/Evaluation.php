@@ -37,14 +37,19 @@ class Evaluation
 
     #[ORM\Column(name: 'noteTech')]
     #[Assert\NotBlank(message: "Technical note must not be blank.")]
+    #[Assert\Positive(message: "Technical note must be a positive value.")]
+    #[Assert\Type(type: 'numeric', message: "Technical note must be a number.")]
     private ?float $noteTech = null;
 
     #[ORM\Column(name: 'noteInnov')]
     #[Assert\NotBlank(message: "Innovation note must not be blank.")]
+    #[Assert\Positive(message: "Innovation note must be a positive value.")]
+    #[Assert\Type(type: 'numeric', message: "Technical note must be a number.")]
     private ?float $noteInnov = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotBlank(message: "Date must not be blank.")]
+    #[Assert\EqualTo("today", message: "The date must be today's date.")]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\OneToMany(mappedBy: 'idEvaluation', targetEntity: Vote::class)]

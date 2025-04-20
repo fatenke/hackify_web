@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Vote;
 use App\Form\VoteType;
+use App\Repository\VoteRepository;
+use App\Repository\ProjetRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,24 +14,32 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class VoteController extends AbstractController
 {
-  #[Route('/vote/add', name: 'vote_add')]
-  public function add(Request $request, EntityManagerInterface $entityManager): Response
+  #[Route('/vote/add/{idProjet}', name: 'vote_add')]
+  public function addVote(Request $request, VoteRepository $voteRepo, ProjetRepository $projectRepo, int $idProjet): Response
   {
     $vote = new Vote();
+
+    // Pre-fill project field if exists
+    $project = $projectRepo->find($idProjet);
+    if ($project) {
+      $vote->setIdProjet($project);
+    }
+
+    // Create the form and handle the pre-set project
     $form = $this->createForm(VoteType::class, $vote);
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
-      $entityManager->persist($vote);
-      $entityManager->flush();
-      $this->addFlash('success', 'Vote added successfully!');
-      return $this->redirectToRoute('vote_add');
+      $voteRepo->save($vote, true);
+      return $this->redirectToRoute('project_list');
     }
 
     return $this->render('addVote.html.twig', [
       'form' => $form->createView(),
     ]);
   }
+
+
 
   #[Route('/vote/list', name: 'vote_list')]
   public function list(EntityManagerInterface $entityManager): Response

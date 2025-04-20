@@ -18,7 +18,7 @@ class EvaluationType extends AbstractType
         $builder
             ->add('idJury', EntityType::class, [
                 'class' => Jury::class,
-                'choice_label' => 'id', // Or something more readable like 'nom'
+                'choice_label' => 'nom', // Or something more readable like 'nom'
                 'placeholder' => 'Choose a jury',
                 'attr' => ['class' => 'form-control'],
             ])
