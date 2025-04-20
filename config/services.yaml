@@ -4,8 +4,12 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-
+    google_ai_api_key: '%env(GOOGLE_AI_API_KEY)%'
+    google_ai_model: '%env(GOOGLE_AI_MODEL)%'
 services:
+    App\Service\GeminiService:
+        arguments:
+            $httpClient: '@http_client'
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.

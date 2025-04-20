@@ -13,6 +13,9 @@ class Jury
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $Nom = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -27,5 +30,17 @@ class Jury
     public function __toString(): string
     {
         return (string) $this->id;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->Nom;
+    }
+
+    public function setNom(string $Nom): static
+    {
+        $this->Nom = $Nom;
+
+        return $this;
     }
 }
