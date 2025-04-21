@@ -42,7 +42,7 @@ class CommunauteType extends AbstractType
             ->add('isActive', CheckboxType::class, [
                 'label' => 'Actif',
                 'required' => false,
-                'data' => true, // Default to active
+                'data' => true, 
                 'property_path' => 'is_active',
             ]);
     }
