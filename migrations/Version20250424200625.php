@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250417222504 extends AbstractMigration
+final class Version20250424200625 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -24,10 +24,10 @@ final class Version20250417222504 extends AbstractMigration
             CREATE TABLE chapitres (id INT NOT NULL, id_ressources INT DEFAULT NULL, url_fichier VARCHAR(500) NOT NULL, titre VARCHAR(255) NOT NULL, contenu LONGTEXT NOT NULL, format_fichier VARCHAR(50) NOT NULL, INDEX IDX_508679FCCFA65510 (id_ressources), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE chat (id INT NOT NULL, communaute_id INT DEFAULT NULL, nom VARCHAR(255) NOT NULL, type VARCHAR(255) NOT NULL, date_creation DATETIME NOT NULL, is_active TINYINT(1) NOT NULL, INDEX IDX_659DF2AAC903E5B8 (communaute_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+            CREATE TABLE chat (id INT AUTO_INCREMENT NOT NULL, communaute_id INT DEFAULT NULL, nom VARCHAR(255) NOT NULL, type VARCHAR(255) NOT NULL, date_creation DATETIME NOT NULL, is_active TINYINT(1) NOT NULL, INDEX IDX_659DF2AAC903E5B8 (communaute_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE communaute (id INT NOT NULL, id_hackathon INT DEFAULT NULL, nom VARCHAR(255) NOT NULL, description LONGTEXT NOT NULL, date_creation DATETIME NOT NULL, is_active TINYINT(1) NOT NULL, INDEX IDX_21C94799B0F4A68 (id_hackathon), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+            CREATE TABLE communaute (id INT AUTO_INCREMENT NOT NULL, id_hackathon INT DEFAULT NULL, nom VARCHAR(255) NOT NULL, description LONGTEXT NOT NULL, date_creation DATETIME NOT NULL, is_active TINYINT(1) NOT NULL, INDEX IDX_21C94799B0F4A68 (id_hackathon), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE evaluation (id INT NOT NULL, note_tech DOUBLE PRECISION NOT NULL, note_innov DOUBLE PRECISION NOT NULL, date DATE NOT NULL, idJury INT DEFAULT NULL, idHackathon INT DEFAULT NULL, idProjet INT DEFAULT NULL, INDEX IDX_1323A57560C8EEB2 (idJury), INDEX IDX_1323A57577D0DD19 (idHackathon), INDEX IDX_1323A57533043433 (idProjet), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
@@ -36,19 +36,19 @@ final class Version20250417222504 extends AbstractMigration
             CREATE TABLE hackathon (id_hackathon INT AUTO_INCREMENT NOT NULL, id_organisateur INT DEFAULT NULL, nom_hackathon VARCHAR(255) NOT NULL, description LONGTEXT NOT NULL, date_debut DATETIME NOT NULL, date_fin DATETIME NOT NULL, lieu VARCHAR(255) NOT NULL, theme VARCHAR(255) NOT NULL, max_participants INT NOT NULL, INDEX IDX_8B3AF64F68161836 (id_organisateur), PRIMARY KEY(id_hackathon)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE message (id INT NOT NULL, chat_id INT DEFAULT NULL, posted_by INT DEFAULT NULL, contenu LONGTEXT NOT NULL, type VARCHAR(255) NOT NULL, post_time DATETIME NOT NULL, INDEX IDX_B6BD307F1A9A7125 (chat_id), INDEX IDX_B6BD307FAE36D154 (posted_by), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+            CREATE TABLE message (id INT AUTO_INCREMENT NOT NULL, chat_id INT DEFAULT NULL, posted_by INT DEFAULT NULL, contenu LONGTEXT NOT NULL, type VARCHAR(255) NOT NULL, post_time DATETIME NOT NULL, INDEX IDX_B6BD307F1A9A7125 (chat_id), INDEX IDX_B6BD307FAE36D154 (posted_by), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE participation (id_participation INT AUTO_INCREMENT NOT NULL, id_hackathon INT DEFAULT NULL, id_participant INT DEFAULT NULL, date_inscription DATETIME NOT NULL, statut VARCHAR(255) NOT NULL, INDEX IDX_AB55E24FB0F4A68 (id_hackathon), INDEX IDX_AB55E24FCF8DA6E6 (id_participant), PRIMARY KEY(id_participation)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE poll_options (id INT NOT NULL, poll_id INT DEFAULT NULL, text VARCHAR(255) NOT NULL, vote_count INT NOT NULL, INDEX IDX_2C6077B83C947C0F (poll_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+            CREATE TABLE poll (id INT AUTO_INCREMENT NOT NULL, chat_id INT DEFAULT NULL, question VARCHAR(255) NOT NULL, is_closed TINYINT(1) NOT NULL, created_at DATETIME NOT NULL, INDEX IDX_84BCFA451A9A7125 (chat_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE poll_votes (id INT NOT NULL, poll_id INT DEFAULT NULL, option_id INT DEFAULT NULL, user_id INT DEFAULT NULL, INDEX IDX_373A070E3C947C0F (poll_id), INDEX IDX_373A070EA7C41D6F (option_id), INDEX IDX_373A070EA76ED395 (user_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+            CREATE TABLE poll_option (id INT AUTO_INCREMENT NOT NULL, poll_id INT DEFAULT NULL, text VARCHAR(255) NOT NULL, vote_count INT NOT NULL, INDEX IDX_B68343EB3C947C0F (poll_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE polls (id INT NOT NULL, chat_id INT DEFAULT NULL, question VARCHAR(255) NOT NULL, is_closed TINYINT(1) NOT NULL, created_at DATETIME NOT NULL, INDEX IDX_1D3CC6EE1A9A7125 (chat_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+            CREATE TABLE poll_vote (id INT AUTO_INCREMENT NOT NULL, poll_id INT DEFAULT NULL, option_id INT DEFAULT NULL, user_id INT DEFAULT NULL, INDEX IDX_ED568EBE3C947C0F (poll_id), INDEX IDX_ED568EBEA7C41D6F (option_id), INDEX IDX_ED568EBEA76ED395 (user_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE projets (id INT AUTO_INCREMENT NOT NULL, id_hackathon INT DEFAULT NULL, nom VARCHAR(255) NOT NULL, statut VARCHAR(255) NOT NULL, priorite VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, ressource VARCHAR(255) NOT NULL, INDEX IDX_B454C1DBB0F4A68 (id_hackathon), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
@@ -105,19 +105,19 @@ final class Version20250417222504 extends AbstractMigration
             ALTER TABLE participation ADD CONSTRAINT FK_AB55E24FCF8DA6E6 FOREIGN KEY (id_participant) REFERENCES user (id_user)
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE poll_options ADD CONSTRAINT FK_2C6077B83C947C0F FOREIGN KEY (poll_id) REFERENCES polls (id) ON DELETE CASCADE
+            ALTER TABLE poll ADD CONSTRAINT FK_84BCFA451A9A7125 FOREIGN KEY (chat_id) REFERENCES chat (id) ON DELETE CASCADE
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE poll_votes ADD CONSTRAINT FK_373A070E3C947C0F FOREIGN KEY (poll_id) REFERENCES polls (id) ON DELETE CASCADE
+            ALTER TABLE poll_option ADD CONSTRAINT FK_B68343EB3C947C0F FOREIGN KEY (poll_id) REFERENCES poll (id) ON DELETE CASCADE
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE poll_votes ADD CONSTRAINT FK_373A070EA7C41D6F FOREIGN KEY (option_id) REFERENCES poll_options (id) ON DELETE CASCADE
+            ALTER TABLE poll_vote ADD CONSTRAINT FK_ED568EBE3C947C0F FOREIGN KEY (poll_id) REFERENCES poll (id) ON DELETE CASCADE
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE poll_votes ADD CONSTRAINT FK_373A070EA76ED395 FOREIGN KEY (user_id) REFERENCES user (id_user) ON DELETE CASCADE
+            ALTER TABLE poll_vote ADD CONSTRAINT FK_ED568EBEA7C41D6F FOREIGN KEY (option_id) REFERENCES poll_option (id) ON DELETE CASCADE
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE polls ADD CONSTRAINT FK_1D3CC6EE1A9A7125 FOREIGN KEY (chat_id) REFERENCES chat (id) ON DELETE CASCADE
+            ALTER TABLE poll_vote ADD CONSTRAINT FK_ED568EBEA76ED395 FOREIGN KEY (user_id) REFERENCES user (id_user) ON DELETE CASCADE
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE projets ADD CONSTRAINT FK_B454C1DBB0F4A68 FOREIGN KEY (id_hackathon) REFERENCES hackathon (id_hackathon)
@@ -179,19 +179,19 @@ final class Version20250417222504 extends AbstractMigration
             ALTER TABLE participation DROP FOREIGN KEY FK_AB55E24FCF8DA6E6
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE poll_options DROP FOREIGN KEY FK_2C6077B83C947C0F
+            ALTER TABLE poll DROP FOREIGN KEY FK_84BCFA451A9A7125
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE poll_votes DROP FOREIGN KEY FK_373A070E3C947C0F
+            ALTER TABLE poll_option DROP FOREIGN KEY FK_B68343EB3C947C0F
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE poll_votes DROP FOREIGN KEY FK_373A070EA7C41D6F
+            ALTER TABLE poll_vote DROP FOREIGN KEY FK_ED568EBE3C947C0F
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE poll_votes DROP FOREIGN KEY FK_373A070EA76ED395
+            ALTER TABLE poll_vote DROP FOREIGN KEY FK_ED568EBEA7C41D6F
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE polls DROP FOREIGN KEY FK_1D3CC6EE1A9A7125
+            ALTER TABLE poll_vote DROP FOREIGN KEY FK_ED568EBEA76ED395
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE projets DROP FOREIGN KEY FK_B454C1DBB0F4A68
@@ -236,13 +236,13 @@ final class Version20250417222504 extends AbstractMigration
             DROP TABLE participation
         SQL);
         $this->addSql(<<<'SQL'
-            DROP TABLE poll_options
+            DROP TABLE poll
         SQL);
         $this->addSql(<<<'SQL'
-            DROP TABLE poll_votes
+            DROP TABLE poll_option
         SQL);
         $this->addSql(<<<'SQL'
-            DROP TABLE polls
+            DROP TABLE poll_vote
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE projets

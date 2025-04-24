@@ -6,6 +6,7 @@ use App\Entity\Hackathon;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 class HackathonType extends AbstractType
 {
@@ -13,23 +14,17 @@ class HackathonType extends AbstractType
     {
         $builder
             /*->add('id_organisateur')*/
-            ->add('nom_hackathon', null, [
-                'property_path' => 'nomHackathon',
-            ])
+            ->add('nom_hackathon')
             ->add('description')
             ->add('date_debut', null, [
-                'widget' => 'single_text',
-                'property_path' => 'dateDebut',
+                'widget' => 'single_text'
             ])
             ->add('date_fin', null, [
-                'widget' => 'single_text',
-                'property_path' => 'dateFin',
+                'widget' => 'single_text'
             ])
             ->add('lieu')
             ->add('theme')
-            ->add('max_participants', null, [
-                'property_path' => 'maxParticipants',
-            ])
+            ->add('max_participants')
         ;
     }
 

@@ -89,6 +89,7 @@ class Hackathon
 
     #[ORM\Column(type: 'datetime', nullable: false)]
     #[Assert\NotBlank(message: 'La date de début est requise.')]
+    #[Assert\NotNull(message: 'La date de début est requise.')]
     #[Assert\Type(\DateTimeInterface::class, message: 'Format de date invalide.')]
     #[Assert\GreaterThanOrEqual(
         'today',
