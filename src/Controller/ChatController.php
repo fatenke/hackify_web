@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Security\Voter\ChatMessageVoter;
 
 #[Route('/chat')]
 class ChatController extends AbstractController
@@ -45,6 +46,11 @@ class ChatController extends AbstractController
         $user = $this->getUser();
         if (!$user) {
             return $this->json(['error' => 'You must be logged in to send messages'], 401);
+        }
+
+        // Check if the user has permission to post in this chat type
+        if (!$this->isGranted(ChatMessageVoter::POST_MESSAGE, $chat)) {
+            return $this->json(['error' => 'You do not have permission to post in this chat type'], 403);
         }
 
         try {

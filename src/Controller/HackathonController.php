@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Entity\Hackathon;
 use App\Entity\Communaute;
 use App\Entity\Chat;
+use App\Enum\ChatType;
 use App\Form\HackathonType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -45,21 +46,20 @@ final class HackathonController extends AbstractController
             $em->persist($communaute);
             $em->flush();
             
-            // Create default chats for the community
-            $chatTypes = ['ANNOUNCEMENT', 'QUESTION', 'FEEDBACK', 'COACH', 'BOT_SUPPORT'];
-            $chatNames = [
-                'Annonces',
-                'Questions',
-                'Retour',
-                'Coaching',
-                'Support'
+            // Create default chats for the community using the ChatType enum
+            $chatTypes = [
+                ChatType::ANNOUNCEMENT,
+                ChatType::QUESTION,
+                ChatType::FEEDBACK,
+                ChatType::COACH,
+                ChatType::BOT_SUPPORT
             ];
 
-            foreach ($chatTypes as $index => $type) {
+            foreach ($chatTypes as $type) {
                 $chat = new Chat();
                 $chat->setCommunaute_id($communaute);
-                $chat->setNom($chatNames[$index]);
-                $chat->setType($type);
+                $chat->setNom($type->getLabel());
+                $chat->setType($type->value);
                 $chat->setDate_creation(new \DateTime());
                 $chat->setIs_active(true);
                 
