@@ -25,7 +25,7 @@ final class ProjetsController extends AbstractController
         $projet = new Projets();
         $projet->setStatut('en cours');
         $projet->setPriorite('faible');
-    
+        
         // 2) Build the form around that pre‑populated entity
         $form = $this->createForm(ProjetsType::class, $projet);
         $form->handleRequest($request);
@@ -47,30 +47,74 @@ final class ProjetsController extends AbstractController
     public function voirProjets(Hackathon $hackathon, ProjetsRepository $projets_repository): Response
     {
         $projets = $projets_repository->findBy(['id_hack' => $hackathon]);
-    
+        
         return $this->render('projets/afficherProjets.html.twig', [
             'hackathon' => $hackathon,
             'projets' => $projets,
         ]);
     }
     #[Route('backoffice/projets', name: 'voir_projets_back')]
-    public function voirProjetsback(ProjetsRepository $projets_repository): Response
+    public function voirProjetsback(Request $request, ProjetsRepository $projets_repository): Response
     {
-        $projets = $projets_repository->findAll();
+        $nom = $request->query->get('nom');
+        $statut = $request->query->get('statut');
+        $priorite = $request->query->get('priorite');
+    
+        $queryBuilder = $projets_repository->createQueryBuilder('p');
+    
+        if ($nom) {
+            $queryBuilder->andWhere('p.nom LIKE :nom')
+                         ->setParameter('nom', '%' . $nom . '%');
+        }
+    
+        if ($statut) {
+            $queryBuilder->andWhere('p.statut = :statut')
+                         ->setParameter('statut', $statut);
+        }
+    
+        if ($priorite) {
+            $queryBuilder->andWhere('p.priorite = :priorite')
+                         ->setParameter('priorite', $priorite);
+        }
+    
+        $projets = $queryBuilder->getQuery()->getResult();
     
         return $this->render('backoffice/projets/index.html.twig', [
             'projets' => $projets,
         ]);
     }
     #[Route('backoffice/technologies', name: 'voir_technologies_back')]
-    public function voirTechnologiesback(TechnologiesRepository $projets_repository): Response
+    public function voirTechnologiesback(Request $request, TechnologiesRepository $technologies_repository): Response
     {
-        $projets = $projets_repository->findAll();
+        $nom = $request->query->get('nom');
+        $type = $request->query->get('type');
+        $complexite = $request->query->get('complexite');
+    
+        $queryBuilder = $technologies_repository->createQueryBuilder('t');
+    
+        if ($nom) {
+            $queryBuilder->andWhere('t.nom_tech LIKE :nom')
+                         ->setParameter('nom', '%' . $nom . '%');
+        }
+    
+        if ($type) {
+            $queryBuilder->andWhere('t.type_tech = :type')
+                         ->setParameter('type', $type);
+        }
+    
+        if ($complexite) {
+            $queryBuilder->andWhere('t.complexite = :complexite')
+                         ->setParameter('complexite', $complexite);
+        }
+    
+        $technologies = $queryBuilder->getQuery()->getResult();
     
         return $this->render('backoffice/technologies/index.html.twig', [
-            'projets' => $projets,
+            'projets' => $technologies,
         ]);
     }
+    
+
     #[Route('/projets/supprimer/{id}', name: 'supprimer_projet', methods: ['POST'])]
     public function supprimer(Request $request, Projets $projet, EntityManagerInterface $em): Response
     {
