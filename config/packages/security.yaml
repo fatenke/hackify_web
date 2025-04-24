@@ -26,20 +26,18 @@ security:
                 password_parameter: password
                 enable_csrf: true
                 default_target_path: app_profile_show
-                always_use_default_target_path: true
+                success_handler: App\Security\AuthenticationSuccessHandler
             logout:
                 path: app_logout
                 target: app_home
 
             # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
-
-    # Easy way to control access for large sections of your site
+            # switch_user: true    # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
-        - { path: ^/admin, roles: ROLE_ORGANISATEUR }
+        - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/profile, roles: ROLE_USER }
         # Allow access to the home page
         - { path: ^/$, roles: PUBLIC_ACCESS }

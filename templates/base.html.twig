@@ -1,40 +1,44 @@
 {# templates/base.html.twig #}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>{% block title %}Hackify{% endblock %}</title>
 
-    <link href="{{ asset('assets/img/favicon.png') }}" rel="icon">
-    <link href="{{ asset('assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Index - Yummy Bootstrap Template</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
 
-    <!-- CSS AOS -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <!-- Favicons -->
+  <link href="FrontOffice/assets/img/favicon.png" rel="icon">
+  <link href="FrontOffice/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com" rel="preconnect">
-    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Inter&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
-
-    <!-- Vendor CSS Files -->
-    <link href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/vendor/aos/aos.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/vendor/glightbox/css/glightbox.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/vendor/swiper/swiper-bundle.min.css') }}" rel="stylesheet">
-
-    
-
-    <!-- Main CSS File -->
-    <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
+  <!-- Fonts -->
+   <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
 
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
- 
-  </head>
+  <!-- Vendor CSS Files -->
+  <link href="{{ asset('FrontOffice/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ asset('FrontOffice/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
+  <link href="{{ asset('FrontOffice/assets/vendor/aos/aos.css') }}" rel="stylesheet">
+  <link href="{{ asset('FrontOffice/assets/vendor/glightbox/css/glightbox.min.css') }}" rel="stylesheet">
+  <link href="{{ asset('FrontOffice/assets/vendor/swiper/swiper-bundle.min.css') }}" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="{{ asset('FrontOffice/assets/css/main.css') }}" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: Yummy
+  * Template URL: https://bootstrapmade.com/yummy-bootstrap-restaurant-website-template/
+  * Updated: Aug 07 2024 with Bootstrap v5.3.3
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+
 
   <body class="index-page" >
 
@@ -42,7 +46,7 @@
     <div class="container position-relative d-flex align-items-center justify-content-between">
 
       <a href="index.html" class="logo d-flex align-items-center me-auto me-xl-0">
-        <img src="{{ asset('assets/img/logo.png') }}" alt="Logo">
+        <img src="{{ asset('FrontOffice/assets/img/logo.png') }}" alt="Logo">
         <h1 class="sitename">Hackify</h1>
         
       </a>
@@ -51,51 +55,127 @@
         <ul>
           <li><a href="/home#hero" class="active">Accueil<br></a></li>
           <li><a href="/home#about">À propos</a></li>
-          <li><a href="#chefs">Notre équipe</a></li>
-          <li><a href="/home#hackathons">Hackathons</a></li>
-          <li><a href="#chefs">Participer</a></li>
-          <li><a href="#gallery">Gallery</a></li>
-          <li><a href="hackathon/ajouter">Organiser</a></li>
-          <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="#">Dropdown 1</a></li>
-              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                <ul>
-                  <li><a href="#">Deep Dropdown 1</a></li>
-                  <li><a href="#">Deep Dropdown 2</a></li>
-                  <li><a href="#">Deep Dropdown 3</a></li>
-                  <li><a href="#">Deep Dropdown 4</a></li>
-                  <li><a href="#">Deep Dropdown 5</a></li>
-                </ul>
-              </li>
-              <li><a href="#">Dropdown 2</a></li>
-              <li><a href="#">Dropdown 3</a></li>
-              <li><a href="#">Dropdown 4</a></li>
+          <li><a href="/home#chefs">Notre équipe</a></li>
+          <li class="dropdown"><a href="/home#hackathons"><span>Hackathons</span>  <i class="bi bi-chevron-down toggle-dropdown"></i> </a>
+            <ul> 
+               {% if app.user and 'ROLE_ORGANISATEUR' in app.user.roles %}
+              <li><a href="{{ path('ajouter_hackathon') }}">Organiser</a></li>
+              {% endif %}
+              <li><a href="{{ path('liste_hackathon') }}">Mes hackathons</a></li>
+         
             </ul>
           </li>
-          <li><a href="#contact">Contact</a></li>
+          <li><a href="/home#gallery">Gallery</a></li>
+          <li><a href="/home#contact">Contact</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
-
+{% if not app.user %}
       <a class="btn-getstarted" href="/register">Connexion / S'inscrire</a>
+      {% endif %}
 
+      {% if app.user %}
+          {% if app.user.photoUser is defined and app.user.photoUser %}
+          <a  href="/profile">
+              <img src="{{ asset('uploads/profile_pictures/' ~ app.user.photoUser) }}" 
+                                 alt="Photo de profil" 
+                                 class="rounded-circle"
+                                 style="width: 50px; height: 50px; object-fit: cover; border: 3px solid #1b3347;">
+                        {% else %}
+                            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto"
+                                 style="width: 50px; height: 50px;">
+                                <i class="bi bi-person-fill text-white" style="font-size: 2rem;"></i>
+                            </div>
+                        {% endif %}
+                        {% endif %}
+</a>
     </div>
   </header>
+  <main>
 
     {% block body %}{% endblock %}
-
-    <!-- Vendor JS Files -->
-    <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/aos/aos.js') }}"></script>
-    <script src="{{ asset('assets/vendor/glightbox/js/glightbox.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/purecounter/purecounter_vanilla.js') }}"></script>
-    <script src="{{ asset('assets/vendor/swiper/swiper-bundle.min.js') }}"></script>
-    <script src="{{ asset('assets/js/main.js') }}"></script>
+    </main>
 
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>AOS.init();</script>
+    <footer id="footer" class="footer dark-background">
+
+    <div class="container">
+      <div class="row gy-3">
+        <div class="col-lg-3 col-md-6 d-flex">
+          <i class="bi bi-geo-alt icon"></i>
+          <div class="address">
+            <h4>Address</h4>
+            <p>A108 Adam Street</p>
+            <p>New York, NY 535022</p>
+            <p></p>
+          </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6 d-flex">
+          <i class="bi bi-telephone icon"></i>
+          <div>
+            <h4>Contact</h4>
+            <p>
+              <strong>Phone:</strong> <span>+1 5589 55488 55</span><br>
+              <strong>Email:</strong> <span>info@example.com</span><br>
+            </p>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 d-flex">
+          <i class="bi bi-clock icon"></i>
+          <div>
+            <h4>Opening Hours</h4>
+            <p>
+              <strong>Mon-Sat:</strong> <span>11AM - 23PM</span><br>
+              <strong>Sunday</strong>: <span>Closed</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+          <h4>Follow Us</h4>
+          <div class="social-links d-flex">
+            <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
+            <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+            <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">Yummy</strong> <span>All Rights Reserved</span></p>
+      <div class="credits">
+        <!-- All the links in the footer should remain intact. -->
+        <!-- You can delete the links only if you've purchased the pro version. -->
+        <!-- Licensing information: https://bootstrapmade.com/license/ -->
+        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
+        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+      </div>
+    </div>
+
+  </footer>
+
+
+   <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script src="{{ asset('FrontOffice/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('FrontOffice/assets/vendor/php-email-form/validate.js') }}"></script>
+    <script src="{{ asset('FrontOffice/assets/vendor/aos/aos.js') }}"></script>
+    <script src="{{ asset('FrontOffice/assets/vendor/glightbox/js/glightbox.min.js') }}"></script>
+    <script src="{{ asset('FrontOffice/assets/vendor/purecounter/purecounter_vanilla.js') }}"></script>
+    <script src="{{ asset('FrontOffice/assets/vendor/swiper/swiper-bundle.min.js') }}"></script>
+  <!-- Main JS File -->
+  <script src="{{ asset('FrontOffice/assets/js/main.js') }}"></script>
 
   </body>
 </html>
