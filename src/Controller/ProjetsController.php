@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Controller;
-
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use App\Entity\Hackathon;
 use App\Entity\Projets;
 use App\Entity\Technologies;
@@ -219,5 +220,59 @@ public function updatefront(Request $request, Projets $projet, EntityManagerInte
         'projet'  => $projet,
     ]);
 }
+#[Route('/backoffice/projets/pdf', name: 'projets_pdf')]
+    public function exportPDF(ProjetsRepository $projetsRepository): Response
+    {
+        $projets = $projetsRepository->findAll();
 
+        // Configuration Dompdf
+        $options = new Options();
+        $options->set('defaultFont', 'Arial');
+        $dompdf = new Dompdf($options);
+
+        // Générer le HTML à partir du template Twig
+        $html = $this->renderView('backoffice/projets/pdf.html.twig', [
+            'projets' => $projets,
+        ]);
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+
+        // Retourner le fichier PDF
+        return new Response($dompdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="liste_projets.pdf"',
+        ]);
+    }
+
+    #[Route('/backoffice/technologies/pdf', name: 'technologies_pdf')]
+    public function exportTechnologiesPDF(TechnologiesRepository $technologiesRepository): Response
+    {
+        // Récupérer toutes les technologies
+        $technologies = $technologiesRepository->findAll();
+    
+        // Configuration Dompdf
+        $options = new Options();
+        $options->set('defaultFont', 'Arial');
+        $dompdf = new Dompdf($options);
+    
+        // Générer le HTML à partir du template Twig
+        $html = $this->renderView('backoffice/technologies/pdf.html.twig', [
+            'technologies' => $technologies,
+        ]);
+    
+        // Charger le HTML dans Dompdf
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');  // Choix de la mise en page (portrait ou paysage)
+        $dompdf->render();
+    
+        // Retourner le fichier PDF
+        return new Response($dompdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="liste_technologies.pdf"',
+        ]);
+    }
+
+   
 }

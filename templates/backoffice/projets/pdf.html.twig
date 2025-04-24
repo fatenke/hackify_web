@@ -1,0 +1,56 @@
+{# templates/backoffice/projets/pdf.html.twig #}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #444;
+            padding: 6px;
+            text-align: left;
+        }
+        th {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <h2>Liste des projets</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Description</th>
+                <th>Ressource</th>
+                <th>Statut</th>
+                <th>Priorité</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for projet in projets %}
+                <tr>
+                    <td>{{ projet.nom }}</td>
+                    <td>{{ projet.description }}</td>
+                    <td>{{ projet.ressource }}</td>
+                    <td>{{ projet.statut }}</td>
+                    <td>{{ projet.priorite }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

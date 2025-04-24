@@ -13,94 +13,83 @@
                     <div class="card-body">
                         <div class="alert alert-info">
                            {% if projets is empty %}
-    <p>Aucun Projets pour le moment.</p>
-  {% else %}
-    <p>Tous Les Projets.</p>
-
+                               <p>Aucun Projets pour le moment.</p>
+                           {% else %}
+                               <p>Tous Les Projets.</p>
                         </div>
-            <div class="card">
-                       
-                                          
-                                            
-              <!-- /.card-header -->
-                <div class="card-body p-0">
+                        <div class="card">
 
-                <form method="get" action="{{ path('voir_projets_back') }}" class="row g-3 mb-4">
-    <div class="col-md-3">
-    <label for="type">Nom</label>
-        <input type="text" name="nom" value="{{ app.request.get('nom') }}" class="form-control" placeholder="Nom du projet">
-    </div>
-    <div class="col-md-3">
-<label for="type">Statuts</label>
-        <select name="statut" class="form-control">
-            <option value="">Tous les statuts</option>
-            <option value="en cours" {% if app.request.get('statut') == 'en cours' %}selected{% endif %}>En cours</option>
-            <option value="terminé" {% if app.request.get('statut') == 'terminé' %}selected{% endif %}>Terminé</option>
-        </select>
-    </div>
+                            <!-- Ajouter le bouton pour générer le PDF juste ici -->
+                            <a href="{{ path('projets_pdf') }}" class="btn btn-danger mb-3">
+                                📄 Télécharger PDF
+                            </a>
+                            
+                            <!-- /.card-header -->
+                            <div class="card-body p-0">
 
+                                <form method="get" action="{{ path('voir_projets_back') }}" class="row g-3 mb-4">
+                                    <div class="col-md-3">
+                                        <label for="type">Nom</label>
+                                        <input type="text" name="nom" value="{{ app.request.get('nom') }}" class="form-control" placeholder="Nom du projet">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="type">Statuts</label>
+                                        <select name="statut" class="form-control">
+                                            <option value="">Tous les statuts</option>
+                                            <option value="en cours" {% if app.request.get('statut') == 'en cours' %}selected{% endif %}>En cours</option>
+                                            <option value="terminé" {% if app.request.get('statut') == 'terminé' %}selected{% endif %}>Terminé</option>
+                                        </select>
+                                    </div>
 
-    <div class="col-md-3">
-    <label for="type">Priorite</label>
-        <select name="priorite" class="form-control">
-            <option value="">Toutes les priorités</option>
-            <option value="faible" {% if app.request.get('priorite') == 'faible' %}selected{% endif %}>Faible</option>
-            <option value="moyenne" {% if app.request.get('priorite') == 'moyenne' %}selected{% endif %}>Moyenne</option>
-            <option value="haute" {% if app.request.get('priorite') == 'haute' %}selected{% endif %}>haute</option>
-        </select>
-    </div>
+                                    <div class="col-md-3">
+                                        <label for="type">Priorite</label>
+                                        <select name="priorite" class="form-control">
+                                            <option value="">Toutes les priorités</option>
+                                            <option value="faible" {% if app.request.get('priorite') == 'faible' %}selected{% endif %}>Faible</option>
+                                            <option value="moyenne" {% if app.request.get('priorite') == 'moyenne' %}selected{% endif %}>Moyenne</option>
+                                            <option value="haute" {% if app.request.get('priorite') == 'haute' %}selected{% endif %}>Haute</option>
+                                        </select>
+                                    </div>
 
+                                    <div class="col-md-3 d-flex gap-2 align-items-end">
+                                        <button type="submit" class="btn btn-primary w-100">Rechercher</button>
+                                        <a href="{{ path('voir_projets_back') }}" class="btn btn-secondary w-100">Réinitialiser</a>
+                                    </div>
+                                </form>
 
-    <div class="col-md-3 d-flex gap-2 align-items-end">
-        <button type="submit" class="btn btn-primary w-100">Rechercher</button>
-        <a href="{{ path('voir_projets_back') }}" class="btn btn-secondary w-100">Réinitialiser</a>
-    </div>
+                                <table class="table">
+                                    <thead>
+                                        <th>Nom</th>
+                                        <th>Statut</th>
+                                        <th>Priorite</th>
+                                        <th>Description</th>
+                                        <th>Ressource</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for projet in projets %}
+                                            <tr>
+                                                <td>{{ projet.nom }}</td>
+                                                <td>{{ projet.statut }}</td>
+                                                <td>{{ projet.priorite }}</td>
+                                                <td>{{ projet.description }}</td>
+                                                <td>{{ projet.ressource }}</td>
+                                                <td>
+                                                    <a href="{{ path('modifier_projet', { id: projet.id }) }}" class="btn bg-gradient-primary w-30 m-2 me-2">Update</a>
 
-</form>
-
-                    <table class="table">
-                        <thead>
-                            <th>Nom</th>
-          <th>Statut</th>
-          <th>Priorite</th>
-          <th>Description</th>
-          <th>Ressource</th>
-          <th>action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-        {% for projet in projets %}
-
-                            <tr>
-                             <td>{{ projet.nom }}</td>
-            <td>{{ projet.statut }}</td>
-            <td>{{ projet.priorite }}</td>
-            <td>{{ projet.description }}</td>
-            <td>{{ projet.ressource }}</td>
-              <td>
-<a href="{{ path('modifier_projet', { id: projet.id }) }}" class="btn bg-gradient-primary w-30 m-2 me-2">Update</a>
-
-              <form method="post" action="{{ path('supprimer_projet', {id: projet.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');" class="w-50 m-2">
-        <input type="hidden" name="_token" value="{{ csrf_token('supprimer' ~ projet.id) }}">
-        <button class="btn bg-gradient-danger w-30">Delete</button>
-    </form>
-              </td>
-                            </tr>
-        {% endfor %}
-                        
-                        </tbody>
-                    </table>
-                </div>
-
-
-              <!-- /.card-body -->
-         </div>
-  {% endif %}
-
-
-
-
-
+                                                    <form method="post" action="{{ path('supprimer_projet', {id: projet.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');" class="w-50 m-2">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('supprimer' ~ projet.id) }}">
+                                                        <button class="btn bg-gradient-danger w-30">Delete</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    {% endif %}
                     </div>
                 </div>
             </div>
