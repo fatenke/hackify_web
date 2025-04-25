@@ -32,23 +32,49 @@ class EvaluationController extends AbstractController
   }
 
   #[Route('/evaluation/list', name: 'evaluation_list')]
-  public function list(EntityManagerInterface $entityManager): Response
+  public function list(Request $request, EntityManagerInterface $entityManager): Response
   {
-    // Get all evaluations along with their associated votes
-    $evaluations = $entityManager->getRepository(Evaluation::class)
-      ->findBy([], ['id' => 'ASC']); // Retrieve all evaluations
+    // Create query builder
+    $queryBuilder = $entityManager->getRepository(Evaluation::class)
+      ->createQueryBuilder('e')
+      ->leftJoin('e.idJury', 'j')
+      ->leftJoin('e.idHackathon', 'h')
+      ->leftJoin('e.idProjet', 'p')
+      ->leftJoin('e.votes', 'v');
 
-    // Optionally, load votes for each evaluation. If you have a lot of data, consider using a JOIN query to improve performance.
+    // Search functionality
+    $search = $request->query->get('search');
+    if ($search) {
+      $queryBuilder->andWhere(' 
+            p.id LIKE :search 
+        ')
+        ->setParameter('search', '%' . $search . '%');
+    }
+
+    // Sorting
+    $sort = $request->query->get('sort', 'e.id');
+    $direction = $request->query->get('direction', 'asc');
+
+    $validSorts = ['e.id', 'j.id', 'h.id', 'p.id', 'e.noteTech', 'e.noteInnov', 'e.date'];
+    $sort = in_array($sort, $validSorts) ? $sort : 'e.id';
+
+    $queryBuilder->orderBy($sort, $direction === 'desc' ? 'desc' : 'asc');
+
+    // Get paginated results
+    $evaluations = $queryBuilder->getQuery()->getResult();
+
+    // Map votes for each evaluation
     $evaluationVoteMap = [];
     foreach ($evaluations as $evaluation) {
-      // Get the collection of votes for this evaluation
-      $votes = $evaluation->getVotes(); // This is a PersistentCollection of Vote objects
-      $evaluationVoteMap[$evaluation->getId()] = $votes;
+      $evaluationVoteMap[$evaluation->getId()] = $evaluation->getVotes();
     }
 
     return $this->render('listEvaluation.html.twig', [
-      'evaluations' => $evaluations, // Pass the evaluations with votes to the template
-      'evaluationVoteMap' => $evaluationVoteMap, // Optionally, map votes for easy access in the template
+      'evaluations' => $evaluations,
+      'evaluationVoteMap' => $evaluationVoteMap,
+      'search' => $search,
+      'sort' => $sort,
+      'direction' => $direction
     ]);
   }
 
@@ -88,5 +114,80 @@ class EvaluationController extends AbstractController
     }
 
     return $this->redirectToRoute('evaluation_list');
+  }
+  #[Route('/top-projects', name: 'app_top_projects')]
+  public function topProjects(EntityManagerInterface $em): Response
+  {
+    // First get all project scores
+    $projectScores = $em->createQueryBuilder()
+      ->select([
+        'p.id',
+        'AVG(e.noteTech) as averageTech',
+        'AVG(e.noteInnov) as averageInnov',
+        '(AVG(e.noteTech) + AVG(e.noteInnov)) as totalScore',
+        'COUNT(v.id) as voteCount'
+      ])
+      ->from('App\Entity\Evaluation', 'e')
+      ->join('e.idProjet', 'p')
+      ->leftJoin('e.votes', 'v')
+      ->groupBy('p.id')
+      ->getQuery()
+      ->getResult();
+
+    // Sort by totalScore descending
+    usort($projectScores, function ($a, $b) {
+      return $b['totalScore'] <=> $a['totalScore'];
+    });
+
+    // Get top 3 projects
+    $topProjects = array_slice($projectScores, 0, 3);
+
+    // Calculate max score
+    $maxScore = 0;
+    foreach ($projectScores as $project) {
+      if ($project['totalScore'] > $maxScore) {
+        $maxScore = $project['totalScore'];
+      }
+    }
+
+    // Get basic statistics
+    $stats = $em->createQueryBuilder()
+      ->select([
+        'COUNT(e.id) as totalEvaluations',
+        'AVG(e.noteTech) as averageTechScore',
+        'AVG(e.noteInnov) as averageInnovScore'
+      ])
+      ->from('App\Entity\Evaluation', 'e')
+      ->getQuery()
+      ->getSingleResult();
+
+    // Calculate closest competition
+    $scores = array_column($projectScores, 'totalScore');
+
+
+    // Calculate participation rate
+    $totalJury = $em->createQueryBuilder()
+      ->select('COUNT(j.id)')
+      ->from('App\Entity\Jury', 'j')
+      ->getQuery()
+      ->getSingleScalarResult();
+
+    $participatingJury = $em->createQueryBuilder()
+      ->select('COUNT(DISTINCT e.idJury)')
+      ->from('App\Entity\Evaluation', 'e')
+      ->getQuery()
+      ->getSingleScalarResult();
+
+    $participationRate = $totalJury > 0 ? round(($participatingJury / $totalJury) * 100, 1) : 0;
+
+    return $this->render('top_projects.html.twig', [
+      'topProjects' => $topProjects,
+      'maxScore' => $maxScore ?: 1,
+      'totalEvaluations' => $stats['totalEvaluations'],
+      'averageTechScore' => $stats['averageTechScore'] ?: 0,
+      'averageInnovScore' => $stats['averageInnovScore'] ?: 0,
+      'participationRate' => $participationRate,
+      'topScore' => $maxScore ?: 0
+    ]);
   }
 }
