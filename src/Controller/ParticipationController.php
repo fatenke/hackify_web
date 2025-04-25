@@ -10,6 +10,9 @@ use App\Entity\Hackathon;
 use App\Repository\ParticipationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
+
 final class ParticipationController extends AbstractController
 {
     #[Route('hackathon/{id}/participer', name: 'hackathon_participer')]
@@ -66,5 +69,22 @@ public function refuser(Participation $participation,EntityManagerInterface $ent
     return $this->redirectToRoute('voir_participants', ['id' => $participation->getHackathon()->getId_hackathon()]);
 }
 
+public function sendConfirmation(MailerInterface $mailer): Response
+{
+    $email = (new Email())
+        ->from('fatenkerrou@gmail.com') // L'adresse d'envoi
+        ->to('kerroufaten729@gmail.com') // L'adresse du participant
+        ->subject('Confirmation de votre inscription')
+        ->html('<p>Votre participation au hackathon a bien été enregistrée.</p>');
 
+    $mailer->send($email);
+
+    return new Response('Email envoyé !');
+}
+
+#[Route('/test-email', name: 'test_email')]
+public function testEmail(MailerInterface $mailer): Response
+{
+    return $this->sendConfirmation($mailer);
+}
 }
