@@ -42,12 +42,41 @@ class VoteController extends AbstractController
 
 
   #[Route('/vote/list', name: 'vote_list')]
-  public function list(EntityManagerInterface $entityManager): Response
+  public function list(Request $request, EntityManagerInterface $entityManager): Response
   {
-    $votes = $entityManager->getRepository(Vote::class)->findAll();
+    // Create query builder
+    $queryBuilder = $entityManager->getRepository(Vote::class)
+      ->createQueryBuilder('v')
+      ->leftJoin('v.idEvaluation', 'e')
+      ->leftJoin('v.idProjet', 'p')
+      ->leftJoin('v.idHackathon', 'h');
+
+    // Search functionality
+    $search = $request->query->get('search');
+    if ($search) {
+      $queryBuilder->andWhere('
+            p.id LIKE :search 
+        ')
+        ->setParameter('search', '%' . $search . '%');
+    }
+
+    // Sorting
+    $sort = $request->query->get('sort', 'v.id');
+    $direction = $request->query->get('direction', 'asc');
+
+    $validSorts = ['v.id', 'e.id', 'p.id', 'h.id', 'v.valeurVote', 'v.date'];
+    $sort = in_array($sort, $validSorts) ? $sort : 'v.id';
+
+    $queryBuilder->orderBy($sort, $direction === 'desc' ? 'desc' : 'asc');
+
+    // Get results
+    $votes = $queryBuilder->getQuery()->getResult();
 
     return $this->render('listVote.html.twig', [
-      'votes' => $votes
+      'votes' => $votes,
+      'search' => $search,
+      'sort' => $sort,
+      'direction' => $direction
     ]);
   }
 
