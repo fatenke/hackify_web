@@ -76,7 +76,7 @@
 
       {% if app.user %}
           {% if app.user.photoUser is defined and app.user.photoUser %}
-          <a  href="/profile">
+          <a href="{{ path('app_profile_show') }}">
               <img src="{{ asset('uploads/profile_pictures/' ~ app.user.photoUser) }}" 
                                  alt="Photo de profil" 
                                  class="rounded-circle"
