@@ -1,26 +1,34 @@
 <?php
 
 namespace App\Controller;
-
 use App\Entity\Chat;
 use App\Entity\Message;
 use App\Entity\Poll;
 use App\Entity\PollOption;
 use App\Entity\PollVote;
 use App\Entity\User;
+use App\Entity\Communaute;
+use App\Form\MessageSearchType;
 use App\Repository\ChatRepository;
-use App\Repository\MessageRepository;
-use App\Repository\UserRepository;
+use App\Security\Voter\ChatMessageVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Security\Voter\ChatMessageVoter;
+
 
 #[Route('/chat')]
 class ChatController extends AbstractController
 {
+    private EntityManagerInterface $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+
     #[Route('/', name: 'app_chat_index', methods: ['GET'])]
     public function index(ChatRepository $chatRepository): Response
     {
@@ -265,4 +273,113 @@ class ChatController extends AbstractController
         
         return $this->json(['polls' => $data]);
     }
-} 
+    #[Route('/community/{id}/search', name: 'chat_search')]
+    public function searchMessages(Request $request, Communaute $community): Response
+    {
+        $form = $this->createForm(MessageSearchType::class);
+        $form->handleRequest($request);
+        $results = [];
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $query = $form->get('query')->getData();
+            if ($query) {
+                // Use database search since Algolia is not properly configured
+                $results = $this->performDatabaseSearch($query, $community);
+            }
+        }
+
+        return $this->render('chat/search.html.twig', [
+            'community' => $community,
+            'form' => $form->createView(),
+            'results' => $results,
+        ]);
+    }
+    
+    private function performDatabaseSearch(string $query, Communaute $community): array
+    {
+        // Escape special characters for LIKE query
+        $escapedQuery = str_replace(['%', '_', '*'], ['\\%', '\\_', '%'], $query);
+        
+        return $this->entityManager->getRepository(Message::class)
+            ->createQueryBuilder('m')
+            ->join('m.chat_id', 'c')
+            ->join('c.communaute_id', 'co')
+            ->where('co.id = :communityId')
+            ->andWhere('m.contenu LIKE :query')
+            ->setParameter('communityId', $community->getId())
+            ->setParameter('query', '%'.$escapedQuery.'%')
+            ->orderBy('m.post_time', 'DESC')
+            ->setMaxResults(50)
+            ->getQuery()
+            ->getResult();
+    }
+    
+    #[Route('/community/{id}/search-ajax', name: 'chat_search_ajax')]
+    public function searchMessagesAjax(Request $request, Communaute $community): Response
+    {
+        try {
+            $query = $request->query->get('query');
+            $results = [];
+            
+            if ($query) {
+                // Log the search request
+                error_log("Performing search for '{$query}' in community {$community->getId()}");
+                
+                // Special case for * which would match everything
+                if ($query === '*') {
+                    // Return most recent messages instead
+                    $results = $this->entityManager->getRepository(Message::class)
+                        ->createQueryBuilder('m')
+                        ->join('m.chat_id', 'c')
+                        ->join('c.communaute_id', 'co')
+                        ->where('co.id = :communityId')
+                        ->setParameter('communityId', $community->getId())
+                        ->orderBy('m.post_time', 'DESC')
+                        ->setMaxResults(20)
+                        ->getQuery()
+                        ->getResult();
+                } else {
+                    $results = $this->performDatabaseSearch($query, $community);
+                }
+                
+                error_log("Search completed with " . count($results) . " results");
+            }
+            
+            // Transform results to be JSON-serializable
+            $serializedResults = [];
+            foreach ($results as $message) {
+                $serializedResults[] = [
+                    'id' => $message->getId(),
+                    'contenu' => $message->getContenu(),
+                    'type' => $message->getType(),
+                    'post_time' => $message->getPost_time()->format('Y-m-d H:i:s'),
+                    'chat_id' => [
+                        'id' => $message->getChat_id()->getId(),
+                        'nom' => $message->getChat_id()->getNom()
+                    ],
+                    'posted_by' => [
+                        'id' => $message->getPosted_by()->getId(),
+                        'nomUser' => $message->getPosted_by()->getNomUser(),
+                        'prenomUser' => $message->getPosted_by()->getPrenomUser()
+                    ]
+                ];
+            }
+            
+            return $this->json([
+                'success' => true,
+                'query' => $query,
+                'results' => $serializedResults
+            ]);
+        } catch (\Exception $e) {
+            // Log the error
+            error_log("Search error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+            
+            // Return error response
+            return $this->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'query' => $request->query->get('query')
+            ], 500);
+        }
+    }
+}

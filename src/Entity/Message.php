@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 use App\Entity\User;
 use App\Entity\Chat;
@@ -10,17 +11,16 @@ use App\Entity\Chat;
 #[ORM\Entity]
 class Message
 {
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
     private $id;
 
-        #[ORM\ManyToOne(targetEntity: Chat::class, inversedBy: "messages")]
+    #[ORM\ManyToOne(targetEntity: Chat::class, inversedBy: "messages")]
     #[ORM\JoinColumn(name: 'chat_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private Chat $chat_id;
 
-        #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "messages")]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "messages")]
     #[ORM\JoinColumn(name: 'posted_by', referencedColumnName: 'id_user', onDelete: 'CASCADE')]
     private User $posted_by;
 
@@ -91,5 +91,21 @@ class Message
     public function setPost_time($value)
     {
         $this->post_time = $value;
+    }
+
+    public function getAuthorForIndexing(): string
+    {
+        return $this->posted_by ? $this->posted_by->getNomUser() : '';
+    }
+
+    /**
+     * Returns the community ID for indexing
+     *
+     * @return int|null
+     * @Groups({"search"})
+     */
+    public function getCommunityForIndexing(): ?int
+    {
+        return $this->chat_id ? $this->chat_id->getCommunaute_id()->getId() : null;
     }
 }
