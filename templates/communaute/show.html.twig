@@ -5,36 +5,31 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        /* Dark Modern Banner and Countdown Styling */
+        /* Existing styles unchanged */
         .community-banner {
             background-color: #13071d;
             color: #ffffff;
             padding: 2rem 0;
             margin-bottom: 2rem;
         }
-        
         .welcome-title {
             color: #e9c7ff;
             font-weight: 400;
             margin-bottom: 0.5rem;
             font-size: 1.8rem;
         }
-        
         .hackathon-title {
             color: #a388c5;
             font-weight: 300;
             margin-bottom: 1rem;
             font-size: 1.4rem;
         }
-        
-        /* New Countdown Styling */
         .countdown-title {
             color: #a388c5;
             font-weight: 600;
             font-size: 1.2rem;
             margin-bottom: 1rem;
         }
-        
         .countdown-status {
             display: inline-block;
             font-size: 0.9rem;
@@ -43,40 +38,32 @@
             font-weight: 500;
             margin-bottom: 1rem;
         }
-        
         .status-active {
             background-color: rgba(16, 142, 233, 0.2);
             color: #40a9ff;
         }
-        
         .status-ending {
             background-color: rgba(250, 173, 20, 0.2);
             color: #faad14;
         }
-        
         .status-ended {
             background-color: rgba(245, 34, 45, 0.2);
             color: #ff4d4f;
         }
-        
         .date-info {
             margin-bottom: 1.5rem;
         }
-        
         .date-label {
             color: #a388c5;
             font-size: 0.85rem;
             display: block;
         }
-        
         .date-value {
             color: #e9c7ff;
             font-size: 1rem;
             display: block;
             margin-bottom: 0.5rem;
         }
-        
-        /* Countdown Grid */
         .countdown-grid {
             display: grid;
             grid-auto-flow: column;
@@ -85,7 +72,6 @@
             text-align: center;
             margin-bottom: 1.5rem;
         }
-        
         .countdown-box {
             display: flex;
             flex-direction: column;
@@ -97,7 +83,6 @@
             min-width: 90px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
         .countdown-value {
             font-family: monospace;
             font-size: 2.8rem;
@@ -108,18 +93,14 @@
             text-align: center;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
-        
         .time-critical .countdown-value {
             color: #ff4d4f;
         }
-        
         .countdown-label {
             font-size: 0.85rem;
             color: #a388c5;
             margin-top: 0.5rem;
         }
-        
-        /* Countdown Progress */
         .countdown-progress {
             height: 4px;
             border-radius: 2px;
@@ -127,31 +108,14 @@
             background-color: rgba(255, 255, 255, 0.1);
             margin-top: 1rem;
         }
-        
         .countdown-progress-bar {
             height: 100%;
             background-color: #40a9ff;
             transition: width 0.6s ease;
         }
-        
         .time-critical .countdown-progress-bar {
             background-color: #ff4d4f;
         }
-        
-        /* Countdown Number Animation */
-        .countdown-progress-bar::before {
-            content: attr(data-progress);
-            display: block;
-            width: 100%;
-            height: 100%;
-            background-color: #40a9ff;
-            transition: width 0.6s ease;
-        }
-        
-        .time-critical .countdown-progress-bar::before {
-            background-color: #ff4d4f;
-        }
-        
         .submission-alert {
             background-color: rgba(245, 34, 45, 0.15);
             color: #ff4d4f;
@@ -163,32 +127,25 @@
             align-items: center;
             gap: 1rem;
         }
-        
         .submission-alert i {
             font-size: 1.5rem;
         }
-        
         .submission-alert-content {
             flex: 1;
         }
-        
         .submission-alert-title {
             font-weight: 600;
             margin-bottom: 0.25rem;
             font-size: 1.1rem;
         }
-        
         .submission-alert .btn-danger {
             background-color: #ff4d4f;
             border-color: #ff4d4f;
         }
-        
         .submission-alert .btn-danger:hover {
             background-color: #ff7875;
             border-color: #ff7875;
         }
-
-        /* Rest of existing styles below */
         .message-content {
             max-width: 75%;
             display: inline-block;
@@ -250,7 +207,6 @@
             bottom: 20px;
             z-index: 1001;
         }
-        /* New styling for messages */
         .message {
             margin-bottom: 15px;
             max-width: 75%;
@@ -261,6 +217,8 @@
             color: black;
             border-radius: 15px 15px 15px 0;
             padding: 10px 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-right: 3px solid #d9d9d9;
         }
         .message-own .text-muted {
             color: rgba(0, 0, 0, 0.6) !important;
@@ -275,6 +233,47 @@
         .message-other .text-muted {
             color: rgba(255, 255, 255, 0.7) !important;
         }
+        .message-bot {
+            margin-left: auto;
+            background-color: #0a5c36;
+            color: white;
+            border-radius: 15px 15px 0 15px;
+            padding: 15px 20px;
+            max-width: 85%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #28a745;
+        }
+        .message-bot .text-muted {
+            color: rgba(255, 255, 255, 0.7) !important;
+            font-size: 0.8rem;
+            margin-top: 8px;
+            display: block;
+            text-align: right;
+        }
+        .bot-response-content {
+            line-height: 1.5;
+            font-size: 1rem;
+        }
+        .bot-response-content strong {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+            color: #e9ff9e;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 3px;
+        }
+        .bot-response-content em {
+            color: #ffeb99;
+            font-style: italic;
+        }
+        .bot-response-content code {
+            background-color: rgba(0,0,0,0.2);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+            color: #f8f9fa;
+        }
         .option-input-group {
             display: flex;
             align-items: center;
@@ -284,7 +283,6 @@
             color: #dc3545;
             cursor: pointer;
         }
-        /* Enhanced Search Styles */
         .search-container {
             background-color: #f8f9fa;
             border-radius: 0.75rem;
@@ -448,7 +446,6 @@
             transform: translateY(-2px);
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        /* Spinner Animation */
         .search-loading {
             animation: fadeIn 0.5s ease;
         }
@@ -478,15 +475,13 @@
             background-color: #3498db;
         }
         @keyframes sk-bouncedelay {
-            0%, 80%, 100% { 
+            0%, 80%, 100% {strategies { 
                 transform: scale(0);
             } 
             40% { 
                 transform: scale(1.0);
             }
         }
-
-        /* Countdown Styles */
         .countdown-container {
             display: flex;
             justify-content: center;
@@ -530,15 +525,12 @@
             font-size: 0.875rem;
             margin-top: 0.5rem;
         }
-
-        /* Add specific countdown styles */
         #hackathon-countdown {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 8px;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
         }
-
         #hackathon-countdown .countdown-box {
             text-align: center;
             background: rgba(0, 0, 0, 0.2);
@@ -546,7 +538,6 @@
             border-radius: 6px;
             margin: 0.5rem;
         }
-
         #hackathon-countdown .h2 {
             color: #fff;
             font-size: 2rem;
@@ -554,26 +545,22 @@
             margin: 0;
             line-height: 1;
         }
-
         #hackathon-countdown small {
             color: rgba(255, 255, 255, 0.7);
             font-size: 0.875rem;
         }
-
-        /* Warning state styles */
         #hackathon-countdown.warning {
-            background: rgba(220, 53, 69, 0.2);
+            background: rgba(220
+
+, 53, 69, 0.2);
             border: 1px solid rgba(220, 53, 69, 0.3);
         }
-
         #hackathon-countdown.warning .countdown-box {
             background: rgba(220, 53, 69, 0.3);
         }
-
         #hackathon-countdown.warning .h2 {
             color: #ff6b6b;
         }
-
         .submission-reminder {
             display: none;
             background: #dc3545;
@@ -584,21 +571,17 @@
             text-align: center;
             animation: pulse 2s infinite;
         }
-
         .submission-reminder.show {
             display: block;
         }
-
         .submission-reminder a {
             color: white;
             text-decoration: underline;
             font-weight: bold;
         }
-
         .submission-reminder a:hover {
             color: rgba(255, 255, 255, 0.9);
         }
-
         @keyframes pulse {
             0% {
                 transform: scale(1);
@@ -609,6 +592,216 @@
             100% {
                 transform: scale(1);
             }
+        }
+        
+        /* MORE SPECIFIC CHAT STYLING - WILL OVERRIDE ANY PREVIOUS STYLES */
+        #messages-container {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 20px !important;
+            padding: 20px !important;
+            max-height: 600px !important;
+            overflow-y: auto !important;
+            background-color: #f5f7fb !important;
+            border-radius: 8px !important;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05) !important;
+        }
+        
+        #messages-container .message {
+            display: flex !important;
+            max-width: 80% !important;
+            gap: 12px !important;
+            position: relative !important;
+            margin-bottom: 0 !important;
+        }
+        
+        #messages-container .message-own {
+            margin-left: auto !important;
+            margin-right: 0 !important;
+            flex-direction: row-reverse !important;
+        }
+        
+        #messages-container .message-other, 
+        #messages-container .message-bot {
+            margin-right: auto !important;
+            margin-left: 0 !important;
+        }
+        
+        #messages-container .avatar-container {
+            width: 40px !important;
+            height: 40px !important;
+            border-radius: 50% !important;
+            overflow: hidden !important;
+            flex-shrink: 0 !important;
+            align-self: flex-end !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2) !important;
+            border: 3px solid #fff !important;
+        }
+        
+        #messages-container .message-own .avatar-container {
+            border-color: #0d6efd !important;
+        }
+        
+        #messages-container .message-bot .avatar-container {
+            border-color: #0a5c36 !important;
+        }
+        
+        #messages-container .avatar-container img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+        }
+        
+        #messages-container .avatar-placeholder {
+            width: 100% !important;
+            height: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background-color: #6c757d !important;
+            color: white !important;
+            font-weight: bold !important;
+            font-size: 16px !important;
+        }
+        
+        #messages-container .message-own .avatar-placeholder {
+            background-color: #0d6efd !important;
+        }
+        
+        #messages-container .bot-avatar {
+            background: linear-gradient(135deg, #0a5c36 0%, #28a745 100%) !important;
+        }
+        
+        #messages-container .message-wrapper {
+            display: flex !important;
+            flex-direction: column !important;
+            max-width: calc(100% - 60px) !important;
+        }
+        
+        #messages-container .message-content {
+            padding: 12px 16px !important;
+            border-radius: 18px !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+            position: relative !important;
+            word-break: break-word !important;
+        }
+        
+        #messages-container .message-own .message-content {
+            background-color: #0d6efd !important;
+            color: white !important;
+            border-top-right-radius: 4px !important;
+            margin-right: 8px !important;
+        }
+        
+        #messages-container .message-other .message-content {
+            background-color: white !important;
+            color: #212529 !important;
+            border-top-left-radius: 4px !important;
+            margin-left: 8px !important;
+        }
+        
+        #messages-container .message-bot .message-content {
+            background-color: #0a5c36 !important;
+            color: white !important;
+            border-top-left-radius: 4px !important;
+            margin-left: 8px !important;
+        }
+        
+        /* Other existing styles without the !important */
+        .message-meta {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 5px;
+        }
+        
+        .message-own .message-meta {
+            align-items: flex-end;
+        }
+        
+        .message-sender {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+        
+        .message-own .message-sender {
+            display: none;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.5);
+            margin-top: 4px;
+        }
+        
+        .message-own .message-time {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .message-bot .message-time {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* Bot response specific styling */
+        .bot-response-content {
+            line-height: 1.5;
+            font-size: 1rem;
+        }
+        
+        .bot-response-content strong {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+            color: #e9ff9e;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 3px;
+        }
+        
+        .bot-response-content em {
+            color: #ffeb99;
+            font-style: italic;
+        }
+        
+        .bot-response-content code {
+            background-color: rgba(0,0,0,0.2);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+            color: #f8f9fa;
+        }
+        
+        .bot-response-content br {
+            display: block;
+            content: "";
+            margin-top: 5px;
+        }
+        
+        /* Additional styles for the chat input area */
+        #message-form {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 16px;
+        }
+        
+        #message-form textarea {
+            resize: none;
+            border-radius: 20px;
+            padding: 12px 15px;
+            border: 1px solid rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        #message-form textarea:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        
+        #message-form button {
+            border-radius: 50px;
+            padding: 8px 20px;
         }
     </style>
 {% endblock %}
@@ -715,19 +908,19 @@
                         </div>
 
                         <form id="message-form" class="mt-3" style="display: none;">
-                            <input type="hidden" name="_token" value="{{ csrf_token('message_token') }}">
-                            <div class="form-group">
-                                <textarea class="form-control" name="contenu" rows="2" placeholder="Type your message..." required></textarea>
-                            </div>
-                            <div class="form-group mt-2">
-                                <select class="form-control" name="type">
-                                    <option value="QUESTION">Question</option>
-                                    <option value="REPONSE">Response</option>
-                                    <option value="SUGGESTION">Suggestion</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-primary mt-2">Send Message</button>
-                        </form>
+    <input type="hidden" name="_token" value="{{ csrf_token('message_token') }}">
+    <div class="form-group">
+        <textarea class="form-control" name="contenu" rows="2" placeholder="Type your message..." required></textarea>
+    </div>
+    <div class="form-group mt-2">
+        <select class="form-control" name="type">
+            <option value="QUESTION">Question</option>
+            <option value="REPONSE">Response</option>
+            <option value="SUGGESTION">Suggestion</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Send Message</button>
+</form>
                     </div>
                 </div>
             </div>
@@ -794,99 +987,508 @@
         </div>
     </div>
 
-    <script>
-        // Simplified debug log function that only logs to console
-        function debugLog(message, data = null) {
-            if (data) {
-                console.log(message, data);
+   <!-- Only showing the updated JavaScript section -->
+<script>
+    // Debug log function
+    function debugLog(message, data = null) {
+        if (data) {
+            console.log(message, data);
+        } else {
+            console.log(message);
+        }
+    }
+
+    // Countdown initialization
+    document.addEventListener('DOMContentLoaded', function() {
+        const elements = {
+            days: document.getElementById('days'),
+            hours: document.getElementById('hours'),
+            minutes: document.getElementById('minutes'),
+            seconds: document.getElementById('seconds')
+        };
+
+        const countdownContainer = document.getElementById('hackathon-countdown');
+        const submissionReminder = document.getElementById('submission-reminder');
+        const endDate = new Date('{{ communaute.id_hackathon.date_fin|date('c') }}').getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = endDate - now;
+
+            if (distance < 0) {
+                Object.values(elements).forEach(el => {
+                    if (el) el.textContent = '00';
+                });
+                countdownContainer.classList.add('warning');
+                submissionReminder.classList.add('show');
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            if (elements.days) elements.days.textContent = String(days).padStart(2, '0');
+            if (elements.hours) elements.hours.textContent = String(hours).padStart(2, '0');
+            if (elements.minutes) elements.minutes.textContent = String(minutes).padStart(2, '0');
+            if (elements.seconds) elements.seconds.textContent = String(seconds).padStart(2, '0');
+
+            if (days === 0) {
+                countdownContainer.classList.add('warning');
+                submissionReminder.classList.add('show');
             } else {
-                console.log(message);
+                countdownContainer.classList.remove('warning');
+                submissionReminder.classList.remove('show');
             }
         }
 
-        // Countdown initialization
-        document.addEventListener('DOMContentLoaded', function() {
-            const elements = {
-                days: document.getElementById('days'),
-                hours: document.getElementById('hours'),
-                minutes: document.getElementById('minutes'),
-                seconds: document.getElementById('seconds')
-            };
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    });
 
-            const countdownContainer = document.getElementById('hackathon-countdown');
-            const submissionReminder = document.getElementById('submission-reminder');
-            const endDate = new Date('{{ communaute.id_hackathon.date_fin|date('c') }}').getTime();
+    // Chat functionality
+    let currentChatId = null;
+    let currentUserId = {{ app.user ? app.user.id : 'null' }};
+    let communauteId = {{ communaute.id }};
 
-            function updateCountdown() {
-                const now = new Date().getTime();
-                const distance = endDate - now;
+    document.getElementById('toggle-polls').addEventListener('click', function() {
+        document.getElementById('polls-sidebar').classList.toggle('show');
+    });
 
-                if (distance < 0) {
-                    Object.values(elements).forEach(el => {
-                        if (el) el.textContent = '00';
+    document.querySelectorAll('.chat-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const chatId = this.dataset.chatId;
+            const chatName = this.dataset.chatName;
+            debugLog('Chat selected:', { chatId, chatName });
+            currentChatId = chatId;
+
+            document.getElementById('current-chat-name').textContent = chatName;
+            document.getElementById('message-form').style.display = 'block';
+            document.getElementById('create-poll-btn').style.display = 'block';
+
+            loadChatContent(chatId);
+        });
+    });
+
+    function loadChatContent(chatId) {
+        debugLog('Loading content for chat:', chatId);
+
+        const messagesContainer = document.getElementById('messages-container');
+        messagesContainer.innerHTML = '<p class="text-center text-muted">Loading messages...</p>';
+
+        fetch(`/chat/${chatId}/messages`)
+            .then(response => {
+                debugLog('Messages fetch response status:', response.status);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                debugLog('Messages data:', data);
+                messagesContainer.innerHTML = '';
+                if (data.messages && data.messages.length > 0) {
+                    data.messages.forEach(message => {
+                        const isOwnMessage = message.posted_by && message.posted_by.id_user === currentUserId;
+                        const isBotMessage = message.posted_by && message.posted_by.email_user === 'bot@hackify.com';
+                        const messageClass = isBotMessage ? 'message-bot' : (isOwnMessage ? 'message-own' : 'message-other');
+                        
+                        // Get sender name and initials for avatar
+                        let senderName = 'Unknown';
+                        let initials = 'U';
+                        let photoUrl = null;
+                        
+                        if (message.posted_by) {
+                            if (isBotMessage) {
+                                senderName = 'Bot';
+                                initials = 'B';
+                            } else {
+                                senderName = `${message.posted_by.prenom} ${message.posted_by.nom}`;
+                                initials = (message.posted_by.prenom.charAt(0) + message.posted_by.nom.charAt(0)).toUpperCase();
+                                // Get photo URL if available
+                                if (message.posted_by.photoUser) {
+                                    photoUrl = `/uploads/profile_pictures/${message.posted_by.photoUser}`;
+                                }
+                            }
+                        }
+
+                        const messageElement = document.createElement('div');
+                        messageElement.className = `message ${messageClass}`;
+                        
+                        // Generate avatar HTML
+                        let avatarHTML = '';
+                        if (photoUrl) {
+                            // Use actual profile photo
+                            avatarHTML = `
+                                <div class="avatar-container" style="width:40px; height:40px; border-radius:50%; overflow:hidden;">
+                                    <img src="${photoUrl}" alt="${senderName}" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='<div class=\'avatar-placeholder\' style=\'width:100%; height:100%; display:flex; align-items:center; justify-content:center; background-color:#6c757d; color:white; font-weight:bold; font-size:16px;\'>${initials}</div>';" />
+                                </div>
+                            `;
+                        } else {
+                            // Use initials placeholder
+                            avatarHTML = `
+                                <div class="avatar-container" style="width:40px; height:40px; border-radius:50%; overflow:hidden;">
+                                    <div class="avatar-placeholder ${isBotMessage ? 'bot-avatar' : ''}" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background-color:${isBotMessage ? '#0a5c36' : '#6c757d'}; color:white; font-weight:bold; font-size:16px;">
+                                        ${initials}
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
+                        // Generate message content
+                        let contentHTML = '';
+                        if (isBotMessage) {
+                            // Format bot content with proper styling
+                            const formattedResponse = formatBotResponse(message.contenu);
+                            contentHTML = `
+                                <div class="message-wrapper">
+                                    <div class="message-meta">
+                                        <div class="message-sender">${senderName}</div>
+                                    </div>
+                                    <div class="message-content">
+                                        <div class="bot-response-content">${formattedResponse}</div>
+                                        <div class="message-time">${message.post_time}</div>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            contentHTML = `
+                                <div class="message-wrapper">
+                                    <div class="message-meta">
+                                        <div class="message-sender">${senderName}</div>
+                                    </div>
+                                    <div class="message-content">
+                                        <div>${message.contenu}</div>
+                                        <div class="message-time">${message.post_time}</div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
+                        // Set HTML content with appropriate order based on message type
+                        messageElement.innerHTML = isOwnMessage 
+                            ? `${contentHTML}${avatarHTML}` 
+                            : `${avatarHTML}${contentHTML}`;
+                            
+                        messagesContainer.appendChild(messageElement);
                     });
-                    countdownContainer.classList.add('warning');
-                    submissionReminder.classList.add('show');
-                    return;
-                }
-
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                // Update elements if they exist
-                if (elements.days) elements.days.textContent = String(days).padStart(2, '0');
-                if (elements.hours) elements.hours.textContent = String(hours).padStart(2, '0');
-                if (elements.minutes) elements.minutes.textContent = String(minutes).padStart(2, '0');
-                if (elements.seconds) elements.seconds.textContent = String(seconds).padStart(2, '0');
-
-                // Check if less than 24 hours remaining
-                if (days === 0) {
-                    countdownContainer.classList.add('warning');
-                    submissionReminder.classList.add('show');
                 } else {
-                    countdownContainer.classList.remove('warning');
-                    submissionReminder.classList.remove('show');
+                    messagesContainer.innerHTML = '<p class="text-center text-muted">No messages yet.</p>';
                 }
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            })
+            .catch(error => {
+                debugLog('Error loading messages:', error);
+                messagesContainer.innerHTML = '<p class="text-center text-danger">Error loading messages: ' + error.message + '</p>';
+            });
+
+        fetch(`/chat/${chatId}/polls`)
+            .then(response => {
+                debugLog('Polls fetch response status:', response.status);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                debugLog('Polls data:', data);
+                const pollsContainer = document.getElementById('polls-container');
+                pollsContainer.innerHTML = '';
+                if (data.polls && data.polls.length > 0) {
+                    data.polls.forEach(poll => {
+                        const pollElement = document.createElement('div');
+                        pollElement.className = 'poll-card mb-3';
+                        let optionsHtml = '';
+                        poll.poll_option.forEach(option => {
+                            const percentage = poll.is_closed ? ((option.vote_count / Math.max(1, poll.poll_option.reduce((sum, opt) => sum + opt.vote_count, 0))) * 100).toFixed(1) : 0;
+                            optionsHtml += `
+                                <div class="mb-2">
+                                    <p class="mb-1">${option.text}</p>
+                                    <div class="progress">
+                                        <div class="progress-bar" style="width: ${percentage}%">${percentage}%</div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        pollElement.innerHTML = `
+                            <div class="card-body">
+                                <h6>${poll.question}</h6>
+                                ${optionsHtml}
+                                <span class="badge ${poll.is_closed ? 'badge-closed' : 'badge-active'}">${poll.is_closed ? 'Closed' : 'Active'}</span>
+                            </div>
+                        `;
+                        pollsContainer.appendChild(pollElement);
+                    });
+                } else {
+                    pollsContainer.innerHTML = '<p class="text-center text-muted">No polls available.</p>';
+                }
+            })
+            .catch(error => {
+                debugLog('Error loading polls:', error);
+                pollsContainer.innerHTML = '<p class="text-center text-danger">Error loading polls: ' + error.message + '</p>';
+            });
+    }
+
+    document.getElementById('message-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (!currentChatId) {
+            alert('Please select a chat first.');
+            return;
+        }
+
+        const formData = new FormData(this);
+        const chatType = document.querySelector(`.chat-link[data-chat-id="${currentChatId}"]`).dataset.chatType;
+        debugLog('Submitting message for chat:', { chatId: currentChatId, chatType });
+
+        // Choose the correct endpoint based on chat type
+        const endpoint = chatType === 'BOT_SUPPORT' 
+            ? `/chat/${currentChatId}/message/gemini`
+            : `/chat/${currentChatId}/message/new`;
+
+        fetch(endpoint, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            debugLog('Message submission response status:', response.status);
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            debugLog('Message submission data:', data);
+            if (data.error) {
+                alert(data.error);
+                return;
             }
 
-            // Initial update
-            updateCountdown();
+            this.querySelector('textarea[name="contenu"]').value = '';
 
-            // Update every second
-            setInterval(updateCountdown, 1000);
-        });
+            const messagesContainer = document.getElementById('messages-container');
+            
+            // Add user message with avatar
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message message-own';
+            
+            // Get user info for avatar
+            const userFirstName = '{{ app.user ? app.user.prenomUser : "U" }}';
+            const userLastName = '{{ app.user ? app.user.nomUser : "" }}';
+            const userInitials = (userFirstName.charAt(0) + userLastName.charAt(0)).toUpperCase();
+            const userPhotoUrl = '{{ app.user and app.user.photoUser ? "/uploads/profile_pictures/" ~ app.user.photoUser : "" }}';
+            
+            // Generate avatar HTML
+            let userAvatarHTML = '';
+            if (userPhotoUrl && userPhotoUrl !== '') {
+                // Use actual profile photo
+                userAvatarHTML = `
+                    <div class="avatar-container" style="width:40px; height:40px; border-radius:50%; overflow:hidden;">
+                        <img src="${userPhotoUrl}" alt="${userFirstName}" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='<div class=\'avatar-placeholder\' style=\'width:100%; height:100%; display:flex; align-items:center; justify-content:center; background-color:#0d6efd; color:white; font-weight:bold; font-size:16px;\'>${userInitials}</div>';" />
+                    </div>
+                `;
+            } else {
+                // Use initials placeholder
+                userAvatarHTML = `
+                    <div class="avatar-container" style="width:40px; height:40px; border-radius:50%; overflow:hidden;">
+                        <div class="avatar-placeholder" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background-color:#0d6efd; color:white; font-weight:bold; font-size:16px;">
+                            ${userInitials}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            const userContentHTML = `
+                <div class="message-wrapper">
+                    <div class="message-content">
+                        <div>${formData.get('contenu')}</div>
+                        <div class="message-time">${new Date().toISOString().slice(0, 19).replace('T', ' ')}</div>
+                    </div>
+                </div>
+            `;
+            
+            userMessage.innerHTML = `${userContentHTML}${userAvatarHTML}`;
+            messagesContainer.appendChild(userMessage);
 
-        // Chat functionality
-        let currentChatId = null;
-        let currentUserId = {{ app.user ? app.user.id : 'null' }};
-        let communauteId = {{ communaute.id }};
-
-        // Toggle polls sidebar
-        document.getElementById('toggle-polls').addEventListener('click', function() {
-            document.getElementById('polls-sidebar').classList.toggle('show');
-        });
-
-        // Handle chat selection
-        document.querySelectorAll('.chat-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const chatId = this.dataset.chatId;
-                const chatName = this.dataset.chatName;
-                currentChatId = chatId;
+            // Add bot response if applicable
+            if (chatType === 'BOT_SUPPORT' && data.bot_response) {
+                debugLog('Adding bot response:', data.bot_response);
                 
-                // Update UI
-                document.getElementById('current-chat-name').textContent = chatName;
-                document.getElementById('message-form').style.display = 'block';
-                document.getElementById('create-poll-btn').style.display = 'block';
+                // Format the bot response with proper styling
+                const formattedResponse = formatBotResponse(data.bot_response);
                 
-                // Load messages and polls
-                loadChatContent(chatId);
+                const botMessage = document.createElement('div');
+                botMessage.className = 'message message-bot';
+                
+                // Generate bot avatar
+                const botAvatarHTML = `
+                    <div class="avatar-container" style="width:40px; height:40px; border-radius:50%; overflow:hidden;">
+                        <div class="avatar-placeholder bot-avatar" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background-color:#0a5c36; color:white; font-weight:bold; font-size:16px;">
+                            B
+                        </div>
+                    </div>
+                `;
+                
+                // Generate bot content HTML with proper formatting
+                const botContentHTML = `
+                    <div class="message-wrapper">
+                        <div class="message-meta">
+                            <div class="message-sender">Bot</div>
+                        </div>
+                        <div class="message-content">
+                            <div class="bot-response-content">${formattedResponse}</div>
+                            <div class="message-time">${new Date().toISOString().slice(0, 19).replace('T', ' ')}</div>
+                        </div>
+                    </div>
+                `;
+                
+                botMessage.innerHTML = `${botAvatarHTML}${botContentHTML}`;
+                messagesContainer.appendChild(botMessage);
+            }
+
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        })
+        .catch(error => {
+            debugLog('Error sending message:', error);
+            alert('Error sending message: ' + error.message);
+        });
+    });
+
+    function addOption() {
+        const pollOptions = document.getElementById('pollOptions');
+        const optionCount = pollOptions.children.length + 1;
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'mb-2 option-input-group';
+        optionDiv.innerHTML = `
+            <div class="flex-grow-1">
+                <label class="form-label">Option ${optionCount}</label>
+                <input type="text" class="form-control" name="options[]" required>
+            </div>
+            <i class="fas fa-trash remove-option-btn" onclick="this.parentElement.remove()"></i>
+        `;
+        pollOptions.appendChild(optionDiv);
+    }
+
+    document.getElementById('create-poll-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (!currentChatId) {
+            alert('Please select a chat first.');
+            return;
+        }
+
+        const formData = new FormData(this);
+        fetch(`/chat/${currentChatId}/poll/new`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            debugLog('Poll submission response status:', response.status);
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            debugLog('Poll submission data:', data);
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+            bootstrap.Modal.getInstance(document.getElementById('createPollModal')).hide();
+            loadChatContent(currentChatId);
+        })
+        .catch(error => {
+            debugLog('Error creating poll:', error);
+            alert('Error creating poll: ' + error.message);
+        });
+    });
+
+    document.getElementById('message-search-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const query = document.getElementById('search-query').value.trim();
+        if (!query) return;
+
+        const resultsContainer = document.getElementById('search-results');
+        resultsContainer.innerHTML = '<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>';
+        resultsContainer.classList.add('show');
+
+        fetch(`/community/${communauteId}/search-ajax?query=${encodeURIComponent(query)}`)
+            .then(response => {
+                debugLog('Search response status:', response.status);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                debugLog('Search data:', data);
+                resultsContainer.innerHTML = '';
+                if (data.success && data.results.length > 0) {
+                    data.results.forEach(result => {
+                        const resultElement = document.createElement('div');
+                        resultElement.className = 'message-card';
+                        resultElement.innerHTML = `
+                            <div class="message-meta">
+                                <span class="message-author">${result.posted_by ? `${result.posted_by.prenomUser} ${result.posted_by.nomUser}` : 'Bot'}</span>
+                                <span class="message-date">${result.post_time}</span>
+                            </div>
+                            <span class="message-chat">${result.chat_id.nom}</span>
+                            <p class="message-content">${result.contenu.replace(new RegExp(query, 'gi'), match => `<span class="highlight">${match}</span>`)}</p>
+                            <a href="#" class="btn btn-sm btn-outline-primary view-message-btn" data-chat-id="${result.chat_id.id}">View in Chat</a>
+                        `;
+                        resultsContainer.appendChild(resultElement);
+                    });
+                } else {
+                    resultsContainer.innerHTML = '<p class="text-center text-muted">No results found.</p>';
+                }
+            })
+            .catch(error => {
+                debugLog('Error searching messages:', error);
+                resultsContainer.innerHTML = '<p class="text-center text-danger">Error loading search results: ' + error.message + '</p>';
             });
-        });
+    });
 
-        // Rest of the existing JavaScript for chat, polls, and search functionality
-        // ... existing code ...
-    </script>
-{% endblock %} 
+    document.getElementById('search-results').addEventListener('click', function(e) {
+        if (e.target.classList.contains('view-message-btn')) {
+            e.preventDefault();
+            const chatId = e.target.dataset.chatId;
+            debugLog('View message in chat:', chatId);
+            const chatLink = document.querySelector(`.chat-link[data-chat-id="${chatId}"]`);
+            if (chatLink) {
+                chatLink.click();
+            } else {
+                debugLog('Chat link not found for ID:', chatId);
+            }
+        }
+    });
+
+    // Add this function to format bot responses
+    function formatBotResponse(text) {
+        if (!text) return '';
+        
+        // Replace line breaks with HTML breaks
+        let formatted = text.replace(/\n/g, '<br>');
+        
+        // Format titles (lines with * or # at beginning)
+        formatted = formatted.replace(/^\s*(?:[*#]+)\s*(.*?)$/gm, '<strong>$1</strong>');
+        
+        // Format bullet points
+        formatted = formatted.replace(/^\s*[-•]\s*(.*?)$/gm, '<br>• $1');
+        
+        // Format numbered lists
+        formatted = formatted.replace(/^\s*(\d+)[\.)]\s*(.*?)$/gm, '<br>$1. $2');
+        
+        // Format bold text with ** or __
+        formatted = formatted.replace(/\*\*(.*?)\*\*|__(.*?)__/g, '<strong>$1$2</strong>');
+        
+        // Format italic text with * or _
+        formatted = formatted.replace(/(?<!\*)\*(?!\*)(.*?)(?<!\*)\*(?!\*)|_(.*?)_/g, '<em>$1$2</em>');
+        
+        // Format code blocks
+        formatted = formatted.replace(/`(.*?)`/g, '<code>$1</code>');
+        
+        return formatted;
+    }
+</script>
+{% endblock %}

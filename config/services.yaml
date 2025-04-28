@@ -5,7 +5,7 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     profile_pictures_directory: '%kernel.project_dir%/public/uploads/profile_pictures'
-
+    gemini_api_key: 'AIzaSyAdtU0BkTPvbpbKhK1J6AGNaSwaywhByZc'
 services:
     Symfony\Component\Finder\Finder:
         class: Symfony\Component\Finder\Finder
@@ -22,6 +22,10 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+
+    App\Service\GeminiChatService:
+        arguments:
+            $apiKey: '%gemini_api_key%' 
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

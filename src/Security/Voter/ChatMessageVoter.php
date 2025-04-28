@@ -83,8 +83,8 @@ class ChatMessageVoter extends Voter
                 return true;
                 
             case ChatType::BOT_SUPPORT->value:
-                // Only admins and special bot accounts can post in bot support chats
-                return in_array('ROLE_ADMIN', $roles) || in_array('ROLE_BOT', $roles);
+                // All users can post in bot support chats
+                return true;
                 
             default:
                 // For any undefined chat type, deny by default

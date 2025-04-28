@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controller;
+
 use App\Entity\Chat;
 use App\Entity\Message;
 use App\Entity\Poll;
@@ -11,12 +12,13 @@ use App\Entity\Communaute;
 use App\Form\MessageSearchType;
 use App\Repository\ChatRepository;
 use App\Security\Voter\ChatMessageVoter;
+use App\Service\GeminiChatService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
 
 #[Route('/chat')]
 class ChatController extends AbstractController
@@ -28,7 +30,7 @@ class ChatController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
-
+    // --- Chat Management ---
     #[Route('/', name: 'app_chat_index', methods: ['GET'])]
     public function index(ChatRepository $chatRepository): Response
     {
@@ -47,178 +49,177 @@ class ChatController extends AbstractController
         ]);
     }
 
+    // --- Message Handling ---
     #[Route('/{id}/message/new', name: 'app_chat_message_new', methods: ['POST'])]
-    public function newMessage(Request $request, Chat $chat, EntityManagerInterface $entityManager): Response
+    public function newMessage(Request $request, Chat $chat): JsonResponse
     {
-        // Check if user is authenticated
         $user = $this->getUser();
         if (!$user) {
             return $this->json(['error' => 'You must be logged in to send messages'], 401);
         }
 
-        // Check if the user has permission to post in this chat type
-        if (!$this->isGranted(ChatMessageVoter::POST_MESSAGE, $chat)) {
+        if ($chat->getType() !== 'BOT_SUPPORT' && !$this->isGranted(ChatMessageVoter::POST_MESSAGE, $chat)) {
             return $this->json(['error' => 'You do not have permission to post in this chat type'], 403);
         }
 
+        $content = $request->request->get('contenu');
+        if (!$content) {
+            return $this->json(['error' => 'Message content is required'], 400);
+        }
+
+        $message = new Message();
+        $message->setChat_id($chat);
+        $message->setContenu($content);
+        $message->setType($request->request->get('type', 'QUESTION'));
+        $message->setPost_time(new \DateTime());
+        $message->setPosted_by($user);
+
+        $this->entityManager->persist($message);
+        $this->entityManager->flush();
+
+        return $this->json([
+            'success' => true,
+            'message' => 'Message sent successfully'
+        ]);
+    }
+
+    #[Route('/{id}/message/gemini', name: 'app_chat_message_gemini', methods: ['POST'])]
+    public function newGeminiMessage(Request $request, Chat $chat, GeminiChatService $geminiChatService): JsonResponse
+    {
         try {
+            $user = $this->getUser();
+            if (!$user) {
+                return $this->json(['error' => 'You must be logged in to send messages'], 401);
+            }
+
+            if ($chat->getType() !== 'BOT_SUPPORT') {
+                return $this->json(['error' => 'Gemini messages are only allowed in BOT_SUPPORT chats'], 403);
+            }
+
+            $content = $request->request->get('contenu');
+            if (!$content) {
+                return $this->json(['error' => 'Message content is required'], 400);
+            }
+
+            // Save user message
             $message = new Message();
             $message->setChat_id($chat);
-            $message->setContenu($request->request->get('contenu'));
+            $message->setContenu($content);
             $message->setType($request->request->get('type', 'QUESTION'));
             $message->setPost_time(new \DateTime());
             $message->setPosted_by($user);
-            
-            // Don't set ID manually, let it be auto-incremented
-            // If your database doesn't support auto-increment, uncomment the following:
-            $nextId = $entityManager->createQuery('SELECT MAX(m.id) FROM App\Entity\Message m')->getSingleScalarResult();
-            $message->setId(($nextId ?? 0) + 1);
+            $this->entityManager->persist($message);
+            $this->entityManager->flush(); // Flush immediately to ensure message is saved
 
-            $entityManager->persist($message);
-            $entityManager->flush();
+            // Log path correction
+            $logPath = __DIR__ . '/../../var/log/gemini_debug.log';
+            file_put_contents($logPath, "Processing message ID: {$message->getId()} in chat ID: {$chat->getId()}\n", FILE_APPEND);
 
-            return $this->json(['success' => true, 'message' => 'Message sent successfully']);
-        } catch (\Exception $e) {
-            // Log the error
-            error_log('Error sending message: ' . $e->getMessage());
-            
-            // Return detailed error for debugging
-            return $this->json([
-                'error' => 'Error sending message: ' . $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ], 500);
-        }
-    }
+            // Load previous chat history from database
+            $previousMessages = $this->entityManager->getRepository(Message::class)
+                ->findBy(['chat_id' => $chat], ['post_time' => 'ASC']);
 
-    #[Route('/{id}/poll/new', name: 'app_chat_poll_new', methods: ['POST'])]
-    public function newPoll(Request $request, Chat $chat, EntityManagerInterface $entityManager): Response
-    {
-        // Check if user is authenticated
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->json(['error' => 'You must be logged in to create polls'], 401);
-        }
-
-        try {
-            $poll = new Poll();
-            $poll->setChat_id($chat);
-            $poll->setQuestion($request->request->get('question'));
-            $poll->setIs_closed(false);
-            $poll->setCreated_at(new \DateTime());
-            
-            // Don't set created_by since the column doesn't exist in the database
-            // We'll add it as part of a future migration
-            
-            // If your database doesn't support auto-increment, uncomment the following:
-            $nextId = $entityManager->createQuery('SELECT MAX(p.id) FROM App\Entity\Poll p')->getSingleScalarResult();
-            $poll->setId(($nextId ?? 0) + 1);
-
-            $entityManager->persist($poll);
-            $entityManager->flush();
-
-            // Add poll options
-            $options = $request->request->all('options');
-            foreach ($options as $optionText) {
-                if (!empty(trim($optionText))) {
-                    $option = new PollOption();
-                    $option->setPoll_id($poll);
-                    $option->setText($optionText);
-                    $option->setVote_count(0);
-                    
-                    $entityManager->persist($option);
+            // Convert messages to Gemini format
+            $history = [];
+            foreach ($previousMessages as $prevMessage) {
+                // Skip the message we just saved (it will be added by the sendMessage method)
+                if ($prevMessage->getId() === $message->getId()) {
+                    continue;
                 }
+                
+                $role = ($prevMessage->getPosted_by() && $prevMessage->getPosted_by()->getEmailUser() !== 'bot@hackify.com') 
+                    ? 'user' 
+                    : 'model';
+                
+                $history[] = [
+                    'role' => $role,
+                    'parts' => [['text' => $prevMessage->getContenu()]]
+                ];
             }
-            
-            $entityManager->flush();
 
-            return $this->json(['success' => true, 'message' => 'Poll created successfully']);
-        } catch (\Exception $e) {
-            // Log the error
-            error_log('Error creating poll: ' . $e->getMessage());
-            
-            // Return detailed error for debugging
+            // Set the chat history in Gemini service
+            if (!empty($history)) {
+                file_put_contents($logPath, "Setting history with " . count($history) . " messages\n", FILE_APPEND);
+                $geminiChatService->setHistory($history, $chat->getId());
+            }
+
+            // Get Gemini response
+            try {
+                $botResponse = $geminiChatService->sendMessage($content, $chat->getId());
+                file_put_contents($logPath, "Successfully received bot response\n", FILE_APPEND);
+
+                // Save bot response
+                try {
+                    // Find the bot user - now with a try/catch block
+                    $botUser = null;
+                    try {
+                        $botUser = $this->entityManager->getRepository(User::class)->find(-1);
+                        if ($botUser) {
+                            file_put_contents($logPath, "Found existing bot user ID: -1\n", FILE_APPEND);
+                        }
+                    } catch (\Exception $e) {
+                        file_put_contents($logPath, "Error finding bot user: {$e->getMessage()}\n", FILE_APPEND);
+                    }
+
+                    if (!$botUser) {
+                        file_put_contents($logPath, "Creating new bot user\n", FILE_APPEND);
+                        try {
+                            $botUser = new User();
+                            $botUser->setId(-1);
+                            $botUser->setNomUser('Bot');
+                            $botUser->setPrenomUser('Support');
+                            $botUser->setEmailUser('bot@hackify.com');
+                            $botUser->setMdpUser('botpassword'); 
+                            $botUser->setRoles(['ROLE_BOT']);
+                            $botUser->setTelUser(123456789);
+                            $botUser->setAdresseUser('Bot Address');
+                            $botUser->setStatusUser('Active');
+                            $this->entityManager->persist($botUser);
+                            $this->entityManager->flush();
+                            file_put_contents($logPath, "Bot user created successfully\n", FILE_APPEND);
+                        } catch (\Exception $e) {
+                            file_put_contents($logPath, "Error creating bot user: {$e->getMessage()}\n", FILE_APPEND);
+                            // If we can't create a bot user, we'll set it to null
+                            $botUser = null;
+                        }
+                    }
+
+                    // Create the bot message
+                    $botMessage = new Message();
+                    $botMessage->setChat_id($chat);
+                    $botMessage->setContenu($botResponse);
+                    $botMessage->setType('REPONSE');
+                    $botMessage->setPost_time(new \DateTime());
+                    $botMessage->setPosted_by($botUser); // This might be null if we couldn't create/find a bot user
+                    
+                    $this->entityManager->persist($botMessage);
+                    file_put_contents($logPath, "Bot message created\n", FILE_APPEND);
+                    
+                    $this->entityManager->flush();
+                    file_put_contents($logPath, "Changes flushed to database\n", FILE_APPEND);
+                } catch (\Exception $e) {
+                    file_put_contents($logPath, "Error saving bot message: {$e->getMessage()}\n{$e->getTraceAsString()}\n", FILE_APPEND);
+                    // Even if saving fails, we'll return the response to the user
+                }
+            } catch (\Exception $e) {
+                file_put_contents($logPath, "Gemini API error: {$e->getMessage()}\n", FILE_APPEND);
+                $botResponse = 'Sorry, I encountered an error while processing your request.';
+            }
+
+            // Return success response even if saving the message failed
             return $this->json([
-                'error' => 'Error creating poll: ' . $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ], 500);
-        }
-    }
-
-    #[Route('/poll/{id}/vote', name: 'app_poll_vote', methods: ['POST'])]
-    #[Route('poll/{id}/vote', name: 'app_poll_vote_alt', methods: ['POST'])]
-    public function vote(Request $request, Poll $poll, EntityManagerInterface $entityManager): Response
-    {
-        // Check if user is authenticated
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->json(['error' => 'You must be logged in to vote'], 401);
-        }
-
-        try {
-            $data = json_decode($request->getContent(), true);
-            $optionId = $data['option_id'] ?? null;
-            
-            if (!$optionId) {
-                return $this->json(['error' => 'No option selected'], 400);
-            }
-            
-            $option = $entityManager->getRepository(PollOption::class)->find($optionId);
-
-            if (!$option) {
-                return $this->json(['error' => 'Option not found'], 404);
-            }
-
-            if ($poll->getIs_closed()) {
-                return $this->json(['error' => 'Poll is closed'], 400);
-            }
-
-            // Check if user has already voted
-            $existingVote = $entityManager->getRepository(PollVote::class)->findOneBy([
-                'poll_id' => $poll,
-                'user_id' => $user
+                'success' => true,
+                'message' => 'Message sent successfully',
+                'bot_response' => $botResponse ?? 'Error: No response generated',
             ]);
-
-            if ($existingVote) {
-                return $this->json(['error' => 'You have already voted'], 400);
-            }
-
-            $vote = new PollVote();
-            $vote->setPoll_id($poll);
-            $vote->setOption_id($option);
-            $vote->setUser_id($user);
-
-            $option->setVote_count($option->getVote_count() + 1);
-
-            $entityManager->persist($vote);
-            $entityManager->flush();
-
-            return $this->json(['success' => true, 'message' => 'Vote recorded successfully']);
         } catch (\Exception $e) {
-            return $this->json(['error' => 'Error processing vote: ' . $e->getMessage()], 500);
-        }
-    }
-
-    #[Route('/poll/{id}/close', name: 'app_poll_close', methods: ['POST'])]
-    #[Route('poll/{id}/close', name: 'app_poll_close_alt', methods: ['POST'])]
-    public function closePoll(Poll $poll, EntityManagerInterface $entityManager): Response
-    {
-        // Check if user is authenticated
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->json(['error' => 'You must be logged in to close polls'], 401);
-        }
-        
-        // Allow admins and organizers to close polls
-        if (!in_array('ROLE_ADMIN', $user->getRoles()) && !in_array('ROLE_ORGANISATEUR', $user->getRoles())) {
-            return $this->json(['error' => 'You do not have permission to close this poll'], 403);
-        }
-
-        try {
-            $poll->setIs_closed(true);
-            $entityManager->flush();
-            return $this->json(['success' => true, 'message' => 'Poll closed successfully']);
-        } catch (\Exception $e) {
-            return $this->json(['error' => 'Error closing poll: ' . $e->getMessage()], 500);
+            // Catch-all for any unexpected errors
+            $errorMsg = "Unexpected error: {$e->getMessage()}\n{$e->getTraceAsString()}";
+            file_put_contents(__DIR__ . '/../../var/log/gemini_debug.log', $errorMsg, FILE_APPEND);
+            return $this->json([
+                'error' => 'An unexpected error occurred. Please try again later.',
+                'debug' => $e->getMessage() // Only include this in development
+            ], 500);
         }
     }
 
@@ -229,28 +230,137 @@ class ChatController extends AbstractController
         $data = [];
         
         foreach ($messages as $message) {
-            $data[] = [
+            $messageData = [
                 'id' => $message->getId(),
                 'contenu' => $message->getContenu(),
                 'type' => $message->getType(),
-                'post_time' => $message->getPost_time()->format('Y-m-d H:i:s'),
-                'posted_by' => [
+                'post_time' => $message->getPost_time()->format('Y-m-d H:i:s')
+            ];
+            
+            // Add posted_by data if available
+            if ($message->getPosted_by()) {
+                $messageData['posted_by'] = [
                     'id_user' => $message->getPosted_by()->getId(),
                     'nom' => $message->getPosted_by()->getNomUser(),
-                    'prenom' => $message->getPosted_by()->getPrenomUser()
-                ]
-            ];
+                    'prenom' => $message->getPosted_by()->getPrenomUser(),
+                    'email_user' => $message->getPosted_by()->getEmailUser(),
+                    'photoUser' => $message->getPosted_by()->getPhotoUser()
+                ];
+            } else {
+                $messageData['posted_by'] = null;
+            }
+            
+            $data[] = $messageData;
         }
         
         return $this->json(['messages' => $data]);
     }
 
+    // --- Poll Handling ---
+    #[Route('/{id}/poll/new', name: 'app_chat_poll_new', methods: ['POST'])]
+    public function newPoll(Request $request, Chat $chat): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->json(['error' => 'You must be logged in to create polls'], 401);
+        }
+
+        $poll = new Poll();
+        $poll->setChat_id($chat);
+        $poll->setQuestion($request->request->get('question'));
+        $poll->setIs_closed(false);
+        $poll->setCreated_at(new \DateTime());
+
+        $this->entityManager->persist($poll);
+        $this->entityManager->flush();
+
+        $options = $request->request->all('options');
+        foreach ($options as $optionText) {
+            if (!empty(trim($optionText))) {
+                $option = new PollOption();
+                $option->setPoll_id($poll);
+                $option->setText($optionText);
+                $option->setVote_count(0);
+                $this->entityManager->persist($option);
+            }
+        }
+
+        $this->entityManager->flush();
+
+        return $this->json(['success' => true, 'message' => 'Poll created successfully']);
+    }
+
+    #[Route('/poll/{id}/vote', name: 'app_poll_vote', methods: ['POST'])]
+    #[Route('poll/{id}/vote', name: 'app_poll_vote_alt', methods: ['POST'])]
+    public function vote(Request $request, Poll $poll): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->json(['error' => 'You must be logged in to vote'], 401);
+        }
+
+        $data = json_decode($request->getContent(), true);
+        $optionId = $data['option_id'] ?? null;
+
+        if (!$optionId) {
+            return $this->json(['error' => 'No option selected'], 400);
+        }
+
+        $option = $this->entityManager->getRepository(PollOption::class)->find($optionId);
+        if (!$option) {
+            return $this->json(['error' => 'Option not found'], 404);
+        }
+
+        if ($poll->getIs_closed()) {
+            return $this->json(['error' => 'Poll is closed'], 400);
+        }
+
+        $existingVote = $this->entityManager->getRepository(PollVote::class)->findOneBy([
+            'poll_id' => $poll,
+            'user_id' => $user
+        ]);
+
+        if ($existingVote) {
+            return $this->json(['error' => 'You have already voted'], 400);
+        }
+
+        $vote = new PollVote();
+        $vote->setPoll_id($poll);
+        $vote->setOption_id($option);
+        $vote->setUser_id($user);
+
+        $option->setVoteCount($option->getVoteCount() + 1);
+
+        $this->entityManager->persist($vote);
+        $this->entityManager->flush();
+
+        return $this->json(['success' => true, 'message' => 'Vote recorded successfully']);
+    }
+
+    #[Route('/poll/{id}/close', name: 'app_poll_close', methods: ['POST'])]
+    #[Route('poll/{id}/close', name: 'app_poll_close_alt', methods: ['POST'])]
+    public function closePoll(Poll $poll): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->json(['error' => 'You must be logged in to close polls'], 401);
+        }
+
+        if (!in_array('ROLE_ADMIN', $user->getRoles()) && !in_array('ROLE_ORGANISATEUR', $user->getRoles())) {
+            return $this->json(['error' => 'You do not have permission to close this poll'], 403);
+        }
+
+        $poll->setIs_closed(true);
+        $this->entityManager->flush();
+        return $this->json(['success' => true, 'message' => 'Poll closed successfully']);
+    }
+
     #[Route('/{id}/polls', name: 'app_chat_polls', methods: ['GET'])]
-    public function getPolls(Chat $chat): Response
+    public function getPolls(Chat $chat): JsonResponse
     {
         $polls = $chat->getPolls();
         $data = [];
-        
+
         foreach ($polls as $poll) {
             $pollData = [
                 'id' => $poll->getId(),
@@ -259,20 +369,22 @@ class ChatController extends AbstractController
                 'created_at' => $poll->getCreated_at()->format('Y-m-d H:i:s'),
                 'poll_option' => []
             ];
-            
+
             foreach ($poll->getPollOptions() as $option) {
                 $pollData['poll_option'][] = [
                     'id' => $option->getId(),
                     'text' => $option->getText(),
-                    'vote_count' => $option->getVote_count()
+                    'vote_count' => $option->getVoteCount()
                 ];
             }
-            
+
             $data[] = $pollData;
         }
-        
+
         return $this->json(['polls' => $data]);
     }
+
+    // --- Search Functionality ---
     #[Route('/community/{id}/search', name: 'chat_search')]
     public function searchMessages(Request $request, Communaute $community): Response
     {
@@ -283,7 +395,6 @@ class ChatController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $query = $form->get('query')->getData();
             if ($query) {
-                // Use database search since Algolia is not properly configured
                 $results = $this->performDatabaseSearch($query, $community);
             }
         }
@@ -294,12 +405,59 @@ class ChatController extends AbstractController
             'results' => $results,
         ]);
     }
-    
+
+    #[Route('/community/{id}/search-ajax', name: 'chat_search_ajax')]
+    public function searchMessagesAjax(Request $request, Communaute $community): JsonResponse
+    {
+        $query = $request->query->get('query');
+        $results = [];
+
+        if ($query) {
+            if ($query === '*') {
+                $results = $this->entityManager->getRepository(Message::class)
+                    ->createQueryBuilder('m')
+                    ->join('m.chat_id', 'c')
+                    ->join('c.communaute_id', 'co')
+                    ->where('co.id = :communityId')
+                    ->setParameter('communityId', $community->getId())
+                    ->orderBy('m.post_time', 'DESC')
+                    ->setMaxResults(20)
+                    ->getQuery()
+                    ->getResult();
+            } else {
+                $results = $this->performDatabaseSearch($query, $community);
+            }
+        }
+
+        $serializedResults = [];
+        foreach ($results as $message) {
+            $serializedResults[] = [
+                'id' => $message->getId(),
+                'contenu' => $message->getContenu(),
+                'type' => $message->getType(),
+                'post_time' => $message->getPostTime()->format('Y-m-d H:i:s'),
+                'chat_id' => [
+                    'id' => $message->getChatId()->getId(),
+                    'nom' => $message->getChatId()->getNom()
+                ],
+                'posted_by' => [
+                    'id' => $message->getPostedBy()->getId(),
+                    'nomUser' => $message->getPostedBy()->getNomUser(),
+                    'prenomUser' => $message->getPostedBy()->getPrenomUser()
+                ]
+            ];
+        }
+
+        return $this->json([
+            'success' => true,
+            'query' => $query,
+            'results' => $serializedResults
+        ]);
+    }
+
     private function performDatabaseSearch(string $query, Communaute $community): array
     {
-        // Escape special characters for LIKE query
         $escapedQuery = str_replace(['%', '_', '*'], ['\\%', '\\_', '%'], $query);
-        
         return $this->entityManager->getRepository(Message::class)
             ->createQueryBuilder('m')
             ->join('m.chat_id', 'c')
@@ -312,74 +470,5 @@ class ChatController extends AbstractController
             ->setMaxResults(50)
             ->getQuery()
             ->getResult();
-    }
-    
-    #[Route('/community/{id}/search-ajax', name: 'chat_search_ajax')]
-    public function searchMessagesAjax(Request $request, Communaute $community): Response
-    {
-        try {
-            $query = $request->query->get('query');
-            $results = [];
-            
-            if ($query) {
-                // Log the search request
-                error_log("Performing search for '{$query}' in community {$community->getId()}");
-                
-                // Special case for * which would match everything
-                if ($query === '*') {
-                    // Return most recent messages instead
-                    $results = $this->entityManager->getRepository(Message::class)
-                        ->createQueryBuilder('m')
-                        ->join('m.chat_id', 'c')
-                        ->join('c.communaute_id', 'co')
-                        ->where('co.id = :communityId')
-                        ->setParameter('communityId', $community->getId())
-                        ->orderBy('m.post_time', 'DESC')
-                        ->setMaxResults(20)
-                        ->getQuery()
-                        ->getResult();
-                } else {
-                    $results = $this->performDatabaseSearch($query, $community);
-                }
-                
-                error_log("Search completed with " . count($results) . " results");
-            }
-            
-            // Transform results to be JSON-serializable
-            $serializedResults = [];
-            foreach ($results as $message) {
-                $serializedResults[] = [
-                    'id' => $message->getId(),
-                    'contenu' => $message->getContenu(),
-                    'type' => $message->getType(),
-                    'post_time' => $message->getPost_time()->format('Y-m-d H:i:s'),
-                    'chat_id' => [
-                        'id' => $message->getChat_id()->getId(),
-                        'nom' => $message->getChat_id()->getNom()
-                    ],
-                    'posted_by' => [
-                        'id' => $message->getPosted_by()->getId(),
-                        'nomUser' => $message->getPosted_by()->getNomUser(),
-                        'prenomUser' => $message->getPosted_by()->getPrenomUser()
-                    ]
-                ];
-            }
-            
-            return $this->json([
-                'success' => true,
-                'query' => $query,
-                'results' => $serializedResults
-            ]);
-        } catch (\Exception $e) {
-            // Log the error
-            error_log("Search error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
-            
-            // Return error response
-            return $this->json([
-                'success' => false,
-                'error' => $e->getMessage(),
-                'query' => $request->query->get('query')
-            ], 500);
-        }
     }
 }
