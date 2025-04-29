@@ -78,6 +78,11 @@
   <span class="badge bg3">Terminé</span>
 {% endif %}
                   </div>
+                  <!-- chronometre --> 
+                      {% if debut > now %}
+  <div id="countdown-{{ hackathon.id_hackathon }}" class="countdown"></div>
+{% endif %}
+<!-- chronometre --> 
                   <h5 class="card-text">📍 {{ hackathon.lieu }}</h5>
                   <p class="card-date">📅 Du {{ hackathon.date_debut|date("j F , Y") }} 🕒 {{ hackathon.date_debut|date("H:i")}} 
                   <br>
@@ -92,6 +97,7 @@
                           {% set isAlreadyParticipant = true %}
                         {% endif %}
                       {% endfor %}
+                      
                       {% if not isAlreadyParticipant %}
                         <a href="{{ path('hackathon_participer', { id: hackathon.id_hackathon }) }}" class="btn btn-secondary">Participer</a>
                       {% else %}
@@ -356,5 +362,69 @@
 
   </div>
 </div>
+<script>
+
+  document.addEventListener("DOMContentLoaded", function() {
+    {% for hackathon in hackathons %}
+      {% set debutTimestamp = hackathon.date_debut|date("U") %}
+      {% if debutTimestamp > now %}
+        var countdownElement{{ hackathon.id_hackathon }} = document.getElementById('countdown-{{ hackathon.id_hackathon }}');
+        if (countdownElement{{ hackathon.id_hackathon }}) {
+          var startTime = {{ debutTimestamp }} * 1000; // convertir en millisecondes
+
+          var interval = setInterval(function() {
+            var nowTime = new Date().getTime();
+            var distance = startTime - nowTime;
+
+            if (distance < 0) {
+              clearInterval(interval);
+              countdownElement{{ hackathon.id_hackathon }}.innerHTML = "<span class='badge bg-success'>Hackathon en cours</span>";
+            } else {
+              var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+              var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+              var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+              var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+              countdownElement{{ hackathon.id_hackathon }}.innerHTML = 
+  "⏳ Débute dans <span class='time-part'>" + days + "j</span> " +
+  "<span class='time-part'>" + hours + "h</span> " +
+  "<span class='time-part'>" + minutes + "m</span> " +
+  "<span class='time-part'>" + seconds + "s</span>";
+
+            }
+          }, 1000);
+        }
+      {% endif %}
+    {% endfor %}
+  });
+</script>
+
+
+
+<style>
+.countdown {
+  background: #f0f4f8;
+  color: #1a202c;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 10px;
+  display: inline-block;
+  margin-top: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.countdown span {
+  display: inline-block;
+  margin: 0 4px;
+}
+
+.countdown .time-part {
+  color: #007bff; /* bleu joli */
+  font-weight: bold;
+}
+</style>
+
 
 {% endblock %}
