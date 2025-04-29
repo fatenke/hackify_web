@@ -1,9 +1,82 @@
 {% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.css' rel='stylesheet' />
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('app') }}
+{% endblock %}
 
 {% block title %}Liste des Hackathons{% endblock %}
 
 
   {% block body %}
+<div class="container mt-4 mb-4">
+    <div id='calendar' style="min-height: 600px;"></div>
+</div>
+
+<style>
+.fc {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.fc-view-harness {
+    background-color: white;
+}
+
+.fc-header-toolbar {
+    background-color: white;
+    padding: 10px;
+    margin-bottom: 1em !important;
+}
+</style>
+
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/fr.global.min.js'></script>
+<script>
+window.onload = function() {
+    var calendarEl = document.getElementById('calendar');
+    if (!calendarEl) {
+        console.error('Calendar element not found!');
+        return;
+    }
+
+    try {
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth'
+            },
+            locale: 'fr',
+            timeZone: 'local',
+            height: 'auto',
+            aspectRatio: 1.8,
+            events: [
+            {% for hackathon in hackathons %}
+            {
+                title: '{{ hackathon.nom_hackathon }}',
+                start: '{{ hackathon.date_debut|date("Y-m-d\\TH:i:s") }}',
+                end: '{{ hackathon.date_fin|date("Y-m-d\\TH:i:s") }}',
+                url: '{{ path("hackathon_details", { id: hackathon.id_hackathon }) }}'
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ]
+    });
+        calendar.render();
+    } catch (error) {
+        console.error('Error initializing calendar:', error);
+    }
+};
+</script>
+
+  
 
 <div class="container section-title" data-aos="fade-up">
   <h1>Liste des Hackathons</h1>
@@ -78,15 +151,16 @@
   <span class="badge bg3">Terminé</span>
 {% endif %}
                   </div>
+                  
+                  <h5 class="card-text">📍 {{ hackathon.lieu }}</h5>
+                  <p class="card-date">📅 Du {{ hackathon.date_debut|date("j F , Y") }} 🕒 {{ hackathon.date_debut|date("H:i")}} 
+                  <br>
+                  📅 Au {{ hackathon.date_fin|date("j F , Y") }}  🕒 {{ hackathon.date_fin|date("H:i") }}</p>
                   <!-- chronometre --> 
                       {% if debut > now %}
   <div id="countdown-{{ hackathon.id_hackathon }}" class="countdown"></div>
 {% endif %}
 <!-- chronometre --> 
-                  <h5 class="card-text">📍 {{ hackathon.lieu }}</h5>
-                  <p class="card-date">📅 Du {{ hackathon.date_debut|date("j F , Y") }} 🕒 {{ hackathon.date_debut|date("H:i")}} 
-                  <br>
-                  📅 Au {{ hackathon.date_fin|date("j F , Y") }}  🕒 {{ hackathon.date_fin|date("H:i") }}</p>
                   <div>
                     <a href="{{ path('hackathon_details', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Détails</a>
                     {% if hackathon.participations|length < hackathon.max_participants %}
@@ -424,7 +498,18 @@
   color: #007bff; /* bleu joli */
   font-weight: bold;
 }
+.countdown {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
 </style>
 
 
 {% endblock %}
+
+
