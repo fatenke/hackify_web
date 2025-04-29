@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 {% block stylesheets %}
     {{ parent() }}
-    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.css' rel='stylesheet' />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 {% endblock %}
 
 {% block javascripts %}
@@ -13,68 +13,7 @@
 
 
   {% block body %}
-<div class="container mt-4 mb-4">
-    <div id='calendar' style="min-height: 600px;"></div>
-</div>
 
-<style>
-.fc {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-.fc-view-harness {
-    background-color: white;
-}
-
-.fc-header-toolbar {
-    background-color: white;
-    padding: 10px;
-    margin-bottom: 1em !important;
-}
-</style>
-
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/locales/fr.global.min.js'></script>
-<script>
-window.onload = function() {
-    var calendarEl = document.getElementById('calendar');
-    if (!calendarEl) {
-        console.error('Calendar element not found!');
-        return;
-    }
-
-    try {
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth'
-            },
-            locale: 'fr',
-            timeZone: 'local',
-            height: 'auto',
-            aspectRatio: 1.8,
-            events: [
-            {% for hackathon in hackathons %}
-            {
-                title: '{{ hackathon.nom_hackathon }}',
-                start: '{{ hackathon.date_debut|date("Y-m-d\\TH:i:s") }}',
-                end: '{{ hackathon.date_fin|date("Y-m-d\\TH:i:s") }}',
-                url: '{{ path("hackathon_details", { id: hackathon.id_hackathon }) }}'
-            }{% if not loop.last %},{% endif %}
-            {% endfor %}
-        ]
-    });
-        calendar.render();
-    } catch (error) {
-        console.error('Error initializing calendar:', error);
-    }
-};
-</script>
 
   
 
@@ -156,13 +95,16 @@ window.onload = function() {
                   <p class="card-date">📅 Du {{ hackathon.date_debut|date("j F , Y") }} 🕒 {{ hackathon.date_debut|date("H:i")}} 
                   <br>
                   📅 Au {{ hackathon.date_fin|date("j F , Y") }}  🕒 {{ hackathon.date_fin|date("H:i") }}</p>
-                  <!-- chronometre --> 
-                      {% if debut > now %}
-  <div id="countdown-{{ hackathon.id_hackathon }}" class="countdown"></div>
-{% endif %}
-<!-- chronometre --> 
+                   
                   <div>
-                    <a href="{{ path('hackathon_details', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Détails</a>
+                  <div class="d-flex align-items-center gap-3">
+    <a href="{{ path('hackathon_details', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Détails</a>
+    
+    {% if debut > now %}
+        <div id="countdown-{{ hackathon.id_hackathon }}" class="countdown text-danger fw-bold"></div>
+    {% endif %}
+</div>
+
                     {% if hackathon.participations|length < hackathon.max_participants %}
                       {% if app.user and 'ROLE_PARTICIPANT' in app.user.roles %}
                       {% set isAlreadyParticipant = false %}
@@ -435,36 +377,44 @@ window.onload = function() {
     
 
   </div>
-</div>
-<script>
 
-  document.addEventListener("DOMContentLoaded", function() {
+    {# Bouton Calendrier #}
+    <div class="text-center mt-5 mb-4">
+        <a href="{{ path('hackathons_calendar') }}" class="btn btn-primary btn-lg">
+            <i class="bi bi-calendar3"></i> Voir le calendrier des hackathons
+        </a>
+    </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
     {% for hackathon in hackathons %}
       {% set debutTimestamp = hackathon.date_debut|date("U") %}
       {% if debutTimestamp > now %}
-        var countdownElement{{ hackathon.id_hackathon }} = document.getElementById('countdown-{{ hackathon.id_hackathon }}');
-        if (countdownElement{{ hackathon.id_hackathon }}) {
-          var startTime = {{ debutTimestamp }} * 1000; // convertir en millisecondes
+        let countdownEl{{ hackathon.id_hackathon }} = document.getElementById('countdown-{{ hackathon.id_hackathon }}');
+        if (countdownEl{{ hackathon.id_hackathon }}) {
+          let startTime = {{ debutTimestamp }} * 1000;
 
-          var interval = setInterval(function() {
-            var nowTime = new Date().getTime();
-            var distance = startTime - nowTime;
+          let interval = setInterval(function () {
+            let nowTime = new Date().getTime();
+            let distance = startTime - nowTime;
 
             if (distance < 0) {
               clearInterval(interval);
-              countdownElement{{ hackathon.id_hackathon }}.innerHTML = "<span class='badge bg-success'>Hackathon en cours</span>";
+              countdownEl{{ hackathon.id_hackathon }}.innerHTML = "<span class='badge bg-success'>Hackathon en cours</span>";
             } else {
-              var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-              var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-              var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-              var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+              let d = Math.floor(distance / (1000 * 60 * 60 * 24));
+              let h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+              let m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+              let s = Math.floor((distance % (1000 * 60)) / 1000);
 
-              countdownElement{{ hackathon.id_hackathon }}.innerHTML = 
-  "⏳ Débute dans <span class='time-part'>" + days + "j</span> " +
-  "<span class='time-part'>" + hours + "h</span> " +
-  "<span class='time-part'>" + minutes + "m</span> " +
-  "<span class='time-part'>" + seconds + "s</span>";
-
+              countdownEl{{ hackathon.id_hackathon }}.innerHTML = 
+                `<div class="countdown-box">
+                  <span>${d}j</span> :
+                  <span>${h}h</span> :
+                  <span>${m}m</span> :
+                  <span>${s}s</span>
+                </div>`;
             }
           }, 1000);
         }
@@ -472,7 +422,6 @@ window.onload = function() {
     {% endfor %}
   });
 </script>
-
 
 
 <style>

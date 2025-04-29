@@ -15,6 +15,15 @@ use Symfony\Component\Mime\Email;
 
 final class ParticipationController extends AbstractController
 {
+    #[Route('/hackathons/calendar', name: 'hackathons_calendar')]
+    public function calendar(EntityManagerInterface $em): Response
+    {
+        $hackathons = $em->getRepository(Hackathon::class)->findAll();
+        
+        return $this->render('hackathon/calendar.html.twig', [
+            'hackathons' => $hackathons
+        ]);
+    }
     #[Route('hackathon/{id}/participer', name: 'hackathon_participer')]
 public function participer(
     Hackathon $hackathon,
