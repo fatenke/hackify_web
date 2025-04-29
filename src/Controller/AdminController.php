@@ -9,8 +9,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Repository\HackathonRepository;
+
 
 #[Route('/admin')]
+#[IsGranted('ROLE_ADMIN')]
 class AdminController extends AbstractController
 {
     #[Route('/dashboard', name: 'admin_dashboard')]
@@ -54,4 +57,27 @@ class AdminController extends AbstractController
         $this->addFlash('success', 'User deleted successfully');
         return $this->redirectToRoute('admin_dashboard');
     }
+    #[Route('/hackathons', name: 'admin_hackathon_list')]
+    public function index(HackathonRepository $repo): Response
+{
+    $hackathons = $repo->findAll(); // récupère tous les hackathons
+
+    return $this->render('backoffice/hackathon/afficher.html.twig', [
+        'hackathons' => $hackathons, // passe les données à Twig
+    ]);
+}
+
+#[Route('/admin/hackathon/{id}/delete', name: 'admin_delete_hackathon', methods: ['POST'])]
+public function delete(Hackathon $hackathon, EntityManagerInterface $em, Request $request): Response
+{
+    if ($this->isCsrfTokenValid('delete' . $hackathon->getId(), $request->request->get('_token'))) {
+        $em->remove($hackathon);
+        $em->flush();
+        $this->addFlash('success', 'Hackathon supprimé avec succès.');
+    }
+
+    return $this->redirectToRoute('admin_hackathon_list');
+}
+
+
 }

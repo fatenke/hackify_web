@@ -1,0 +1,41 @@
+{% extends 'backoffice/baseback.html.twig' %}
+
+{% block title %}Liste des Hackathons{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>Liste des Hackathons</h2>
+
+    {% if hackathons is empty %}
+        <div class="alert alert-warning">Aucun hackathon trouvé.</div>
+    {% else %}
+        <table class="table table-bordered table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Date début</th>
+                    <th>Lieu</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for hackathon in hackathons %}
+                    <tr>
+                        <td>{{ hackathon.id }}</td>
+                        <td>{{ hackathon.nom }}</td>
+                        <td>{{ hackathon.dateDebut ? hackathon.dateDebut|date('d/m/Y H:i') : 'N/A' }}</td>
+                        <td>{{ hackathon.lieu }}</td>
+                        <td>
+                            <a href="{{ path('hackathon_supprimer', { id: hackathon.id }) }}" class="btn btn-danger btn-sm"
+                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce hackathon ?');">
+                               Supprimer
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+{% endblock %}
