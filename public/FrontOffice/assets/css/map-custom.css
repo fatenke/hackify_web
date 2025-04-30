@@ -1,0 +1,29 @@
+/* Style personnalisé pour la carte Leaflet dans la page détails */
+#map {
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  border: 2px solid #1b3347;
+  margin-bottom: 2rem;
+  min-height: 300px;
+  max-width: 100%;
+  transition: box-shadow 0.2s;
+}
+#map:focus, #map:hover {
+  box-shadow: 0 4px 24px rgba(27,51,71,0.25);
+}
+.leaflet-control-custom {
+  background: #1b3347;
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 15px;
+  margin: 6px;
+  border: none;
+}
+@media (max-width: 600px) {
+  #map {
+    height: 220px !important;
+    min-height: 180px;
+  }
+}

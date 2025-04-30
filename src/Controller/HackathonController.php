@@ -15,6 +15,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\HackathonRepository;
 use App\Repository\ParticipationRepository;
 use App\Entity\Participation;
+use App\Service\GeoapifyService;
+
 
 
 
@@ -117,10 +119,13 @@ final class HackathonController extends AbstractController
     }
 
     #[Route('hackathon/{id}', name:'hackathon_details')]
-    public function details($id, HackathonRepository $hackathonRepository, ParticipationRepository $participationRepository): Response
+    public function details($id, HackathonRepository $hackathonRepository, ParticipationRepository $participationRepository, GeoapifyService $geoapify): Response
     {
         // Trouver le hackathon par son ID
         $hackathon = $hackathonRepository->find($id);
+        $coords = $geoapify->getCoordinates($hackathon->getLieu());
+
+
 
         // Si le hackathon n'est pas trouvé, rediriger vers la liste des hackathons
         if (!$hackathon) {
@@ -133,6 +138,8 @@ final class HackathonController extends AbstractController
         return $this->render('hackathon/details.html.twig', [
             'hackathon' => $hackathon,
             'participations' => $participations,
+            'coords' => $coords,
+            'geoapify_key' => $_ENV['GEOAPIFY_API_KEY'] ?? '2cc017ef18dd4832ae2841268fdd8560',
         ]);
     }
     
