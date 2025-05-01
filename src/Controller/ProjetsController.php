@@ -1,6 +1,11 @@
 <?php
 
+
+
+
 namespace App\Controller;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use App\Entity\Hackathon;
@@ -35,7 +40,7 @@ final class ProjetsController extends AbstractController
             $em->persist($projet);
             $em->flush();
     
-            return $this->redirectToRoute('app_projets');
+            return $this->redirectToRoute('projets_qr', ['id' => $projet->getId()]);
         }
     
         // 3) Render — the form will show your default values
@@ -116,7 +121,7 @@ final class ProjetsController extends AbstractController
     }
     
 
-    #[Route('/projets/supprimer/{id}', name: 'supprimer_projet', methods: ['POST'])]
+    #[Route('/backoffice/projets/supprimer/{id}', name: 'supprimer_projet', methods: ['POST'])]
     public function supprimer(Request $request, Projets $projet, EntityManagerInterface $em): Response
     {
         if ($this->isCsrfTokenValid('supprimer'.$projet->getId(), $request->request->get('_token'))) {
@@ -129,12 +134,28 @@ final class ProjetsController extends AbstractController
     #[Route('/projets/supprimer/{id}', name: 'supprimer_projet_front', methods: ['POST'])]
     public function supprimerfront(Request $request, Projets $projet, EntityManagerInterface $em): Response
     {
-        if ($this->isCsrfTokenValid('supprimerfront'.$projet->getId(), $request->request->get('_token'))) {
-            $em->remove($projet);
-            $em->flush();
+        // Get the hackathon ID before removing the project
+        $hackathon = $projet->getIdHack();
+        $projetId = $projet->getId();
+        $csrfTokenName = 'delete'.$projetId;
+        $csrfToken = $request->request->get('_token');
+
+        // Log the CSRF token validation attempt
+        $this->addFlash('debug', 'Attempting to delete projet with ID: '.$projetId);
+
+        if ($this->isCsrfTokenValid($csrfTokenName, $csrfToken)) {
+            try {
+                $em->remove($projet);
+                $em->flush();
+                $this->addFlash('success', 'Projet supprimé avec succès.');
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Erreur lors de la suppression du projet: ' . $e->getMessage());
+            }
+        } else {
+            $this->addFlash('error', 'Jeton CSRF invalide. La suppression a été annulée.');
         }
     
-        return $this->redirectToRoute('voir_projets');
+        return $this->redirectToRoute('voir_projets', ['id' => $hackathon ? $hackathon->getId_hackathon() : null]);
     }
     #[Route('/technologie/supprimer/{id}', name: 'supprimer_technologie', methods: ['POST'])]
     public function supprimertech(Request $request, Technologies $Technologies, EntityManagerInterface $em): Response
@@ -273,6 +294,31 @@ public function updatefront(Request $request, Projets $projet, EntityManagerInte
             'Content-Disposition' => 'attachment; filename="liste_technologies.pdf"',
         ]);
     }
+
+
+    #[Route('/projets/qr/{id}', name: 'projets_qr')]
+    public function generateQr(Projets $projet): Response
+    {
+        $nomProjet = $projet->getNom();
+        $messageConfirmation = "Projet : $nomProjet\nConfirmation : Projet ajouté avec succès !";
+    
+        // Création du QR code avec le message de confirmation
+        $qrCode = new QrCode($messageConfirmation);
+        $writer = new PngWriter();
+        $qrImageData = $writer->write($qrCode)->getString();
+        $qrImage = base64_encode($qrImageData); // Encodage en base64 pour l'affichage dans la vue
+    
+        // Récupérer l'ID du hackathon associé au projet
+        $hackathonId = $projet->getIdHack() ? $projet->getIdHack()->getId_hackathon() : null;
+
+        return $this->render('projets/qr_confirmation.html.twig', [
+            'qrImage' => $qrImage,
+            'projet' => $projet,
+            'hackathonId' => $hackathonId,
+        ]);
+    }
+    
+    
 
    
 }
