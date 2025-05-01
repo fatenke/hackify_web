@@ -12,12 +12,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
+use Symfony\UX\Chartjs\Model\Chart;
 
 #[Route('/admin')]
 class AdminController extends AbstractController
 {
     #[Route('/dashboard', name: 'admin_dashboard')]
-    public function dashboard(Request $request, UserRepository $userRepository): Response
+    public function dashboard(Request $request, UserRepository $userRepository, ChartBuilderInterface $chartBuilder): Response
     {
         $search = $request->query->get('search');        
         $sort = $request->query->get('sort', 'idUser');
@@ -49,13 +51,191 @@ class AdminController extends AbstractController
         
         $users = $queryBuilder->getQuery()->getResult();
         
+        // Prepare user role statistics for chart
+        $roleStatistics = $this->getUserRoleStatistics($userRepository);
+        $roleChart = $this->createRoleChart($chartBuilder, $roleStatistics);
+        
+        // Prepare user status statistics for chart
+        $statusStatistics = $this->getUserStatusStatistics($userRepository);
+        $statusChart = $this->createStatusChart($chartBuilder, $statusStatistics);
+        
         return $this->render('backoffice/admin/admin.html.twig', [
             'users' => $users,
             'currentSort' => $sort,
             'currentDirection' => $direction,
             'currentSearch' => $search,
-            'currentStatus' => $status
+            'currentStatus' => $status,
+            'roleChart' => $roleChart,
+            'statusChart' => $statusChart
         ]);
+    }
+
+    private function getUserRoleStatistics(UserRepository $userRepository): array
+    {
+        $qb = $userRepository->createQueryBuilder('u');
+        $users = $qb->getQuery()->getResult();
+        
+        $roleCount = [];
+        
+        foreach ($users as $user) {
+            $roles = $user->getRoles();
+            
+            // Skip ROLE_USER as it's assigned to everyone
+            foreach ($roles as $role) {
+                if ($role !== 'ROLE_USER') {
+                    if (!isset($roleCount[$role])) {
+                        $roleCount[$role] = 0;
+                    }
+                    $roleCount[$role]++;
+                }
+            }
+        }
+        
+        // If a user doesn't have any special role, count them as "Regular Users"
+        foreach ($users as $user) {
+            $hasSpecialRole = false;
+            foreach ($user->getRoles() as $role) {
+                if ($role !== 'ROLE_USER') {
+                    $hasSpecialRole = true;
+                    break;
+                }
+            }
+            
+            if (!$hasSpecialRole) {
+                if (!isset($roleCount['Regular Users'])) {
+                    $roleCount['Regular Users'] = 0;
+                }
+                $roleCount['Regular Users']++;
+            }
+        }
+        
+        return $roleCount;
+    }
+    
+    private function getUserStatusStatistics(UserRepository $userRepository): array
+    {
+        $qb = $userRepository->createQueryBuilder('u');
+        $qb->select('u.statusUser, COUNT(u.idUser) as count')
+           ->groupBy('u.statusUser');
+        
+        $results = $qb->getQuery()->getResult();
+        
+        $statusCount = [];
+        foreach ($results as $result) {
+            $statusCount[$result['statusUser']] = (int)$result['count'];
+        }
+        
+        return $statusCount;
+    }
+    
+    private function createRoleChart(ChartBuilderInterface $chartBuilder, array $roleStatistics): Chart
+    {
+        $chart = $chartBuilder->createChart(Chart::TYPE_PIE);
+        
+        $labels = array_keys($roleStatistics);
+        $data = array_values($roleStatistics);
+        
+        // Generate colors for each role
+        $backgroundColors = [
+            'ROLE_ADMIN' => 'rgb(255, 99, 132)',
+            'ROLE_ORGANISATEUR' => 'rgb(54, 162, 235)',
+            'ROLE_PARTICIPANT' => 'rgb(255, 205, 86)',
+            'Regular Users' => 'rgb(75, 192, 192)'
+        ];
+        
+        // Default color for other roles
+        $defaultColors = [
+            'rgb(153, 102, 255)',
+            'rgb(201, 203, 207)',
+            'rgb(255, 159, 64)'
+        ];
+        
+        $colors = [];
+        foreach ($labels as $i => $label) {
+            if (isset($backgroundColors[$label])) {
+                $colors[] = $backgroundColors[$label];
+            } else {
+                $colors[] = $defaultColors[$i % count($defaultColors)];
+            }
+        }
+        
+        $chart->setData([
+            'labels' => $labels,
+            'datasets' => [
+                [
+                    'label' => 'User Roles Distribution',
+                    'backgroundColor' => $colors,
+                    'data' => $data,
+                ]
+            ]
+        ]);
+        
+        $chart->setOptions([
+            'responsive' => true,
+            'maintainAspectRatio' => false,
+            'plugins' => [
+                'title' => [
+                    'display' => true,
+                    'text' => 'User Roles Distribution',
+                    'font' => [
+                        'size' => 16
+                    ]
+                ],
+                'legend' => [
+                    'position' => 'right',
+                ]
+            ]
+        ]);
+        
+        return $chart;
+    }
+    
+    private function createStatusChart(ChartBuilderInterface $chartBuilder, array $statusStatistics): Chart
+    {
+        $chart = $chartBuilder->createChart(Chart::TYPE_DOUGHNUT);
+        
+        $labels = array_keys($statusStatistics);
+        $data = array_values($statusStatistics);
+        
+        $backgroundColors = [
+            'active' => 'rgb(75, 192, 192)',
+            'inactive' => 'rgb(255, 99, 132)'
+        ];
+        
+        $colors = [];
+        foreach ($labels as $label) {
+            $colors[] = $backgroundColors[$label] ?? 'rgb(201, 203, 207)';
+        }
+        
+        $chart->setData([
+            'labels' => $labels,
+            'datasets' => [
+                [
+                    'label' => 'User Status Distribution',
+                    'backgroundColor' => $colors,
+                    'data' => $data,
+                ]
+            ]
+        ]);
+        
+        $chart->setOptions([
+            'responsive' => true,
+            'maintainAspectRatio' => false,
+            'plugins' => [
+                'title' => [
+                    'display' => true,
+                    'text' => 'User Status Distribution',
+                    'font' => [
+                        'size' => 16
+                    ]
+                ],
+                'legend' => [
+                    'position' => 'right',
+                ]
+            ]
+        ]);
+        
+        return $chart;
     }
 
     #[Route('/user/edit/{id}', name: 'admin_user_edit')]
