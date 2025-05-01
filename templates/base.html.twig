@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Index - Yummy Bootstrap Template</title>
+  <title>Hackify</title>
   <meta name="description" content="">
   <meta name="keywords" content="">
 
@@ -26,18 +26,10 @@
   <link href="{{ asset('FrontOffice/assets/vendor/glightbox/css/glightbox.min.css') }}" rel="stylesheet">
   <link href="{{ asset('FrontOffice/assets/vendor/swiper/swiper-bundle.min.css') }}" rel="stylesheet">
 
-  <!-- Main CSS File -->
+  <!-- Main CSS Files -->
   <link href="{{ asset('FrontOffice/assets/css/main.css') }}" rel="stylesheet">
-  <link rel="stylesheet" href="{{ asset('FrontOffice/assets/css/map-custom.css') }}">
-
-  <!-- =======================================================
-  * Template Name: Yummy
-  * Template URL: https://bootstrapmade.com/yummy-bootstrap-restaurant-website-template/
-  * Updated: Aug 07 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
-
+  <link rel="stylesheet" href="{{ asset('FrontOffice/assets/css/hackathon.css') }}">
+ 
 
   <!-- pour le map -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
@@ -61,7 +53,7 @@
         <ul>
           <li><a href="/home#hero" class="active">Accueil<br></a></li>
           <li><a href="/home#about">À propos</a></li>
-          <li><a href="/home#chefs">Notre équipe</a></li>
+          <li><a href="/home#faq">Questions Fréquentes</a></li>
           <li class="dropdown"><a href="/home#hackathons"><span>Hackathons</span>  <i class="bi bi-chevron-down toggle-dropdown"></i> </a>
             <ul> 
                {% if app.user and 'ROLE_ORGANISATEUR' in app.user.roles %}
@@ -78,9 +70,8 @@
       </nav>
 {% if not app.user %}
       <a class="btn-getstarted" href="/register">Connexion / S'inscrire</a>
-      {% endif %}
-
-      {% if app.user %}
+      
+      {% elseif app.user %}
           {% if app.user.photoUser is defined and app.user.photoUser %}
           <a href="{{ path('app_profile_show') }}">
               <img src="{{ asset('uploads/profile_pictures/' ~ app.user.photoUser) }}" 
@@ -88,10 +79,10 @@
                                  class="rounded-circle"
                                  style="width: 50px; height: 50px; object-fit: cover; border: 3px solid #1b3347;">
                         {% else %}
-                            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto"
+                            <a href="{{ path('app_profile_show') }}" class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto"
                                  style="width: 50px; height: 50px;">
                                 <i class="bi bi-person-fill text-white" style="font-size: 2rem;"></i>
-                            </div>
+                            </a>
                         {% endif %}
                         {% endif %}
 </a>

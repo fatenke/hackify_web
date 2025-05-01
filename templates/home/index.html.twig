@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
-        <img src="{{ asset('FrontOffice/assets/img/image1.png') }}" class="img-fluid animated" alt="">
+        <img src="{{ asset('FrontOffice/assets/img/image1.png') }}" class="img-fluid animated" alt="une image">
       </div>
     </div>
   </div>
@@ -35,7 +35,7 @@
   <div class="container">
     <div class="row gy-4">
       <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
-        <img src="FrontOffice/assets/img/about.png" class="img-fluid mb-4" alt="">
+        <img src="FrontOffice/assets/img/about1.png" class="img-fluid mb-4" alt="">
         <div class="book-a-table">
           <h3>Contact</h3>
           <p>contact@hackify.tn</p>
@@ -56,8 +56,8 @@
           </p>
 
           <div class="position-relative mt-4">
-            <img src="assets/img/about-2.jpg" class="img-fluid" alt="">
-            <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox pulsating-play-btn"></a>
+            <img src="{{ asset('FrontOffice/assets/img/about2.png') }}" class="img-fluid" alt="une image">
+            <a href="https://www.youtube.com/watch?v=RkE8c7gXehM" class="glightbox pulsating-play-btn"></a>
           </div>
         </div>
       </div>
@@ -204,7 +204,164 @@
   </div>
 
 </section>
+
 <!-- /Team Section -->
+
+<section id="testimonials" class="testimonials section">
+
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Avis</h2>
+    <p><span>Ce que disent</span> <span class="description-title">nos participants</span></p>
+  </div>
+
+  <div class="container">
+    <div class="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="100">
+      <div class="swiper-wrapper">
+
+        <div class="swiper-slide testimonial-item">
+          <p>"Une expérience inoubliable ! J'ai appris, créé, et rencontré des gens incroyables."</p>
+          <img src="FrontOffice/assets/img/testimonials/user1.jpg" class="testimonial-img" alt="">
+          <h3>Leïla Ben Romdhane</h3>
+          <h4>Développeuse Web</h4>
+        </div>
+
+        <div class="swiper-slide testimonial-item">
+          <p>"Les hackathons sont bien organisés et très enrichissants. Bravo à toute l’équipe !"</p>
+          <img src="FrontOffice/assets/img/testimonials/user2.jpg" class="testimonial-img" alt="">
+          <h3>Karim Abidi</h3>
+          <h4>Étudiant en Informatique</h4>
+        </div>
+
+        <div class="swiper-slide testimonial-item">
+          <p>"Grâce à cet événement, mon projet a gagné en visibilité. Je recommande à 100%."</p>
+          <img src="FrontOffice/assets/img/testimonials/user3.jpg" class="testimonial-img" alt="">
+          <h3>Sarah Jlassi</h3>
+          <h4>Fondatrice de GreenTech</h4>
+        </div>
+
+      </div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+
+</section>
+<!--faq -->
+<section id="faq" class="faq section">
+  <div class="container" data-aos="fade-up">
+
+    <div class="section-title">
+      <h2>FAQ</h2>
+      <p><span>Questions</span> <span class="description-title">Fréquemment Posées</span></p>
+    </div>
+
+    <div class="faq-list">
+      <ul>
+
+        <li data-aos="fade-up" data-aos-delay="100">
+          <i class="bi bi-question-circle icon-help"></i> 
+          <a data-bs-toggle="collapse" class="collapsed" data-bs-target="#faq1">
+            Comment puis-je m'inscrire à un hackathon ?
+            <i class="bi bi-chevron-down icon-show"></i>
+            <i class="bi bi-chevron-up icon-close"></i>
+          </a>
+          <div id="faq1" class="collapse" data-bs-parent=".faq-list">
+            <p>
+              Il suffit de créer un compte sur notre plateforme, puis de choisir le hackathon auquel vous souhaitez participer et cliquer sur "Participer".
+            </p>
+          </div>
+        </li>
+
+        <li data-aos="fade-up" data-aos-delay="200">
+          <i class="bi bi-question-circle icon-help"></i> 
+          <a data-bs-toggle="collapse" class="collapsed" data-bs-target="#faq2">
+            Est-ce que la participation est gratuite ?
+            <i class="bi bi-chevron-down icon-show"></i>
+            <i class="bi bi-chevron-up icon-close"></i>
+          </a>
+          <div id="faq2" class="collapse" data-bs-parent=".faq-list">
+            <p>
+              Oui, la majorité de nos hackathons sont totalement gratuits grâce à nos partenaires et sponsors.
+            </p>
+          </div>
+        </li>
+
+        <li data-aos="fade-up" data-aos-delay="400">
+          <i class="bi bi-question-circle icon-help"></i> 
+          <a data-bs-toggle="collapse" class="collapsed" data-bs-target="#faq4">
+            Faut-il avoir de l’expérience pour participer ?
+            <i class="bi bi-chevron-down icon-show"></i>
+            <i class="bi bi-chevron-up icon-close"></i>
+          </a>
+          <div id="faq4" class="collapse" data-bs-parent=".faq-list">
+            <p>
+              Pas du tout ! Nos hackathons sont ouverts aux débutants comme aux experts. Le plus important est votre motivation.
+            </p>
+          </div>
+        </li>
+
+        <li data-aos="fade-up" data-aos-delay="500">
+  <i class="bi bi-question-circle icon-help"></i> 
+  <a data-bs-toggle="collapse" class="collapsed" data-bs-target="#faq5">
+    Comment puis-je suivre l’état de ma participation ?
+    <i class="bi bi-chevron-down icon-show"></i>
+    <i class="bi bi-chevron-up icon-close"></i>
+  </a>
+  <div id="faq5" class="collapse" data-bs-parent=".faq-list">
+    <p>
+      Une fois inscrit, vous pouvez suivre le statut de votre participation dans votre espace personnel sous l’onglet “Mes hackathons”.
+    </p>
+  </div>
+</li>
+
+<li data-aos="fade-up" data-aos-delay="600">
+  <i class="bi bi-question-circle icon-help"></i> 
+  <a data-bs-toggle="collapse" class="collapsed" data-bs-target="#faq6">
+    Est-ce que je peux annuler ma participation ?
+    <i class="bi bi-chevron-down icon-show"></i>
+    <i class="bi bi-chevron-up icon-close"></i>
+  </a>
+  <div id="faq6" class="collapse" data-bs-parent=".faq-list">
+    <p>
+      Oui, tant que les inscriptions sont ouvertes, vous pouvez annuler votre participation depuis votre tableau de bord.
+    </p>
+  </div>
+</li>
+
+<li data-aos="fade-up" data-aos-delay="700">
+  <i class="bi bi-question-circle icon-help"></i> 
+  <a data-bs-toggle="collapse" class="collapsed" data-bs-target="#faq7">
+    Est-ce que les hackathons sont en ligne ou en présentiel ?
+    <i class="bi bi-chevron-down icon-show"></i>
+    <i class="bi bi-chevron-up icon-close"></i>
+  </a>
+  <div id="faq7" class="collapse" data-bs-parent=".faq-list">
+    <p>
+      Les deux formats existent ! Chaque hackathon indique clairement s’il se déroule en ligne, en présentiel ou en mode hybride.
+    </p>
+  </div>
+</li>
+
+<li data-aos="fade-up" data-aos-delay="800">
+  <i class="bi bi-question-circle icon-help"></i> 
+  <a data-bs-toggle="collapse" class="collapsed" data-bs-target="#faq8">
+    Comment puis-je organiser un hackathon ?
+    <i class="bi bi-chevron-down icon-show"></i>
+    <i class="bi bi-chevron-up icon-close"></i>
+  </a>
+  <div id="faq8" class="collapse" data-bs-parent=".faq-list">
+    <p>
+      Si vous souhaitez organiser un hackathon, il vous suffit de créer un compte sur notre plateforme avec le rôle d'organisateur.
+    </p>
+  </div>
+</li>
+
+
+      </ul>
+    </div>
+
+  </div>
+</section>
+
 
 
 <section id="hackathons">
@@ -230,80 +387,79 @@
   </div>
 </section>
 
-<!-- Events Section -->
-    <section id="events" class="events section">
+<!-- Past Hackathons Gallery -->
+<section id="events" class="events section">
 
-      <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
+  <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
 
-        <div class="swiper init-swiper">
-          <script type="application/json" class="swiper-config">
-            {
-              "loop": true,
-              "speed": 600,
-              "autoplay": {
-                "delay": 5000
-              },
-              "slidesPerView": "auto",
-              "pagination": {
-                "el": ".swiper-pagination",
-                "type": "bullets",
-                "clickable": true
-              },
-              "breakpoints": {
-                "320": {
-                  "slidesPerView": 1,
-                  "spaceBetween": 40
-                },
-                "1200": {
-                  "slidesPerView": 3,
-                  "spaceBetween": 1
-                }
-              }
+    <div class="swiper init-swiper">
+      <script type="application/json" class="swiper-config">
+        {
+          "loop": true,
+          "speed": 600,
+          "autoplay": {
+            "delay": 5000
+          },
+          "slidesPerView": "auto",
+          "pagination": {
+            "el": ".swiper-pagination",
+            "type": "bullets",
+            "clickable": true
+          },
+          "breakpoints": {
+            "320": {
+              "slidesPerView": 1,
+              "spaceBetween": 40
+            },
+            "1200": {
+              "slidesPerView": 3,
+              "spaceBetween": 1
             }
-          </script>
-          <div class="swiper-wrapper">
+          }
+        }
+      </script>
+      <div class="swiper-wrapper">
 
-            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/1.png)">
-              <h3>Custom Parties</h3>
-              <div class="price align-self-start">$99</div>
-              <p class="description">
-                Quo corporis voluptas ea ad. Consectetur inventore sapiente ipsum voluptas eos omnis facere. Enim facilis veritatis id est rem repudiandae nulla expedita quas.
-              </p>
-            </div>
-            <!-- End Event item -->
+        <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/1.png)">
+          <h3>Hackathon 2023: Smart Cities</h3>
+          <div class="price align-self-start">Mars 2023</div>
+          <p class="description">
+            Des idées brillantes autour de la ville intelligente. Une édition riche en projets innovants et collaborations exceptionnelles.
+          </p>
+        </div>
 
-            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/2.png)">
-              <h3>Private Parties</h3>
-              <div class="price align-self-start">$289</div>
-              <p class="description">
-                In delectus sint qui et enim. Et ab repudiandae inventore quaerat doloribus. Facere nemo vero est ut dolores ea assumenda et. Delectus saepe accusamus aspernatur.
-              </p>
-            </div><!-- End Event item -->
+        <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/2.png)">
+          <h3>Hack4Women 2022</h3>
+          <div class="price align-self-start">Novembre 2022</div>
+          <p class="description">
+            Une édition dédiée à l’autonomisation des femmes dans la tech. Merci à toutes les participantes pour leur énergie !
+          </p>
+        </div>
 
-            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/3.png)">
-              <h3>Birthday Parties</h3>
-              <div class="price align-self-start">$499</div>
-              <p class="description">
-                Laborum aperiam atque omnis minus omnis est qui assumenda quos. Quis id sit quibusdam. Esse quisquam ducimus officia ipsum ut quibusdam maxime. Non enim perspiciatis.
-              </p>
-            </div><!-- End Event item -->
+        <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/3.png)">
+          <h3>Green Hack 2022</h3>
+          <div class="price align-self-start">Août 2022</div>
+          <p class="description">
+            Retour sur un week-end de challenges éco-responsables, axé sur l’innovation verte et le développement durable.
+          </p>
+        </div>
 
-            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/4.png)">
-              <h3>Wedding Parties</h3>
-              <div class="price align-self-start">$899</div>
-              <p class="description">
-                Laborum aperiam atque omnis minus omnis est qui assumenda quos. Quis id sit quibusdam. Esse quisquam ducimus officia ipsum ut quibusdam maxime. Non enim perspiciatis.
-              </p>
-            </div><!-- End Event item -->
-
-          </div>
-          <div class="swiper-pagination"></div>
+        <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/4.png)">
+          <h3>AI Challenge 2021</h3>
+          <div class="price align-self-start">Décembre 2021</div>
+          <p class="description">
+            Une immersion dans le monde de l’intelligence artificielle, avec des projets bluffants et une ambiance de folie !
+          </p>
         </div>
 
       </div>
+      <div class="swiper-pagination"></div>
+    </div>
 
-    </section>
-    <!-- /Events Section -->
+  </div>
+
+</section>
+<!-- /Past Hackathons Gallery -->
 
 
 

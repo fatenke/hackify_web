@@ -1670,206 +1670,42 @@ section,
 }
 
 
-
-/* Style général de la section */
-#hackathons {
+/* FAQ Section Styles */
+.faq {
   padding: 60px 20px;
-  text-align: center;
+  background-color: #f9f9f9;
+  font-family: "Poppins", sans-serif;
 }
 
-/* Titre de la section */
-#hackathons h2 {
-  font-size: 2.5rem;
-  font-weight: 700;
+.faq .section-title {
+  text-align: center;
   margin-bottom: 40px;
-  text-transform: uppercase;
 }
 
-/* Style pour les cartes des hackathons */
-.hackathon-card {
-  background-color: #ffffff;
+.faq-item {
+  background-color: #fff;
+  border-left: 4px solid #0d6efd;
   padding: 20px;
-  margin: 15px 0;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  text-align: left;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  transition: all 0.3s ease;
 }
 
-.hackathon-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+.faq-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
 }
 
-/* Titre des hackathons */
-.hackathon-card h3 {
-  font-size: 1.75rem;
+.faq-question {
+  font-size: 18px;
   font-weight: 600;
-  color: #1e0425;
   margin-bottom: 10px;
+  color: #0d6efd;
 }
 
-/* Description des hackathons */
-.hackathon-card p {
-  font-size: 1rem;
-  /*color: #555;*/
+.faq-answer {
+  font-size: 16px;
+  color: #333;
   line-height: 1.6;
-  margin-bottom: 15px;
-}
-
-/* Pour les petits écrans (mobile) */
-@media (max-width: 768px) {
-  .hackathon-card {
-    padding: 15px;
-    margin: 10px 0;
-  }
-
-  #hackathons h2 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-  }
-}
-
-/* Style pour afficher un message lorsqu'il n'y a pas de hackathons */
-#hackathons p {
-  font-size: 1.2rem;
-  /*color: #888;*/
-  font-style: italic;
-}
-
-
-/* Style pour le bouton Détails */
-.btn-primary {
-  background-color: #007bff;
-  border: 1px solid #007bff;
-  color: white;
-  font-size: 1rem;
-  padding: 10px 20px;
-  border-radius: 5px;
-  text-decoration: none;
-  display: inline-block;
-  text-align: center;
-  transition: background-color 0.3s, transform 0.3s;
-}
-
-.btn-primary:hover {
-  background-color: #0056b3;
-  border-color: #0056b3;
-  transform: translateY(-3px);
-}
-
-.btn-primary:active {
-  background-color: #004085;
-  border-color: #004085;
-  transform: translateY(1px);
-}
-
-.btn-primary:focus {
-  outline: none;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-
-
-.btn-secondary {
-  background-color: #db5ab0;
-  border: 1px solid #db5ab0;
-  color: white;
-  font-size: 1rem;
-  padding: 10px 20px;
-  border-radius: 5px;
-  text-decoration: none;
-  display: inline-block;
-  text-align: center;
-  transition: background-color 0.3s, transform 0.3s;
-}
-
-.btn-secondary:hover {
-  background-color: #cd54a5;
-  border-color: #cd54a5;
-  transform: translateY(-3px);
-}
-
-.btn-secondary:active {
-  background-color: #c43895;
-  border-color: #c43895;
-  transform: translateY(1px);
-}
-
-.btn-secondary:focus {
-  outline: none;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-
-
-/* Style général des cartes pour s'assurer que le bouton est bien positionné */
-.card-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-}
-
-.card-body .btn-primary {
-  margin-top: auto;
-}
-
-
-.badge bg-secondary {
-  background-color: #004085;
-
-}
-
-/*details*/
-.icon {
-  margin-right: 8px;
-  font-size: 1.2rem;
-  vertical-align: middle;
-}
-
-/*les badges*/
-
-.badge {
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-weight: 500;
-  font-size: 0.9rem;
-}
-
-.bg1 {
-  background-color: #bc1183;
-  color: white;
-}
-
-.bg2 {
-  background-color: #0755a3;
-  color: white;
-}
-
-.bg3 {
-  background-color: #1e0425;
-  color: white;
-}
-
-.bg-danger {
-  background-color: #c43895;
-
-}
-
-.bg-secondary {
-  background-color: #1e0425;
-}
-
-/*les message d'erreur*/
-.error {
-  color: #dc3545;
-  font-size: 0.9rem;
-  margin-top: 5px;
-  font-weight: 500;
-  background-color: #e6d4d5;
-  /* Rouge clair */
-  padding: 8px 12px;
-  border: 1px solid #f8e9ea;
-  border-radius: 6px;
 }
