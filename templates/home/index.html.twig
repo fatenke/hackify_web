@@ -13,7 +13,12 @@
           Un espace unique pour découvrir, organiser et vivre des expériences innovantes autour de la technologie et de la créativité.
         </p>
         <div class="d-flex" data-aos="fade-up" data-aos-delay="200">
-          <a href="{{ path('liste_hackathon') }}" class="btn-get-started">Découvrir les hackathons</a>
+        {% if app.user %}
+    <a href="{{ path('liste_hackathon') }}" class="btn-get-started">Découvrir les hackathons</a>
+  {% else %}
+    <a href="{{ path('app_register', {'msg': 'login_required'}) }}" class="btn-get-started">Découvrir les hackathons</a>
+  {% endif %}
+          
         </div>
       </div>
       <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
@@ -66,185 +71,6 @@
 
 </section>
 
-<!-- Team Section -->
-<section id="chefs" class="chefs section">
-
-  <!-- Section Title -->
-  <div class="container section-title" data-aos="fade-up">
-    <h2>Notre Équipe</h2>
-    <p><span>Rencontrez</span> <span class="description-title">Notre Équipe </span></p>
-  </div><!-- End Section Title -->
-
-  <div class="container">
-
-    <div class="row gy-4">
-
-      <!-- Team Member 1 -->
-      <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
-        <div class="team-member">
-          <div class="member-img">
-            <img src="FrontOffice/assets/img/members/faten.png" class="img-fluid" alt="">
-            <div class="social">
-              <a href=""><i class="bi bi-twitter-x"></i></a>
-              <a href=""><i class="bi bi-facebook"></i></a>
-              <a href=""><i class="bi bi-instagram"></i></a>
-              <a href=""><i class="bi bi-linkedin"></i></a>
-            </div>
-          </div>
-          <div class="member-info">
-            <h4>Faten Kerrou</h4>
-            <span>Chef de Projet</span>
-            <p>Description du membre 1. Il est expert dans son domaine et apporte une expérience précieuse à l'équipe.</p>
-          </div>
-        </div>
-      </div><!-- End Team Member 1 -->
-
-      <!-- Team Member 2 -->
-      <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
-        <div class="team-member">
-          <div class="member-img">
-            <img src="FrontOffice/assets/img/members/image.png" class="img-fluid" alt="">
-            <div class="social">
-              <a href=""><i class="bi bi-twitter-x"></i></a>
-              <a href=""><i class="bi bi-facebook"></i></a>
-              <a href=""><i class="bi bi-instagram"></i></a>
-              <a href=""><i class="bi bi-linkedin"></i></a>
-            </div>
-          </div>
-          <div class="member-info">
-            <h4>Amira Youssef</h4>
-            <span>Titre du Poste</span>
-            <p>Description du membre 2. Son expertise dans [domaine spécifique] fait d'elle un atout majeur pour notre équipe.</p>
-          </div>
-        </div>
-      </div><!-- End Team Member 2 -->
-
-      <!-- Team Member 3 -->
-      <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="300">
-        <div class="team-member">
-          <div class="member-img">
-            <img src="/FrontOffice/assets/img/members/farah.png" class="img-fluid" alt="">
-            <div class="social">
-              <a href=""><i class="bi bi-twitter-x"></i></a>
-              <a href=""><i class="bi bi-facebook"></i></a>
-              <a href=""><i class="bi bi-instagram"></i></a>
-              <a href=""><i class="bi bi-linkedin"></i></a>
-            </div>
-          </div>
-          <div class="member-info">
-            <h4>Farah Maiti</h4>
-            <span>Titre du Poste</span>
-            <p>Description du membre 3. Grâce à ses compétences en [domaine], il est indispensable pour la réussite de nos projets.</p>
-          </div>
-        </div>
-      </div><!-- End Team Member 3 -->
-
-      <!-- Team Member 4 -->
-      <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="400">
-        <div class="team-member">
-          <div class="member-img">
-            <img src="/FrontOffice/assets/img/members/image.png" class="img-fluid" alt="">
-            <div class="social">
-              <a href=""><i class="bi bi-twitter-x"></i></a>
-              <a href=""><i class="bi bi-facebook"></i></a>
-              <a href=""><i class="bi bi-instagram"></i></a>
-              <a href=""><i class="bi bi-linkedin"></i></a>
-            </div>
-          </div>
-          <div class="member-info">
-            <h4>Ali Belkadhi</h4>
-            <span>Titre du Poste</span>
-            <p>Description du membre 4. Son expérience dans [domaine] nous permet de rester à la pointe de l'innovation.</p>
-          </div>
-        </div>
-      </div><!-- End Team Member 4 -->
-
-      <!-- Team Member 5 -->
-      <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="500">
-        <div class="team-member">
-          <div class="member-img">
-            <img src="/FrontOffice/assets/img/members/image.png" class="img-fluid" alt="">
-            <div class="social">
-              <a href=""><i class="bi bi-twitter-x"></i></a>
-              <a href=""><i class="bi bi-facebook"></i></a>
-              <a href=""><i class="bi bi-instagram"></i></a>
-              <a href=""><i class="bi bi-linkedin"></i></a>
-            </div>
-          </div>
-          <div class="member-info">
-            <h4>Mohamed Bennour</h4>
-            <span>Titre du Poste</span>
-            <p>Description du membre 5. Il apporte des solutions novatrices et son esprit d'équipe est essentiel pour la collaboration.</p>
-          </div>
-        </div>
-      </div><!-- End Team Member 5 -->
-
-      <!-- Team Member 6 -->
-      <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="600">
-        <div class="team-member">
-          <div class="member-img">
-            <img src="/FrontOffice/assets/img/members/image.png" class="img-fluid" alt="">
-            <div class="social">
-              <a href=""><i class="bi bi-twitter-x"></i></a>
-              <a href=""><i class="bi bi-facebook"></i></a>
-              <a href=""><i class="bi bi-instagram"></i></a>
-              <a href=""><i class="bi bi-linkedin"></i></a>
-            </div>
-          </div>
-          <div class="member-info">
-            <h4>Hanin Saidi</h4>
-            <span>Titre du Poste</span>
-            <p>Description du membre 6. Avec son expertise en [domaine], il assure que chaque projet soit mené à bien.</p>
-          </div>
-        </div>
-      </div><!-- End Team Member 6 -->
-
-    </div>
-
-  </div>
-
-</section>
-
-<!-- /Team Section -->
-
-<section id="testimonials" class="testimonials section">
-
-  <div class="container section-title" data-aos="fade-up">
-    <h2>Avis</h2>
-    <p><span>Ce que disent</span> <span class="description-title">nos participants</span></p>
-  </div>
-
-  <div class="container">
-    <div class="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="100">
-      <div class="swiper-wrapper">
-
-        <div class="swiper-slide testimonial-item">
-          <p>"Une expérience inoubliable ! J'ai appris, créé, et rencontré des gens incroyables."</p>
-          <img src="FrontOffice/assets/img/testimonials/user1.jpg" class="testimonial-img" alt="">
-          <h3>Leïla Ben Romdhane</h3>
-          <h4>Développeuse Web</h4>
-        </div>
-
-        <div class="swiper-slide testimonial-item">
-          <p>"Les hackathons sont bien organisés et très enrichissants. Bravo à toute l’équipe !"</p>
-          <img src="FrontOffice/assets/img/testimonials/user2.jpg" class="testimonial-img" alt="">
-          <h3>Karim Abidi</h3>
-          <h4>Étudiant en Informatique</h4>
-        </div>
-
-        <div class="swiper-slide testimonial-item">
-          <p>"Grâce à cet événement, mon projet a gagné en visibilité. Je recommande à 100%."</p>
-          <img src="FrontOffice/assets/img/testimonials/user3.jpg" class="testimonial-img" alt="">
-          <h3>Sarah Jlassi</h3>
-          <h4>Fondatrice de GreenTech</h4>
-        </div>
-
-      </div>
-      <div class="swiper-pagination"></div>
-    </div>
-  </div>
-
-</section>
 <!--faq -->
 <section id="faq" class="faq section">
   <div class="container" data-aos="fade-up">
@@ -383,12 +209,16 @@
   {% endfor %}
 
   <div class="text-center mt-4">
+    {% if app.user %}
     <a href="{{ path('liste_hackathon') }}" class="btn-get-started">Voir tous les hackathons</a>
+  {% else %}
+    <a href="{{ path('app_register', {'msg': 'login_required'}) }}" class="btn-get-started">Voir tous les hackathons</a>
+  {% endif %}
   </div>
 </section>
 
 <!-- Past Hackathons Gallery -->
-<section id="events" class="events section">
+<section id="gallery" class="events section">
 
   <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
 
@@ -551,8 +381,49 @@
 
       </div>
 
-    </section><!-- /Contact Section -->
+    </section>
+    <!-- /Contact Section -->
 
 
+
+<style>
+.faq {
+  padding: 60px 20px;
+  font-family: "Poppins", sans-serif;
+}
+
+.faq .section-title {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.faq-item {
+  background-color: #fff;
+  border-left: 4px solid #0d6efd;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.faq-question {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #0d6efd;
+}
+
+.faq-answer {
+  font-size: 16px;
+  color: #333;
+  line-height: 1.6;
+}
+</style>
 
 {% endblock %}

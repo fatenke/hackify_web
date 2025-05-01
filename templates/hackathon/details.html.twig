@@ -12,6 +12,9 @@
   <p><span class="icon">📝</span><strong>Description :</strong> {{ hackathon.description }}</p>
   
   <div>
+  {% set now = "now"|date("U") %}
+  {% set debut = hackathon.date_debut|date("U") %}
+
     <br>
     {% if hackathon.participations|length < hackathon.max_participants %}
       {% if app.user and 'ROLE_PARTICIPANT' in app.user.roles %}
@@ -24,6 +27,7 @@
         {% if not isAlreadyParticipant %}
           <a href="{{ path('hackathon_participer', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Participer</a>
         {% else %}
+        <span class="badge bg-secondary">Déjà inscrit</span>
           <a href="{{ path('app_projets', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Soummettre le projet</a>
         {% endif %}
       {% endif %}
@@ -34,8 +38,8 @@
   <br>
 
   <div>
-    {% if app.user and 'ROLE_ORGANISATEUR' in app.user.roles %}
       {% if hackathon.id_organisateur.id == app.user.id %}
+      {% if debut > now %}
         <a href="{{ path('modifier_hackathon', { id: hackathon.id_hackathon }) }}" class="btn btn-primary">Modifier</a>
         <form method="post" action="{{ path('supprimer_hackathon', {id: hackathon.id_hackathon}) }}" style="display:inline;" onsubmit="return confirm('Es-tu sûr(e) ?');">
           <input type="hidden" name="_token" value="{{ csrf_token('supprimer' ~ hackathon.id_hackathon) }}">
@@ -44,8 +48,11 @@
         <a href="{{ path('voir_participants', { id: hackathon.id_hackathon}) }}" class="btn btn-secondary" >Voir les participants</a>
         <a href="{{ path('voir_projets', { id: hackathon.id_hackathon}) }}" class="btn btn-secondary">Voir les projets</a>
       {% endif %}
-    {% endif %}
+      {% endif %}
+
+    
   </div>
+  <br/>
   <div id="map" class="map-custom" style="height: 400px;"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
@@ -60,7 +67,7 @@
       }).addTo(map);
 
       const hackathonIcon = L.icon({
-  iconUrl: '/FrontOffice/assets/img/hackathon-marker.svg',
+  iconUrl: '/FrontOffice/assets/img/markers/hackathonMarker.png',
   iconSize: [36, 36],
   iconAnchor: [18, 36],
   popupAnchor: [0, -30]
@@ -87,13 +94,13 @@ const marker = L.marker([{{ coords.lat }}, {{ coords.lon }}], {icon: hackathonIc
       // --- Ajout des POI proches (restaurants et hôtels) via Geoapify ---
       const poiIcons = {
   restaurant: L.icon({
-    iconUrl: '/FrontOffice/assets/img/restaurant-marker.svg',
+    iconUrl: '/FrontOffice/assets/img/markers/restaurantMarker.png',
     iconSize: [36, 36],
     iconAnchor: [18, 36],
     popupAnchor: [0, -30]
   }),
   hotel: L.icon({
-    iconUrl: '/FrontOffice/assets/img/hotel-marker.svg',
+    iconUrl: '/FrontOffice/assets/img/markers/hotelMarker.png',
     iconSize: [36, 36],
     iconAnchor: [18, 36],
     popupAnchor: [0, -30]
@@ -119,8 +126,13 @@ const marker = L.marker([{{ coords.lat }}, {{ coords.lon }}], {icon: hackathonIc
   });
 </script>
 <div style="margin-top:10px;">
-  <span style="display:inline-block;margin-right:20px;"><img src="https://cdn.geoapify.com/icons/restaurant.svg" style="width:22px;vertical-align:middle;"> Restaurant</span>
-  <span style="display:inline-block;"><img src="https://cdn.geoapify.com/icons/lodging.svg" style="width:22px;vertical-align:middle;"> Hôtel</span>
+
+<span style="display:inline-block;margin-right:20px;">
+  <img src="{{ asset('FrontOffice/assets/img/markers/restaurantMarker.png') }}" style="width:22px;vertical-align:middle;"> Restaurant
+</span>
+<span style="display:inline-block;margin-right:20px;">
+  <img src="{{ asset('FrontOffice/assets/img/markers/hotelMarker.png') }}" style="width:22px;vertical-align:middle;"> Hôtel
+</span>
 </div>
 {% endif %}
 </div>
