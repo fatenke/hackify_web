@@ -3,112 +3,122 @@
 {% block title %}Technologies{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header"></div>
-                <div class="card-body">
-                    <div class="alert alert-info">
-                        {% if projets is empty %}
-                            <p>Aucune technologie pour le moment.</p>
-                            <div style="width: 20%;">
-                                <a href="{{ path('ajouter_technologie') }}" class="btn bg-gradient-info btn-lg w-100">
-                                    Nouvelle technologie
-                                </a>
-                            </div>
-                        {% else %}
-                            <div class="d-flex align-items-center justify-content-between">
-                                <p class="m-0">Toutes les technologies.</p>
-                                
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                {# Flash Messages #}
+                {% for label, messages in app.flashes %}  
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                <div class="card">
+                    <div class="card-header"></div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            {% if projets is empty %}
+                                <p>Aucune technologie pour le moment.</p>
                                 <div style="width: 20%;">
                                     <a href="{{ path('ajouter_technologie') }}" class="btn bg-gradient-info btn-lg w-100">
                                         Nouvelle technologie
                                     </a>
                                 </div>
+                            {% else %}
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <p class="m-0">Toutes les technologies.</p>
+                                    
+                                    <div style="width: 20%;">
+                                        <a href="{{ path('ajouter_technologie') }}" class="btn bg-gradient-info btn-lg w-100">
+                                            Nouvelle technologie
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {% if projets is not empty %}
+                        <div class="card mt-3">
+                            <a href="{{ path('technologies_pdf') }}" class="btn btn-danger mb-3">
+                                📄 Télécharger PDF
+                            </a>
+                            <div class="card-body">
+                                <form method="get" action="{{ path('voir_technologies_back') }}" class="row g-3 mb-4">
+                                    <div class="col-md-3">
+                                        <label for="nom">nom</label>
+                                        <input type="text" name="nom" value="{{ app.request.get('nom') }}" class="form-control" placeholder="Nom de la technologie">
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label for="type">Type</label>
+                                        <select name="type" id="type" class="form-control">
+                                            <option value="">Tous les types</option>
+                                            <option value="Dev" {% if app.request.get('type_tech') == 'Dev' %}selected{% endif %}>Dev</option>
+                                            <option value="Business" {% if app.request.get('type_tech') == 'Business'%}selected{% endif %}>Business</option>
+                                            <option value="Finance" {% if app.request.get('type_tech') == 'Finance' %}selected{% endif %}>Finance</option>
+                                            <option value="Securite" {% if app.request.get('type_tech') == 'Securite' %}selected{% endif %}>Sécurité</option>
+                                            <option value="Reseaux" {% if app.request.get('type_tech') == 'Reseaux' %}selected{% endif %}>Réseaux</option>
+                                            <option value="Autre" {% if app.request.get('type_tech') == 'Autre' %}selected{% endif %}>Autre</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label for="complexite">Complexité</label>
+                                        <select name="complexite" id="complexite" class="form-control">
+                                            <option value="">Toutes les complexités</option>
+                                            <option value="faible" {% if app.request.get('complexite') == 'faible' %}selected{% endif %}>Faible</option>
+                                            <option value="moyenne" {% if app.request.get('complexite') == 'moyenne' %}selected{% endif %}>Moyenne</option>
+                                            <option value="haute" {% if app.request.get('complexite') == 'haute' %}selected{% endif %}>Haute</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-3 d-flex gap-2 align-items-end">
+                                        <button type="submit" class="btn btn-primary w-100">Rechercher</button>
+                                        <a href="{{ path('voir_technologies_back') }}" class="btn btn-secondary w-100">Réinitialiser</a>
+                                    </div>
+                                </form>
+
+                                <table class="table table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Nom</th>
+                                            <th>Type</th>
+                                            <th>Complexité</th>
+                                            <th>Documentaire</th>
+                                            <th>Compatibilité</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for projet in projets %}
+                                            <tr>
+                                                <td>{{ projet.NomTech }}</td>
+                                                <td>{{ projet.typeTech }}</td>
+                                                <td>{{ projet.complexite }}</td>
+                                                <td>{{ projet.documentaire }}</td>
+                                                <td>{{ projet.compatibilite }}</td>
+                                                <td>
+                                                    <div class="d-flex">
+                                                        <a href="{{ path('modifier_technologie', { id: projet.id }) }}" class="btn bg-gradient-primary m-1">Update</a>
+                                                        <form method="post" action="{{ path('supprimer_technologie', {id: projet.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');" class="m-1">
+                                                            <input type="hidden" name="_token" value="{{ csrf_token('supprimer' ~ projet.id) }}">
+                                                            <button class="btn bg-gradient-danger">Delete</button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
+                        </div>
                         {% endif %}
                     </div>
-
-                    {% if projets is not empty %}
-                    <div class="card mt-3">
-                        <a href="{{ path('technologies_pdf') }}" class="btn btn-danger mb-3">
-    📄 Télécharger PDF
-</a>
-                        <div class="card-body">
-                            <form method="get" action="{{ path('voir_technologies_back') }}" class="row g-3 mb-4">
-                                <div class="col-md-3">
-                                <label for="nom">nom</label>
-                                    <input type="text" name="nom" value="{{ app.request.get('nom') }}" class="form-control" placeholder="Nom de la technologie">
-                                </div>
-
-                                <div class="col-md-3">
-                                    <label for="type">Type</label>
-                                    <select name="type" id="type" class="form-control">
-                                        <option value="">Tous les types</option>
-                                        <option value="Dev" {% if app.request.get('type_tech') == 'Dev' %}selected{% endif %}>Dev</option>
-                                        <option value="Business" {% if app.request.get('type_tech') == 'Business'%}selected{% endif %}>Business</option>
-                                        <option value="Finance" {% if app.request.get('type_tech') == 'Finance' %}selected{% endif %}>Finance</option>
-                                        <option value="Securite" {% if app.request.get('type_tech') == 'Securite' %}selected{% endif %}>Sécurité</option>
-                                        <option value="Reseaux" {% if app.request.get('type_tech') == 'Reseaux' %}selected{% endif %}>Réseaux</option>
-                                        <option value="Autre" {% if app.request.get('type_tech') == 'Autre' %}selected{% endif %}>Autre</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-3">
-                                    <label for="complexite">Complexité</label>
-                                    <select name="complexite" id="complexite" class="form-control">
-                                        <option value="">Toutes les complexités</option>
-                                        <option value="faible" {% if app.request.get('complexite') == 'faible' %}selected{% endif %}>Faible</option>
-                                        <option value="moyenne" {% if app.request.get('complexite') == 'moyenne' %}selected{% endif %}>Moyenne</option>
-                                        <option value="haute" {% if app.request.get('complexite') == 'haute' %}selected{% endif %}>Haute</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-3 d-flex gap-2 align-items-end">
-                                    <button type="submit" class="btn btn-primary w-100">Rechercher</button>
-                                    <a href="{{ path('voir_technologies_back') }}" class="btn btn-secondary w-100">Réinitialiser</a>
-                                </div>
-                            </form>
-
-                            <table class="table table-bordered">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>Nom</th>
-                                        <th>Type</th>
-                                        <th>Complexité</th>
-                                        <th>Documentaire</th>
-                                        <th>Compatibilité</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for projet in projets %}
-                                        <tr>
-                                            <td>{{ projet.NomTech }}</td>
-                                            <td>{{ projet.typeTech }}</td>
-                                            <td>{{ projet.complexite }}</td>
-                                            <td>{{ projet.documentaire }}</td>
-                                            <td>{{ projet.compatibilite }}</td>
-                                            <td>
-                                                <div class="d-flex">
-                                                    <a href="{{ path('modifier_technologie', { id: projet.id }) }}" class="btn bg-gradient-primary m-1">Update</a>
-                                                    <form method="post" action="{{ path('supprimer_technologie', {id: projet.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');" class="m-1">
-                                                        <input type="hidden" name="_token" value="{{ csrf_token('supprimer' ~ projet.id) }}">
-                                                        <button class="btn bg-gradient-danger">Delete</button>
-                                                    </form>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}

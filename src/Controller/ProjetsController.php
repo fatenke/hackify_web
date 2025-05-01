@@ -161,6 +161,14 @@ final class ProjetsController extends AbstractController
     public function supprimertech(Request $request, Technologies $Technologies, EntityManagerInterface $em): Response
     {
         if ($this->isCsrfTokenValid('supprimer'.$Technologies->getId(), $request->request->get('_token'))) {
+            // Check if the technology is used in any project
+            $projetsUsingTechnology = $Technologies->getProjets();
+            
+            if (count($projetsUsingTechnology) > 0) {
+                $this->addFlash('error', 'Technologie existe  dans projet');
+                return $this->redirectToRoute('voir_technologies_back');
+            }
+            
             $em->remove($Technologies);
             $em->flush();
         }
