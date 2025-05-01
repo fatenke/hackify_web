@@ -19,18 +19,21 @@ class AdminController extends AbstractController
     #[Route('/dashboard', name: 'admin_dashboard')]
     public function dashboard(Request $request, UserRepository $userRepository): Response
     {
-        $search = $request->query->get('search');        $sort = $request->query->get('sort', 'idUser');
+        $search = $request->query->get('search');        
+        $sort = $request->query->get('sort', 'idUser');
         $direction = $request->query->get('direction', 'asc');
         $status = $request->query->get('status');
         
         $queryBuilder = $userRepository->createQueryBuilder('u');
         
+        // Exclude admin users from the list
+        $queryBuilder->where('u.roleUser NOT LIKE :role')
+                    ->setParameter('role', '%"ROLE_ADMIN"%');
+        
         // Search
         if ($search) {
             $queryBuilder
-                ->where('u.nomUser LIKE :search')
-                ->orWhere('u.prenomUser LIKE :search')
-                ->orWhere('u.emailUser LIKE :search')
+                ->andWhere('(u.nomUser LIKE :search OR u.prenomUser LIKE :search OR u.emailUser LIKE :search)')
                 ->setParameter('search', '%' . $search . '%');
         }
         
@@ -77,9 +80,41 @@ class AdminController extends AbstractController
         ]);
     }
 
+    #[Route('/user/ban/{id}', name: 'admin_user_ban')]
+    public function banUser(User $user, EntityManagerInterface $entityManager): Response
+    {
+        // Check if the user is not an admin
+        if (in_array('ROLE_ADMIN', $user->getRoles())) {
+            $this->addFlash('error', 'Cannot ban an administrator');
+            return $this->redirectToRoute('admin_dashboard');
+        }
+        
+        $user->setStatusUser('inactive');
+        $entityManager->flush();
+        
+        $this->addFlash('success', 'User has been banned successfully');
+        return $this->redirectToRoute('admin_dashboard');
+    }
+
+    #[Route('/user/unban/{id}', name: 'admin_user_unban')]
+    public function unbanUser(User $user, EntityManagerInterface $entityManager): Response
+    {
+        $user->setStatusUser('active');
+        $entityManager->flush();
+        
+        $this->addFlash('success', 'User has been unbanned successfully');
+        return $this->redirectToRoute('admin_dashboard');
+    }
+
     #[Route('/user/delete/{id}', name: 'admin_user_delete')]
     public function deleteUser(User $user, EntityManagerInterface $entityManager): Response
     {
+        // Check if the user is not an admin
+        if (in_array('ROLE_ADMIN', $user->getRoles())) {
+            $this->addFlash('error', 'Cannot delete an administrator');
+            return $this->redirectToRoute('admin_dashboard');
+        }
+        
         $entityManager->remove($user);
         $entityManager->flush();
         
@@ -90,7 +125,12 @@ class AdminController extends AbstractController
     #[Route('/dashboard/export-pdf', name: 'admin_dashboard_export_pdf')]
     public function exportPdf(UserRepository $userRepository): Response
     {
-        $users = $userRepository->findAll();
+        // Exclude admin users from the export
+        $queryBuilder = $userRepository->createQueryBuilder('u');
+        $queryBuilder->where('u.roleUser NOT LIKE :role')
+                    ->setParameter('role', '%"ROLE_ADMIN"%');
+        
+        $users = $queryBuilder->getQuery()->getResult();
 
         // Configure Dompdf
         $options = new Options();

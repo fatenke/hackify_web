@@ -2,6 +2,8 @@
 
 namespace App\Security;
 
+use App\Entity\User;
+use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,12 +30,14 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     private UrlGeneratorInterface $urlGenerator;
     private HttpClientInterface $httpClient;
     private string $recaptchaSecret;
+    private UserRepository $userRepository;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, HttpClientInterface $httpClient)
+    public function __construct(UrlGeneratorInterface $urlGenerator, HttpClientInterface $httpClient, UserRepository $userRepository)
     {
         $this->urlGenerator = $urlGenerator;
         $this->httpClient = $httpClient;
         $this->recaptchaSecret = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
+        $this->userRepository = $userRepository;
     }
 
     private function verifyRecaptcha(?string $token): bool
@@ -67,6 +71,12 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         $recaptchaResponse = $request->request->get('g-recaptcha-response');
         if (!$this->verifyRecaptcha($recaptchaResponse)) {
             throw new CustomUserMessageAuthenticationException('La vérification reCAPTCHA a échoué. Veuillez réessayer.');
+        }
+        
+        // Check if user is banned (inactive)
+        $user = $this->userRepository->findOneBy(['emailUser' => $username]);
+        if ($user && $user->getStatusUser() === 'inactive') {
+            throw new CustomUserMessageAuthenticationException('Votre compte a été désactivé. Veuillez contacter un administrateur.');
         }
         
         $request->getSession()->set(Security::LAST_USERNAME, $username);
