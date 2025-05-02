@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 use App\Entity\User;
 use App\Entity\Chat;
@@ -32,6 +34,14 @@ class Message
 
     #[ORM\Column(type: "datetime")]
     private \DateTimeInterface $post_time;
+
+    #[ORM\OneToMany(mappedBy: 'message', targetEntity: Reaction::class, orphanRemoval: true)]
+    private Collection $reactions;
+
+    public function __construct()
+    {
+        $this->reactions = new ArrayCollection();
+    }
 
     public function getId()
     {
@@ -91,6 +101,36 @@ class Message
     public function setPost_time($value)
     {
         $this->post_time = $value;
+    }
+
+    /**
+     * @return Collection<int, Reaction>
+     */
+    public function getReactions(): Collection
+    {
+        return $this->reactions;
+    }
+
+    public function addReaction(Reaction $reaction): self
+    {
+        if (!$this->reactions->contains($reaction)) {
+            $this->reactions->add($reaction);
+            $reaction->setMessage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReaction(Reaction $reaction): self
+    {
+        if ($this->reactions->removeElement($reaction)) {
+            // set the owning side to null (unless already changed)
+            if ($reaction->getMessage() === $this) {
+                // Handle removal in database instead
+            }
+        }
+
+        return $this;
     }
 
     public function getAuthorForIndexing(): string

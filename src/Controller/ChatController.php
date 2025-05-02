@@ -13,6 +13,7 @@ use App\Form\MessageSearchType;
 use App\Repository\ChatRepository;
 use App\Security\Voter\ChatMessageVoter;
 use App\Service\GeminiChatService;
+use App\Service\PerspectiveApiService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -51,7 +52,7 @@ class ChatController extends AbstractController
 
     // --- Message Handling ---
     #[Route('/{id}/message/new', name: 'app_chat_message_new', methods: ['POST'])]
-    public function newMessage(Request $request, Chat $chat): JsonResponse
+    public function newMessage(Request $request, Chat $chat, PerspectiveApiService $perspectiveApiService): JsonResponse
     {
         $user = $this->getUser();
         if (!$user) {
@@ -65,6 +66,17 @@ class ChatController extends AbstractController
         $content = $request->request->get('contenu');
         if (!$content) {
             return $this->json(['error' => 'Message content is required'], 400);
+        }
+
+        // Check message for toxic content using Perspective API
+        $contentAnalysis = $perspectiveApiService->analyzeText($content);
+        
+        if ($contentAnalysis['isFlagged']) {
+            // Message is flagged as toxic
+            return $this->json([
+                'error' => 'Your message may contain inappropriate content and cannot be posted.',
+                'toxicity_scores' => $contentAnalysis['scores']
+            ], 400);
         }
 
         $message = new Message();
@@ -84,7 +96,7 @@ class ChatController extends AbstractController
     }
 
     #[Route('/{id}/message/gemini', name: 'app_chat_message_gemini', methods: ['POST'])]
-    public function newGeminiMessage(Request $request, Chat $chat, GeminiChatService $geminiChatService): JsonResponse
+    public function newGeminiMessage(Request $request, Chat $chat, GeminiChatService $geminiChatService, PerspectiveApiService $perspectiveApiService): JsonResponse
     {
         try {
             $user = $this->getUser();
@@ -99,6 +111,17 @@ class ChatController extends AbstractController
             $content = $request->request->get('contenu');
             if (!$content) {
                 return $this->json(['error' => 'Message content is required'], 400);
+            }
+
+            // Check message for toxic content using Perspective API
+            $contentAnalysis = $perspectiveApiService->analyzeText($content);
+            
+            if ($contentAnalysis['isFlagged']) {
+                // Message is flagged as toxic
+                return $this->json([
+                    'error' => 'Your message may contain inappropriate content and cannot be posted.',
+                    'toxicity_scores' => $contentAnalysis['scores']
+                ], 400);
             }
 
             // Save user message
@@ -453,6 +476,58 @@ class ChatController extends AbstractController
             'query' => $query,
             'results' => $serializedResults
         ]);
+    }
+
+    #[Route('/community/{id}/members', name: 'app_community_members', methods: ['GET'])]
+    public function getCommunityMembers(Communaute $community): JsonResponse
+    {
+        try {
+            // Check if user is part of this community
+            $currentUser = $this->getUser();
+            if (!$currentUser) {
+                return $this->json(['error' => 'You must be logged in to access community members'], 401);
+            }
+
+            // Get the hackathon associated with the community
+            $hackathon = $community->getIdHackathon();
+            if (!$hackathon) {
+                return $this->json(['error' => 'No hackathon associated with this community'], 404);
+            }
+
+            // Get all participations for this hackathon
+            $participations = $hackathon->getParticipations();
+            
+            $members = [];
+            foreach ($participations as $participation) {
+                // Get user from participation
+                $user = $participation->getParticipant();
+                if ($user) {
+                    // Get the user's role - default to 'PARTICIPANT' if no roles
+                    $roles = $user->getRoles();
+                    $role = !empty($roles) ? $roles[0] : 'ROLE_PARTICIPANT';
+                    
+                    // Remove the 'ROLE_' prefix for display
+                    $displayRole = str_replace('ROLE_', '', $role);
+                    
+                    $members[] = [
+                        'id' => $user->getId(),
+                        'name' => $user->getPrenomUser() . ' ' . $user->getNomUser(),
+                        'email' => $user->getEmailUser(),
+                        'photo' => $user->getPhotoUser(),
+                        'role' => $displayRole
+                    ];
+                }
+            }
+
+            return $this->json([
+                'success' => true,
+                'members' => $members
+            ]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'error' => 'Failed to retrieve community members: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     private function performDatabaseSearch(string $query, Communaute $community): array

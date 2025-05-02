@@ -212,7 +212,8 @@
             max-width: 75%;
         }
         .message-own {
-            margin-right: auto;
+            margin-left: auto;
+            margin-right: 0;
             background-color: #f1f1f1;
             color: black;
             border-radius: 15px 15px 15px 0;
@@ -224,7 +225,8 @@
             color: rgba(0, 0, 0, 0.6) !important;
         }
         .message-other {
-            margin-left: auto;
+            margin-right: auto;
+            margin-left: 0;
             background-color: #007bff;
             color: white;
             border-radius: 15px 15px 0 15px;
@@ -234,7 +236,8 @@
             color: rgba(255, 255, 255, 0.7) !important;
         }
         .message-bot {
-            margin-left: auto;
+            margin-right: auto;
+            margin-left: 0;
             background-color: #0a5c36;
             color: white;
             border-radius: 15px 15px 0 15px;
@@ -594,161 +597,185 @@
             }
         }
         
-        /* MORE SPECIFIC CHAT STYLING - WILL OVERRIDE ANY PREVIOUS STYLES */
+        /* Remove all these conflicting message styles */
+        .message-content {
+            line-height: 1.5;
+            margin-bottom: 0.75rem;
+        }
+        .messages {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .chat-container {
+            height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+        /* Remove all old message styles */
+        
+        /* BEGIN CLEAN CHAT STYLING - COMPLETELY REIMPLEMENTED */
+        /* Main messages container */
         #messages-container {
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 20px !important;
-            padding: 20px !important;
-            max-height: 600px !important;
-            overflow-y: auto !important;
-            background-color: #f5f7fb !important;
-            border-radius: 8px !important;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.05) !important;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+            background-color: #f5f7fb;
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
         }
         
+        /* Base message style */
         #messages-container .message {
-            display: flex !important;
-            max-width: 80% !important;
-            gap: 12px !important;
-            position: relative !important;
-            margin-bottom: 0 !important;
+            display: flex;
+            max-width: 80%;
+            gap: 12px;
+            position: relative;
+            margin-bottom: 0;
         }
         
+        /* User's own messages */
         #messages-container .message-own {
-            margin-left: auto !important;
-            margin-right: 0 !important;
-            flex-direction: row-reverse !important;
+            align-self: flex-end;
+            flex-direction: row-reverse;
+            margin-left: auto;
         }
         
-        #messages-container .message-other, 
+        /* Other user's messages and bot messages */
+        #messages-container .message-other,
         #messages-container .message-bot {
-            margin-right: auto !important;
-            margin-left: 0 !important;
+            align-self: flex-start;
+            margin-right: auto;
         }
         
+        /* Avatar styling */
         #messages-container .avatar-container {
-            width: 40px !important;
-            height: 40px !important;
-            border-radius: 50% !important;
-            overflow: hidden !important;
-            flex-shrink: 0 !important;
-            align-self: flex-end !important;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2) !important;
-            border: 3px solid #fff !important;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            align-self: flex-end;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            border: 3px solid #fff;
         }
         
         #messages-container .message-own .avatar-container {
-            border-color: #0d6efd !important;
+            border-color: #0d6efd;
         }
         
         #messages-container .message-bot .avatar-container {
-            border-color: #0a5c36 !important;
+            border-color: #0a5c36;
         }
         
         #messages-container .avatar-container img {
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover !important;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         #messages-container .avatar-placeholder {
-            width: 100% !important;
-            height: 100% !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            background-color: #6c757d !important;
-            color: white !important;
-            font-weight: bold !important;
-            font-size: 16px !important;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #6c757d;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
         }
         
         #messages-container .message-own .avatar-placeholder {
-            background-color: #0d6efd !important;
+            background-color: #0d6efd;
         }
         
         #messages-container .bot-avatar {
-            background: linear-gradient(135deg, #0a5c36 0%, #28a745 100%) !important;
+            background: linear-gradient(135deg, #0a5c36 0%, #28a745 100%);
         }
         
+        /* Message content wrapper */
         #messages-container .message-wrapper {
-            display: flex !important;
-            flex-direction: column !important;
-            max-width: calc(100% - 60px) !important;
+            display: flex;
+            flex-direction: column;
+            max-width: calc(100% - 60px);
         }
         
+        /* Message content styling */
         #messages-container .message-content {
-            padding: 12px 16px !important;
-            border-radius: 18px !important;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-            position: relative !important;
-            word-break: break-word !important;
+            padding: 12px 16px;
+            border-radius: 18px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: relative;
+            word-break: break-word;
+            line-height: 1.5;
         }
         
         #messages-container .message-own .message-content {
-            background-color: #0d6efd !important;
-            color: white !important;
-            border-top-right-radius: 4px !important;
-            margin-right: 8px !important;
+            background-color: #0d6efd;
+            color: white;
+            border-top-right-radius: 4px;
+            margin-right: 8px;
         }
         
         #messages-container .message-other .message-content {
-            background-color: white !important;
-            color: #212529 !important;
-            border-top-left-radius: 4px !important;
-            margin-left: 8px !important;
+            background-color: white;
+            color: #212529;
+            border-top-left-radius: 4px;
+            margin-left: 8px;
         }
         
         #messages-container .message-bot .message-content {
-            background-color: #0a5c36 !important;
-            color: white !important;
-            border-top-left-radius: 4px !important;
-            margin-left: 8px !important;
+            background-color: #0a5c36;
+            color: white;
+            border-top-left-radius: 4px;
+            margin-left: 8px;
         }
         
-        /* Other existing styles without the !important */
-        .message-meta {
+        /* Message metadata */
+        #messages-container .message-meta {
             display: flex;
             flex-direction: column;
             margin-bottom: 5px;
         }
         
-        .message-own .message-meta {
+        #messages-container .message-own .message-meta {
             align-items: flex-end;
         }
         
-        .message-sender {
+        #messages-container .message-sender {
             font-weight: 600;
             font-size: 13px;
             margin-bottom: 2px;
         }
         
-        .message-own .message-sender {
+        #messages-container .message-own .message-sender {
             display: none;
         }
         
-        .message-time {
+        #messages-container .message-time {
             font-size: 11px;
             color: rgba(0, 0, 0, 0.5);
             margin-top: 4px;
         }
         
-        .message-own .message-time {
+        #messages-container .message-own .message-time {
             color: rgba(255, 255, 255, 0.7);
         }
         
-        .message-bot .message-time {
+        #messages-container .message-bot .message-time {
             color: rgba(255, 255, 255, 0.7);
         }
         
-        /* Bot response specific styling */
-        .bot-response-content {
+        /* Bot message specific styling */
+        #messages-container .bot-response-content {
             line-height: 1.5;
             font-size: 1rem;
         }
         
-        .bot-response-content strong {
+        #messages-container .bot-response-content strong {
             display: block;
             margin-top: 10px;
             margin-bottom: 5px;
@@ -758,12 +785,12 @@
             padding-bottom: 3px;
         }
         
-        .bot-response-content em {
+        #messages-container .bot-response-content em {
             color: #ffeb99;
             font-style: italic;
         }
         
-        .bot-response-content code {
+        #messages-container .bot-response-content code {
             background-color: rgba(0,0,0,0.2);
             padding: 2px 5px;
             border-radius: 3px;
@@ -771,37 +798,122 @@
             color: #f8f9fa;
         }
         
-        .bot-response-content br {
+        #messages-container .bot-response-content br {
             display: block;
             content: "";
             margin-top: 5px;
         }
+        /* END CLEAN CHAT STYLING */
+
+        /* Mention feature styling */
+        .mention-container {
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            width: 250px;
+            z-index: 9999;
+            display: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
         
-        /* Additional styles for the chat input area */
-        #message-form {
-            background-color: #fff;
+        .mention-container.show {
+            display: block !important;
+            animation: fadeIn 0.2s ease;
+        }
+        
+        .mention-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .mention-item:hover, .mention-item.active {
+            background-color: #f0f7ff;
+        }
+        
+        .mention-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: #6c757d;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .mention-info {
+            flex: 1;
+        }
+        
+        .mention-name {
+            font-weight: 500;
+            color: #212529;
+            font-size: 14px;
+            line-height: 1.2;
+        }
+        
+        .mention-email {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        .mention-text {
+            color: #0d6efd;
+            font-weight: 500;
+        }
+        
+        .mention-highlight {
+            background-color: rgba(13, 110, 253, 0.1);
+            border-radius: 3px;
+            padding: 1px 4px;
+            margin: 0 1px;
+        }
+
+        /* Reaction styling */
+        .message-reactions {
+            margin-top: 5px;
+        }
+        
+        .reaction-buttons {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .reaction-button {
+            background: none;
+            border: 1px solid #ccc;
             border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-top: 16px;
+            padding: 2px 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
         }
         
-        #message-form textarea {
-            resize: none;
-            border-radius: 20px;
-            padding: 12px 15px;
-            border: 1px solid rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+        .reaction-button:hover {
+            background-color: #f0f0f0;
         }
         
-        #message-form textarea:focus {
-            border-color: #0d6efd;
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        .reaction-button.active {
+            background-color: #e0f0ff;
+            border-color: #a0c0f0;
         }
         
-        #message-form button {
-            border-radius: 50px;
-            padding: 8px 20px;
+        .reaction-counter {
+            font-size: 12px;
+            margin-left: 3px;
+            font-weight: 500;
+            min-width: 10px;
         }
     </style>
 {% endblock %}
@@ -907,20 +1019,21 @@
                             <p class="text-center text-muted">Select a chat from the list to view messages</p>
                         </div>
 
-                        <form id="message-form" class="mt-3" style="display: none;">
-    <input type="hidden" name="_token" value="{{ csrf_token('message_token') }}">
-    <div class="form-group">
-        <textarea class="form-control" name="contenu" rows="2" placeholder="Type your message..." required></textarea>
-    </div>
-    <div class="form-group mt-2">
-        <select class="form-control" name="type">
-            <option value="QUESTION">Question</option>
-            <option value="REPONSE">Response</option>
-            <option value="SUGGESTION">Suggestion</option>
-        </select>
-    </div>
-    <button type="submit" class="btn btn-primary mt-2">Send Message</button>
-</form>
+                        <form id="message-form" class="mt-3 d-none">
+                            <input type="hidden" name="_token" value="{{ csrf_token('message_token') }}">
+                            <div class="form-group position-relative">
+                                <textarea class="form-control" name="contenu" id="message-input" rows="2" placeholder="Type your message... Use @ to mention someone" required></textarea>
+                                <div id="mention-container" class="mention-container"></div>
+                            </div>
+                            <div class="form-group mt-2">
+                                <select class="form-control" name="type">
+                                    <option value="QUESTION">Question</option>
+                                    <option value="REPONSE">Response</option>
+                                    <option value="SUGGESTION">Suggestion</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-2">Send Message</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -989,17 +1102,146 @@
 
    <!-- Only showing the updated JavaScript section -->
 <script>
-    // Debug log function
+    // Enhanced debug log function
     function debugLog(message, data = null) {
-        if (data) {
-            console.log(message, data);
-        } else {
-            console.log(message);
+        try {
+            if (data !== null) {
+                console.log(message, data);
+            } else {
+                console.log(message);
+            }
+        } catch (e) {
+            // Handle console errors in older browsers
+            console.error("Debug logging error:", e);
         }
     }
-
-    // Countdown initialization
+    
+    // Global error handler for better debugging
+    window.addEventListener('error', function(event) {
+        debugLog('JavaScript error:', {
+            message: event.message,
+            source: event.filename,
+            lineNo: event.lineno,
+            colNo: event.colno,
+            error: event.error
+        });
+    });
+    
+    // Initialize key variables
+    let currentChatId = null;
+    let currentUserId = {{ app.user ? app.user.id : 'null' }};
+    let communauteId = {{ communaute.id }};
+    let communityMembers = [];
+    
+    // Initialize variables for mentions
+    let mentionContainer = null;
+    let messageTextarea = null;
+    let mentionActive = false;
+    let mentionStartIndex = -1;
+    let mentionSearchText = '';
+    let mentionSelectedIndex = -1;
+    
+    // Function to fetch community members
+    function fetchCommunityMembers() {
+        const apiUrl = `/chat/community/${communauteId}/members`;
+        debugLog('Fetching community members from:', apiUrl);
+        
+        fetch(apiUrl)
+            .then(response => {
+                debugLog('API response status:', response.status);
+                if (!response.ok) {
+                    throw new Error('Failed to load community members');
+                }
+                return response.json();
+            })
+            .then(data => {
+                debugLog('Community members loaded:', data);
+                communityMembers = data.members || [];
+            })
+            .catch(error => {
+                debugLog('Error loading community members:', error);
+                // Fallback: Use test data if API fails
+                debugLog('Using fallback test data for members');
+                communityMembers = [
+                    {
+                        id: 1, 
+                        name: 'John Doe',
+                        email: 'john@example.com',
+                        role: 'ADMIN'
+                    },
+                    {
+                        id: 2,
+                        name: 'Jane Smith',
+                        email: 'jane@example.com',
+                        role: 'ORGANISATEUR'
+                    },
+                    {
+                        id: 3,
+                        name: 'Alice Johnson',
+                        email: 'alice@example.com',
+                        role: 'COACH'
+                    },
+                    {
+                        id: 4,
+                        name: 'Bob Brown',
+                        email: 'bob@example.com',
+                        role: 'PARTICIPANT'
+                    },
+                    {
+                        id: 5,
+                        name: 'Charlie Davis',
+                        email: 'charlie@example.com',
+                        role: 'PARTICIPANT'
+                    }
+                ];
+            });
+    }
+    
+    // Function to initialize/reinitialize the message form
+    function initializeMessageForm() {
+        // Get the message textarea
+        messageTextarea = document.getElementById('message-input');
+        
+        if (!messageTextarea) {
+            debugLog('ERROR: Message textarea not found');
+            return;
+        }
+        
+        debugLog('Setting up mention handlers on textarea');
+        
+        // Make sure we have the mention container
+        mentionContainer = document.getElementById('mention-container');
+        if (!mentionContainer) {
+            debugLog('Creating mention container');
+            mentionContainer = document.createElement('div');
+            mentionContainer.id = 'mention-container';
+            mentionContainer.className = 'mention-container';
+            document.body.appendChild(mentionContainer);
+        }
+        
+        // Remove any existing listeners to avoid duplicates
+        messageTextarea.removeEventListener('keyup', handleMentionKeyup);
+        messageTextarea.removeEventListener('keydown', handleMentionKeydown);
+        
+        // Add event listeners
+        messageTextarea.addEventListener('keyup', handleMentionKeyup);
+        messageTextarea.addEventListener('keydown', handleMentionKeydown);
+    }
+    
+    // Call this when the page loads
     document.addEventListener('DOMContentLoaded', function() {
+        debugLog('Setting up mentions and reactions functionality for community ID:', communauteId);
+        
+        // Fetch community members right away
+        fetchCommunityMembers();
+        
+        // Set up reaction handling
+        setupReactions();
+        
+        // Initialize message form if available
+        initializeMessageForm();
+
+        // Countdown initialization
         const elements = {
             days: document.getElementById('days'),
             hours: document.getElementById('hours'),
@@ -1019,8 +1261,8 @@
                 Object.values(elements).forEach(el => {
                     if (el) el.textContent = '00';
                 });
-                countdownContainer.classList.add('warning');
-                submissionReminder.classList.add('show');
+                if (countdownContainer) countdownContainer.classList.add('warning');
+                if (submissionReminder) submissionReminder.classList.add('show');
                 return;
             }
 
@@ -1035,22 +1277,118 @@
             if (elements.seconds) elements.seconds.textContent = String(seconds).padStart(2, '0');
 
             if (days === 0) {
-                countdownContainer.classList.add('warning');
-                submissionReminder.classList.add('show');
+                if (countdownContainer) countdownContainer.classList.add('warning');
+                if (submissionReminder) submissionReminder.classList.add('show');
             } else {
-                countdownContainer.classList.remove('warning');
-                submissionReminder.classList.remove('show');
+                if (countdownContainer) countdownContainer.classList.remove('warning');
+                if (submissionReminder) submissionReminder.classList.remove('show');
             }
         }
 
         updateCountdown();
         setInterval(updateCountdown, 1000);
     });
+    
+    // Setup reaction functionality
+    function setupReactions() {
+        debugLog('Setting up reactions functionality');
+        
+        // Listen for reaction button clicks on dynamically added messages
+        document.getElementById('messages-container').addEventListener('click', function(e) {
+            // Check if the clicked element or its parent is a reaction button
+            const reactionButton = e.target.closest('.reaction-button');
+            if (reactionButton) {
+                const messageId = reactionButton.dataset.messageId;
+                const emoji = reactionButton.dataset.emoji;
+                debugLog('Reaction clicked:', { messageId, emoji });
+                addReaction(messageId, emoji);
+            }
+        });
+    }
+    
+    // Function to add a reaction to a message
+    function addReaction(messageId, emoji) {
+        const formData = new FormData();
+        formData.append('emoji', emoji);
+        
+        fetch(`/reaction/add/${messageId}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to add reaction');
+            }
+            return response.json();
+        })
+        .then(data => {
+            debugLog('Reaction response:', data);
+            if (data.success) {
+                // Update the UI to reflect the new reaction counts
+                updateReactionCounts(messageId, data.counts);
+                
+                // Toggle active class on the button
+                const button = document.querySelector(`.reaction-button[data-message-id="${messageId}"][data-emoji="${emoji}"]`);
+                if (button) {
+                    if (data.action === 'added') {
+                        button.classList.add('active');
+                    } else if (data.action === 'removed') {
+                        button.classList.remove('active');
+                    }
+                }
+            }
+        })
+        .catch(error => {
+            debugLog('Error adding reaction:', error);
+        });
+    }
+    
+    // Function to update reaction counts in the UI
+    function updateReactionCounts(messageId, counts) {
+        Object.keys(counts).forEach(emoji => {
+            const counter = document.querySelector(`.reaction-counter[data-message-id="${messageId}"][data-emoji="${emoji}"]`);
+            if (counter) {
+                const count = counts[emoji] || 0;
+                counter.textContent = count > 0 ? count : '';
+            }
+        });
+    }
+    
+    // Function to fetch existing reactions for a message
+    function loadReactions(messageId) {
+        fetch(`/reaction/get/${messageId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to load reactions');
+                }
+                return response.json();
+            })
+            .then(data => {
+                debugLog('Loaded reactions for message:', messageId, data);
+                if (data.success) {
+                    updateReactionCounts(messageId, data.counts);
+                    
+                    // Mark user's reactions as active
+                    data.userReactions.forEach(emoji => {
+                        const button = document.querySelector(`.reaction-button[data-message-id="${messageId}"][data-emoji="${emoji}"]`);
+                        if (button) {
+                            button.classList.add('active');
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                debugLog('Error loading reactions:', error);
+            });
+    }
 
-    // Chat functionality
-    let currentChatId = null;
-    let currentUserId = {{ app.user ? app.user.id : 'null' }};
-    let communauteId = {{ communaute.id }};
+    // Listen for clicks outside the mention container to close it
+    document.addEventListener('click', function(e) {
+        if (mentionActive && !mentionContainer.contains(e.target) && e.target !== messageTextarea) {
+            debugLog('Click outside mention container detected');
+            closeMentionContainer();
+        }
+    });
 
     document.getElementById('toggle-polls').addEventListener('click', function() {
         document.getElementById('polls-sidebar').classList.toggle('show');
@@ -1061,13 +1399,51 @@
             e.preventDefault();
             const chatId = this.dataset.chatId;
             const chatName = this.dataset.chatName;
-            debugLog('Chat selected:', { chatId, chatName });
-            currentChatId = chatId;
-
+            const chatType = this.dataset.chatType;
+            debugLog('Chat selected:', { chatId, chatName, chatType });
+            
+            // Update UI for selected chat
+            document.querySelectorAll('.chat-link').forEach(el => el.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Update chat header
             document.getElementById('current-chat-name').textContent = chatName;
-            document.getElementById('message-form').style.display = 'block';
-            document.getElementById('create-poll-btn').style.display = 'block';
-
+            
+            // Store current chat ID for later use
+            currentChatId = chatId;
+            
+            // Check if the user has permission to post in this chat
+            const userRole = '{{ app.user ? app.user.roles[0] : "ROLE_USER" }}';
+            const canPost = !(userRole === 'ROLE_PARTICIPANT' && (chatType === 'ANNONCES' || chatType === 'COACH'));
+            
+            // Show or hide input form based on permissions
+            const messageForm = document.getElementById('message-form');
+            if (messageForm) {
+                if (canPost) {
+                    messageForm.classList.remove('d-none');
+                    messageForm.style.display = 'block';
+                    
+                    // Also clear any previous permission alerts
+                    const permissionAlert = document.getElementById('permission-alert');
+                    if (permissionAlert) {
+                        permissionAlert.remove();
+                    }
+                } else {
+                    messageForm.style.display = 'none';
+                    // Show permission alert
+                    showPermissionDeniedAlert(chatName, chatType);
+                }
+            }
+            
+            // Make sure we have community members for mentions
+            fetchCommunityMembers();
+            
+            // Initialize/reinitialize the message form if the user can post
+            if (canPost) {
+                initializeMessageForm();
+            }
+            
+            // Load chat content
             loadChatContent(chatId);
         });
     });
@@ -1116,6 +1492,7 @@
 
                         const messageElement = document.createElement('div');
                         messageElement.className = `message ${messageClass}`;
+                        messageElement.dataset.messageId = message.id;
                         
                         // Generate avatar HTML
                         let avatarHTML = '';
@@ -1162,6 +1539,15 @@
                                     <div class="message-content">
                                         <div>${message.contenu}</div>
                                         <div class="message-time">${message.post_time}</div>
+                                        <div class="message-reactions">
+                                            <div class="reaction-buttons">
+                                                <button class="reaction-button" data-message-id="${message.id}" data-emoji="👍">👍 <span class="reaction-counter" data-message-id="${message.id}" data-emoji="👍"></span></button>
+                                                <button class="reaction-button" data-message-id="${message.id}" data-emoji="❤️">❤️ <span class="reaction-counter" data-message-id="${message.id}" data-emoji="❤️"></span></button>
+                                                <button class="reaction-button" data-message-id="${message.id}" data-emoji="😂">😂 <span class="reaction-counter" data-message-id="${message.id}" data-emoji="😂"></span></button>
+                                                <button class="reaction-button" data-message-id="${message.id}" data-emoji="😮">😮 <span class="reaction-counter" data-message-id="${message.id}" data-emoji="😮"></span></button>
+                                                <button class="reaction-button" data-message-id="${message.id}" data-emoji="👏">👏 <span class="reaction-counter" data-message-id="${message.id}" data-emoji="👏"></span></button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             `;
@@ -1173,6 +1559,9 @@
                             : `${avatarHTML}${contentHTML}`;
                             
                         messagesContainer.appendChild(messageElement);
+                        
+                        // Load reactions for this message
+                        loadReactions(message.id);
                     });
                 } else {
                     messagesContainer.innerHTML = '<p class="text-center text-muted">No messages yet.</p>';
@@ -1231,129 +1620,154 @@
             });
     }
 
+    // Handle message form submission
     document.getElementById('message-form').addEventListener('submit', function(e) {
         e.preventDefault();
+        
         if (!currentChatId) {
             alert('Please select a chat first.');
             return;
         }
-
-        const formData = new FormData(this);
+        
+        const messageInput = document.getElementById('message-input');
+        const content = messageInput.value.trim();
+        
+        if (!content) {
+            return; // Don't send empty messages
+        }
+        
+        // Check permissions based on chat type and user role
         const chatType = document.querySelector(`.chat-link[data-chat-id="${currentChatId}"]`).dataset.chatType;
-        debugLog('Submitting message for chat:', { chatId: currentChatId, chatType });
-
+        const userRole = '{{ app.user ? app.user.roles[0] : "ROLE_USER" }}';
+        
+        // Participants can't post in ANNONCES or COACH chats
+        if (userRole === 'ROLE_PARTICIPANT' && (chatType === 'ANNONCES' || chatType === 'COACH')) {
+            const chatName = document.querySelector(`.chat-link[data-chat-id="${currentChatId}"]`).dataset.chatName;
+            showPermissionDeniedAlert(chatName, chatType);
+            return;
+        }
+        
+        // Create FormData from the form to capture all fields
+        const formData = new FormData(this);
+        
+        // Extract mentions from message
+        const mentions = extractMentions(content);
+        debugLog('Extracted mentions:', mentions);
+        
+        // Add mentions as JSON if any were found
+        if (mentions.length > 0) {
+            formData.append('mentions', JSON.stringify(mentions));
+        }
+        
+        debugLog('Sending message to chat ID:', currentChatId);
+        
         // Choose the correct endpoint based on chat type
         const endpoint = chatType === 'BOT_SUPPORT' 
             ? `/chat/${currentChatId}/message/gemini`
             : `/chat/${currentChatId}/message/new`;
-
+            
+        // Disable submit button during request
+        const submitButton = this.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.innerHTML;
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        
         fetch(endpoint, {
             method: 'POST',
             body: formData
         })
         .then(response => {
-            debugLog('Message submission response status:', response.status);
             if (!response.ok) {
-                throw new Error('Network response was not ok: ' + response.statusText);
+                if (response.status === 403) {
+                    throw new Error('You do not have permission to post in this chat.');
+                } else {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
             }
             return response.json();
         })
         .then(data => {
-            debugLog('Message submission data:', data);
-            if (data.error) {
-                alert(data.error);
-                return;
+            debugLog('Message sent response:', data);
+            if (data.success) {
+                // Clear the input
+                messageInput.value = '';
+                
+                // Reload chat to show new message
+                loadChatContent(currentChatId);
+            } else if (data.error) {
+                throw new Error(data.error);
             }
-
-            this.querySelector('textarea[name="contenu"]').value = '';
-
-            const messagesContainer = document.getElementById('messages-container');
-            
-            // Add user message with avatar
-            const userMessage = document.createElement('div');
-            userMessage.className = 'message message-own';
-            
-            // Get user info for avatar
-            const userFirstName = '{{ app.user ? app.user.prenomUser : "U" }}';
-            const userLastName = '{{ app.user ? app.user.nomUser : "" }}';
-            const userInitials = (userFirstName.charAt(0) + userLastName.charAt(0)).toUpperCase();
-            const userPhotoUrl = '{{ app.user and app.user.photoUser ? "/uploads/profile_pictures/" ~ app.user.photoUser : "" }}';
-            
-            // Generate avatar HTML
-            let userAvatarHTML = '';
-            if (userPhotoUrl && userPhotoUrl !== '') {
-                // Use actual profile photo
-                userAvatarHTML = `
-                    <div class="avatar-container" style="width:40px; height:40px; border-radius:50%; overflow:hidden;">
-                        <img src="${userPhotoUrl}" alt="${userFirstName}" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='<div class=\'avatar-placeholder\' style=\'width:100%; height:100%; display:flex; align-items:center; justify-content:center; background-color:#0d6efd; color:white; font-weight:bold; font-size:16px;\'>${userInitials}</div>';" />
-                    </div>
-                `;
-            } else {
-                // Use initials placeholder
-                userAvatarHTML = `
-                    <div class="avatar-container" style="width:40px; height:40px; border-radius:50%; overflow:hidden;">
-                        <div class="avatar-placeholder" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background-color:#0d6efd; color:white; font-weight:bold; font-size:16px;">
-                            ${userInitials}
-                        </div>
-                    </div>
-                `;
-            }
-            
-            const userContentHTML = `
-                <div class="message-wrapper">
-                    <div class="message-content">
-                        <div>${formData.get('contenu')}</div>
-                        <div class="message-time">${new Date().toISOString().slice(0, 19).replace('T', ' ')}</div>
-                    </div>
-                </div>
-            `;
-            
-            userMessage.innerHTML = `${userContentHTML}${userAvatarHTML}`;
-            messagesContainer.appendChild(userMessage);
-
-            // Add bot response if applicable
-            if (chatType === 'BOT_SUPPORT' && data.bot_response) {
-                debugLog('Adding bot response:', data.bot_response);
-                
-                // Format the bot response with proper styling
-                const formattedResponse = formatBotResponse(data.bot_response);
-                
-                const botMessage = document.createElement('div');
-                botMessage.className = 'message message-bot';
-                
-                // Generate bot avatar
-                const botAvatarHTML = `
-                    <div class="avatar-container" style="width:40px; height:40px; border-radius:50%; overflow:hidden;">
-                        <div class="avatar-placeholder bot-avatar" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background-color:#0a5c36; color:white; font-weight:bold; font-size:16px;">
-                            B
-                        </div>
-                    </div>
-                `;
-                
-                // Generate bot content HTML with proper formatting
-                const botContentHTML = `
-                    <div class="message-wrapper">
-                        <div class="message-meta">
-                            <div class="message-sender">Bot</div>
-                        </div>
-                        <div class="message-content">
-                            <div class="bot-response-content">${formattedResponse}</div>
-                            <div class="message-time">${new Date().toISOString().slice(0, 19).replace('T', ' ')}</div>
-                        </div>
-                    </div>
-                `;
-                
-                botMessage.innerHTML = `${botAvatarHTML}${botContentHTML}`;
-                messagesContainer.appendChild(botMessage);
-            }
-
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         })
         .catch(error => {
             debugLog('Error sending message:', error);
-            alert('Error sending message: ' + error.message);
+            
+            if (error.message.includes('permission')) {
+                // This is a permission error
+                const chatName = document.querySelector(`.chat-link[data-chat-id="${currentChatId}"]`).dataset.chatName;
+                showPermissionDeniedAlert(chatName, chatType);
+            } else {
+                // Other errors
+                alert('Error sending message: ' + error.message);
+            }
+        })
+        .finally(() => {
+            // Re-enable submit button
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonText;
         });
     });
+    
+    // Function to show a nice permission denied alert
+    function showPermissionDeniedAlert(chatName, chatType) {
+        // Create or get the alert container
+        let alertContainer = document.getElementById('permission-alert');
+        if (!alertContainer) {
+            alertContainer = document.createElement('div');
+            alertContainer.id = 'permission-alert';
+            alertContainer.className = 'alert alert-danger alert-dismissible fade show';
+            alertContainer.setAttribute('role', 'alert');
+            
+            // Insert it before the messages container
+            const messagesContainer = document.getElementById('messages-container');
+            messagesContainer.parentNode.insertBefore(alertContainer, messagesContainer);
+        }
+        
+        // Set the alert content
+        alertContainer.innerHTML = `
+            <strong>Permission Denied!</strong> As a participant, you cannot post messages in "${chatName}" (${chatType}).
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            const bsAlert = new bootstrap.Alert(alertContainer);
+            bsAlert.close();
+        }, 5000);
+    }
+
+    function extractMentions(content) {
+        const mentions = [];
+        const mentionRegex = /@([\w\s]+)/g;
+        let match;
+        
+        while ((match = mentionRegex.exec(content)) !== null) {
+            const mentionedName = match[1].trim();
+            
+            // Find the user ID for this name
+            const mentionedUser = communityMembers.find(member => 
+                member.name === mentionedName
+            );
+            
+            if (mentionedUser) {
+                mentions.push({
+                    id: mentionedUser.id,
+                    name: mentionedName
+                });
+            }
+        }
+        
+        return mentions;
+    }
 
     function addOption() {
         const pollOptions = document.getElementById('pollOptions');
@@ -1489,6 +1903,317 @@
         formatted = formatted.replace(/`(.*?)`/g, '<code>$1</code>');
         
         return formatted;
+    }
+
+    function renderMentionSuggestions(members) {
+        debugLog('Rendering mention suggestions for members:', members);
+        if (!members || members.length === 0) {
+            debugLog('No members to render');
+            closeMentionContainer();
+            return;
+        }
+        
+        // Make sure we have the textarea element
+        if (!messageTextarea) {
+            debugLog('Message textarea not found');
+            return;
+        }
+        
+        // Force the container to be visible in the DOM before positioning
+        mentionContainer.style.display = 'block';
+        
+        // Find the position of the @ symbol in the textarea
+        const cursorPosition = messageTextarea.selectionStart;
+        const text = messageTextarea.value.substring(0, cursorPosition);
+        const lastAtPos = text.lastIndexOf('@');
+        
+        if (lastAtPos === -1) {
+            debugLog('@ symbol not found in text');
+            closeMentionContainer();
+            return;
+        }
+        
+        // Get the text area position and cursor position for better positioning
+        const textareaRect = messageTextarea.getBoundingClientRect();
+        
+        // Get caret position
+        const caretPos = getCaretCoordinates(messageTextarea, lastAtPos);
+        
+        // Position the container at the @ symbol
+        mentionContainer.style.position = 'absolute';
+        mentionContainer.style.width = '250px';
+        
+        // Get the left position based on the caret
+        let left = textareaRect.left + caretPos.left;
+        
+        // Make sure it doesn't go off-screen
+        if (left + 250 > window.innerWidth) {
+            left = window.innerWidth - 260;
+        }
+        
+        // Set the position
+        mentionContainer.style.left = `${left}px`;
+        mentionContainer.style.top = `${textareaRect.top + caretPos.top + 25}px`;
+        
+        // Clear previous content
+        mentionContainer.innerHTML = '';
+        
+        // Create a div for each member
+        members.forEach((member, index) => {
+            const mentionItem = document.createElement('div');
+            mentionItem.className = 'mention-item';
+            
+            // Determine role class based on member data or default to 'participant'
+            const role = member.role || 'participant';
+            mentionItem.classList.add(`role-${role.toLowerCase()}`);
+            
+            mentionItem.dataset.id = member.id;
+            mentionItem.dataset.name = member.name;
+            
+            // Get initials for avatar
+            const name = member.name;
+            const nameParts = name.split(' ');
+            const initials = nameParts.length > 1 
+                ? (nameParts[0].charAt(0) + nameParts[1].charAt(0)).toUpperCase()
+                : name.substring(0, 2).toUpperCase();
+            
+            mentionItem.innerHTML = `
+                <div class="mention-avatar">${initials}</div>
+                <div class="mention-info">
+                    <div class="mention-name">${member.name}</div>
+                    <div class="mention-role">${role.toLowerCase().replace('_', ' ')}</div>
+                </div>
+            `;
+            
+            // Add highlight for first item
+            if (index === 0) {
+                mentionItem.classList.add('active');
+                mentionSelectedIndex = 0;
+            }
+            
+            // Add click handler
+            mentionItem.addEventListener('click', () => {
+                selectMention(mentionItem);
+            });
+            
+            mentionContainer.appendChild(mentionItem);
+        });
+        
+        // Show the container
+        mentionContainer.classList.add('show');
+    }
+    
+    // Helper function to get caret coordinates
+    function getCaretCoordinates(element, position) {
+        // Create a div with the same styling as the textarea
+        const mirror = document.createElement('div');
+        const style = window.getComputedStyle(element);
+        
+        mirror.style.position = 'absolute';
+        mirror.style.visibility = 'hidden';
+        mirror.style.overflow = 'auto';
+        mirror.style.whiteSpace = 'pre-wrap';
+        mirror.style.wordWrap = 'break-word';
+        mirror.style.padding = style.padding;
+        mirror.style.borderWidth = style.borderWidth;
+        mirror.style.fontFamily = style.fontFamily;
+        mirror.style.fontSize = style.fontSize;
+        mirror.style.lineHeight = style.lineHeight;
+        mirror.style.width = element.clientWidth + 'px';
+        
+        // Create content up to the caret position
+        const textBeforeCaret = element.value.substring(0, position);
+        
+        // Replace spaces with nbsp to preserve whitespace
+        mirror.textContent = textBeforeCaret.replace(/ /g, '\u00a0');
+        
+        // Add a span at the end to measure
+        const span = document.createElement('span');
+        span.textContent = '\u200b'; // Zero-width space
+        mirror.appendChild(span);
+        
+        document.body.appendChild(mirror);
+        
+        const coordinates = {
+            top: span.offsetTop,
+            left: span.offsetLeft
+        };
+        
+        document.body.removeChild(mirror);
+        
+        return coordinates;
+    }
+
+    function showMentionSuggestions(query) {
+        debugLog('Showing mention suggestions with query:', query);
+        
+        // No members available yet, try fetching them
+        if (!communityMembers || communityMembers.length === 0) {
+            debugLog('No community members loaded yet, fetching...');
+            fetchCommunityMembers();
+            // Show all members once loaded
+            setTimeout(() => {
+                if (communityMembers && communityMembers.length > 0) {
+                    renderMentionSuggestions(communityMembers);
+                }
+            }, 500);
+            return;
+        }
+        
+        // If no query or very short query, show all members
+        if (!query || query.length < 1) {
+            debugLog('Empty query, showing all members');
+            renderMentionSuggestions(communityMembers);
+            return;
+        }
+        
+        // Filter members by query
+        const lowercaseQuery = query.toLowerCase();
+        const filteredMembers = communityMembers.filter(member => {
+            return member.name.toLowerCase().includes(lowercaseQuery) || 
+                   member.email.toLowerCase().includes(lowercaseQuery);
+        });
+        
+        debugLog('Showing mention suggestions for:', query);
+        debugLog('Filtered members:', filteredMembers);
+        
+        renderMentionSuggestions(filteredMembers);
+    }
+
+    function handleMentionKeydown(e) {
+        // If mentions are not active, do nothing
+        if (!mentionActive || mentionContainer.style.display === 'none') {
+            return;
+        }
+        
+        const mentionItems = mentionContainer.querySelectorAll('.mention-item');
+        
+        // Handle keyboard navigation
+        switch (e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                // Move selection down
+                if (mentionSelectedIndex < mentionItems.length - 1) {
+                    // Remove active class from current item
+                    if (mentionSelectedIndex >= 0) {
+                        mentionItems[mentionSelectedIndex].classList.remove('active');
+                    }
+                    // Add active class to next item
+                    mentionSelectedIndex++;
+                    mentionItems[mentionSelectedIndex].classList.add('active');
+                    
+                    // Scroll to the item if necessary
+                    const selectedItem = mentionItems[mentionSelectedIndex];
+                    if (selectedItem.offsetTop + selectedItem.offsetHeight > mentionContainer.scrollTop + mentionContainer.offsetHeight) {
+                        mentionContainer.scrollTop = selectedItem.offsetTop + selectedItem.offsetHeight - mentionContainer.offsetHeight;
+                    }
+                }
+                break;
+                
+            case 'ArrowUp':
+                e.preventDefault();
+                // Move selection up
+                if (mentionSelectedIndex > 0) {
+                    // Remove active class from current item
+                    mentionItems[mentionSelectedIndex].classList.remove('active');
+                    
+                    // Add active class to previous item
+                    mentionSelectedIndex--;
+                    mentionItems[mentionSelectedIndex].classList.add('active');
+                    
+                    // Scroll to the item if necessary
+                    const selectedItem = mentionItems[mentionSelectedIndex];
+                    if (selectedItem.offsetTop < mentionContainer.scrollTop) {
+                        mentionContainer.scrollTop = selectedItem.offsetTop;
+                    }
+                }
+                break;
+                
+            case 'Enter':
+                e.preventDefault();
+                // Select current item
+                if (mentionSelectedIndex >= 0 && mentionSelectedIndex < mentionItems.length) {
+                    selectMention(mentionItems[mentionSelectedIndex]);
+                } else if (mentionItems.length > 0) {
+                    // Select first item if none is selected
+                    selectMention(mentionItems[0]);
+                }
+                break;
+                
+            case 'Escape':
+                e.preventDefault();
+                // Close mention container
+                closeMentionContainer();
+                break;
+        }
+    }
+
+    function handleMentionKeyup(e) {
+        // Ignore if special key (excluding @ which has keyCode 50)
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter' || e.key === 'Escape') {
+            return;
+        }
+        
+        const cursorPosition = this.selectionStart;
+        const textBeforeCursor = this.value.substring(0, cursorPosition);
+        
+        // Check if we're inside a potential mention (after an @ symbol)
+        const lastAtSymbol = textBeforeCursor.lastIndexOf('@');
+        
+        if (lastAtSymbol !== -1) {
+            // Check if there's a space between the last @ and the cursor
+            const textBetweenAtAndCursor = textBeforeCursor.substring(lastAtSymbol + 1);
+            
+            debugLog('@ detected at position:', lastAtSymbol);
+            debugLog('Text after @:', textBetweenAtAndCursor);
+            
+            // Show mentions as long as there's no space after the @
+            if (!textBetweenAtAndCursor.includes(' ')) {
+                mentionActive = true;
+                mentionStartIndex = lastAtSymbol;
+                mentionSearchText = textBetweenAtAndCursor;
+                
+                // Show mention suggestions for current search text
+                showMentionSuggestions(mentionSearchText);
+                return;
+            }
+        }
+        
+        // If we got here, close the mention container
+        if (mentionActive) {
+            closeMentionContainer();
+        }
+    }
+
+    function closeMentionContainer() {
+        debugLog('Closing mention container');
+        mentionContainer.innerHTML = '';
+        mentionContainer.classList.remove('show');
+        mentionContainer.style.display = 'none';
+        mentionActive = false;
+        mentionSearchText = '';
+        mentionSelectedIndex = -1;
+    }
+    
+    function selectMention(mentionItem) {
+        debugLog('Selecting mention:', mentionItem.dataset);
+        const userId = mentionItem.dataset.id;
+        const userName = mentionItem.dataset.name;
+        
+        // Replace the @query with the selected mention
+        const textBeforeMention = messageTextarea.value.substring(0, mentionStartIndex);
+        const textAfterMention = messageTextarea.value.substring(messageTextarea.selectionStart);
+        
+        // Use data attribute to store metadata about the mention for later processing
+        const newText = textBeforeMention + `@${userName} ` + textAfterMention;
+        debugLog('Replacing text with:', newText);
+        messageTextarea.value = newText;
+        
+        // Close the mention container
+        closeMentionContainer();
+        
+        // Focus back on the textarea
+        messageTextarea.focus();
     }
 </script>
 {% endblock %}

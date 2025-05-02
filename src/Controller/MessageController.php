@@ -6,6 +6,7 @@ use App\Entity\Message;
 use App\Entity\Chat;
 use App\Repository\MessageRepository;
 use App\Security\Voter\ChatMessageVoter;
+use App\Service\PerspectiveApiService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +26,7 @@ class MessageController extends AbstractController
     }
 
     #[Route('/new/{chat_id}', name: 'app_message_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, Chat $chat_id, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, Chat $chat_id, EntityManagerInterface $entityManager, PerspectiveApiService $perspectiveApiService): Response
     {
         // Check if the current user has permission to post in this chat
         $this->denyAccessUnlessGranted(ChatMessageVoter::POST_MESSAGE, $chat_id, 'You do not have permission to post in this chat.');
@@ -33,8 +34,23 @@ class MessageController extends AbstractController
         $message = new Message();
         
         if ($request->isMethod('POST')) {
+            $content = $request->request->get('contenu');
+            
+            // Check message content with Perspective API
+            $contentAnalysis = $perspectiveApiService->analyzeText($content);
+            
+            if ($contentAnalysis['isFlagged']) {
+                $this->addFlash('error', 'Your message may contain inappropriate content and cannot be posted.');
+                
+                // You can optionally pass the toxicity scores to display to the user
+                return $this->render('message/new.html.twig', [
+                    'chat_id' => $chat_id,
+                    'toxicity_scores' => $contentAnalysis['scores']
+                ]);
+            }
+            
             $message->setChat_id($chat_id);
-            $message->setContenu($request->request->get('contenu'));
+            $message->setContenu($content);
             $message->setType($request->request->get('type', 'QUESTION'));
             $message->setPost_time(new \DateTime());
             // Set the current user as the message sender
@@ -45,10 +61,9 @@ class MessageController extends AbstractController
 
             return $this->redirectToRoute('app_chat_show', ['id' => $chat_id->getId()]);
         }
-
+        
         return $this->render('message/new.html.twig', [
-            'message' => $message,
-            'chat' => $chat_id,
+            'chat_id' => $chat_id
         ]);
     }
 
