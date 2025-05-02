@@ -163,10 +163,12 @@
             border: 1px solid #e0e0e0;
             border-radius: 8px;
             margin-bottom: 1rem;
+            background-color: #f8f9fa;
         }
         .progress {
             background-color: #e9ecef;
             border-radius: 0.25rem;
+            height: 20px;
         }
         .progress-bar {
             background-color: #007bff;
@@ -175,6 +177,29 @@
             font-size: 0.875rem;
             line-height: 20px;
             white-space: nowrap;
+            min-width: 2em; /* To ensure that small percentages are still visible */
+        }
+        .poll-option {
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .poll-option:hover {
+            background-color: #f0f0f0;
+        }
+        .vote-btn {
+            font-size: 0.8rem;
+            padding: 0.2rem 0.5rem;
+        }
+        #chat-polls-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        /* Make border between message area and polls */
+        @media (min-width: 768px) {
+            .chat-divider {
+                border-right: 1px solid #dee2e6;
+            }
         }
         .badge-active {
             background-color: #28a745;
@@ -808,46 +833,83 @@
         /* Mention feature styling */
         .mention-container {
             position: absolute;
-            background: white;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            max-height: 200px;
+            background: #ffffff;
+            border: 1px solid #d0d0d0;
+            border-radius: 8px;
+            max-height: 220px;
             overflow-y: auto;
-            width: 250px;
+            width: 280px;
             z-index: 9999;
             display: none;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
         }
         
         .mention-container.show {
             display: block !important;
-            animation: fadeIn 0.2s ease;
+            animation: fadeIn 0.25s ease;
+        }
+        
+        .mention-title {
+            padding: 8px 12px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 600;
+            color: #212529;
+            font-size: 14px;
+            border-radius: 8px 8px 0 0;
+            position: sticky;
+            top: 0;
+            z-index: 1;
         }
         
         .mention-item {
-            padding: 8px 12px;
+            padding: 10px 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px;
-            transition: background-color 0.2s ease;
+            gap: 12px;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .mention-item:last-child {
+            border-bottom: none;
         }
         
         .mention-item:hover, .mention-item.active {
-            background-color: #f0f7ff;
+            background-color: #f0f5ff;
         }
         
         .mention-avatar {
-            width: 28px;
-            height: 28px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            background-color: #6c757d;
-            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 15px;
+            color: white;
+        }
+        
+        .role-admin .mention-avatar {
+            background-color: #e63946;
+        }
+        
+        .role-organisateur .mention-avatar {
+            background-color: #2a9d8f;
+        }
+        
+        .role-coach .mention-avatar {
+            background-color: #e76f51;
+        }
+        
+        .role-participant .mention-avatar {
+            background-color: #457b9d;
+        }
+        
+        .role-user .mention-avatar {
+            background-color: #6c757d;
         }
         
         .mention-info {
@@ -855,15 +917,41 @@
         }
         
         .mention-name {
-            font-weight: 500;
+            font-weight: 600;
             color: #212529;
             font-size: 14px;
             line-height: 1.2;
+            margin-bottom: 4px;
         }
         
-        .mention-email {
+        .mention-role {
             font-size: 12px;
-            color: #6c757d;
+            color: #495057;
+            text-transform: capitalize;
+            background-color: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
+        .role-admin .mention-role {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+        
+        .role-organisateur .mention-role {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+        
+        .role-coach .mention-role {
+            background-color: #fff3cd;
+            color: #664d03;
+        }
+        
+        .role-participant .mention-role {
+            background-color: #cfe2ff;
+            color: #084298;
         }
         
         .mention-text {
@@ -872,9 +960,9 @@
         }
         
         .mention-highlight {
-            background-color: rgba(13, 110, 253, 0.1);
+            background-color: rgba(13, 110, 253, 0.15);
             border-radius: 3px;
-            padding: 1px 4px;
+            padding: 1px 5px;
             margin: 0 1px;
         }
 
@@ -914,6 +1002,162 @@
             margin-left: 3px;
             font-weight: 500;
             min-width: 10px;
+        }
+        
+        /* Styling for mentioned users in messages */
+        .gradient-mention {
+            background: linear-gradient(90deg, #4a6fa5, #6b8fd4);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            font-weight: 600;
+            padding: 2px 5px;
+            border-radius: 4px;
+            position: relative;
+            z-index: 1;
+            display: inline-block;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+        
+        .gradient-mention::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(107, 143, 212, 0.15);
+            border-radius: 4px;
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+        
+        .gradient-mention:hover {
+            background: linear-gradient(90deg, #6b8fd4, #4a6fa5);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            transform: translateY(-1px);
+        }
+        
+        .gradient-mention:hover::before {
+            background: rgba(107, 143, 212, 0.25);
+            box-shadow: 0 2px 5px rgba(107, 143, 212, 0.3);
+        }
+        
+        /* Animate gradient background */
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        
+        .gradient-mention.animate {
+            background: linear-gradient(90deg, #4a6fa5, #6b8fd4, #4a6fa5);
+            background-size: 200% 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            animation: gradientShift 3s ease infinite;
+        }
+        
+        /* Specific gradient colors for different roles */
+        .gradient-mention.admin {
+            background: linear-gradient(90deg, #dc3545, #f56565);
+            background-clip: text;
+            -webkit-background-clip: text;
+        }
+        
+        .gradient-mention.admin::before {
+            background: rgba(220, 53, 69, 0.15);
+        }
+        
+        .gradient-mention.admin:hover::before {
+            background: rgba(220, 53, 69, 0.25);
+            box-shadow: 0 2px 5px rgba(220, 53, 69, 0.3);
+        }
+        
+        .gradient-mention.admin.animate {
+            background: linear-gradient(90deg, #dc3545, #f56565, #dc3545);
+            background-size: 200% 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            animation: gradientShift 3s ease infinite;
+        }
+        
+        .gradient-mention.organisateur {
+            background: linear-gradient(90deg, #2a9d8f, #40c9b8);
+            background-clip: text;
+            -webkit-background-clip: text;
+        }
+        
+        .gradient-mention.organisateur::before {
+            background: rgba(42, 157, 143, 0.15);
+        }
+        
+        .gradient-mention.organisateur:hover::before {
+            background: rgba(42, 157, 143, 0.25);
+            box-shadow: 0 2px 5px rgba(42, 157, 143, 0.3);
+        }
+        
+        .gradient-mention.organisateur.animate {
+            background: linear-gradient(90deg, #2a9d8f, #40c9b8, #2a9d8f);
+            background-size: 200% 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            animation: gradientShift 3s ease infinite;
+        }
+        
+        .gradient-mention.coach {
+            background: linear-gradient(90deg, #e76f51, #f4a261);
+            background-clip: text;
+            -webkit-background-clip: text;
+        }
+        
+        .gradient-mention.coach::before {
+            background: rgba(231, 111, 81, 0.15);
+        }
+        
+        .gradient-mention.coach:hover::before {
+            background: rgba(231, 111, 81, 0.25);
+            box-shadow: 0 2px 5px rgba(231, 111, 81, 0.3);
+        }
+        
+        .gradient-mention.coach.animate {
+            background: linear-gradient(90deg, #e76f51, #f4a261, #e76f51);
+            background-size: 200% 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            animation: gradientShift 3s ease infinite;
+        }
+        
+        .gradient-mention.participant {
+            background: linear-gradient(90deg, #457b9d, #68a3c3);
+            background-clip: text;
+            -webkit-background-clip: text;
+        }
+        
+        .gradient-mention.participant::before {
+            background: rgba(69, 123, 157, 0.15);
+        }
+        
+        .gradient-mention.participant:hover::before {
+            background: rgba(69, 123, 157, 0.25);
+            box-shadow: 0 2px 5px rgba(69, 123, 157, 0.3);
+        }
+        
+        .gradient-mention.participant.animate {
+            background: linear-gradient(90deg, #457b9d, #68a3c3, #457b9d);
+            background-size: 200% 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            animation: gradientShift 3s ease infinite;
         }
     </style>
 {% endblock %}
@@ -1015,25 +1259,40 @@
                         </button>
                     </div>
                     <div class="card-body">
-                        <div id="messages-container" style="max-height: 600px; overflow-y: auto;">
-                            <p class="text-center text-muted">Select a chat from the list to view messages</p>
-                        </div>
+                        <div class="row">
+                            <div class="col-md-8 chat-divider">
+                                <div id="messages-container" style="max-height: 600px; overflow-y: auto;">
+                                    <p class="text-center text-muted">Select a chat from the list to view messages</p>
+                                </div>
 
-                        <form id="message-form" class="mt-3 d-none">
-                            <input type="hidden" name="_token" value="{{ csrf_token('message_token') }}">
-                            <div class="form-group position-relative">
-                                <textarea class="form-control" name="contenu" id="message-input" rows="2" placeholder="Type your message... Use @ to mention someone" required></textarea>
-                                <div id="mention-container" class="mention-container"></div>
+                                <form id="message-form" class="mt-3 d-none">
+                                <input type="hidden" name="_token" value="{{ csrf_token('message_token') }}">
+                                    <div class="form-group position-relative">
+                                        <textarea class="form-control" name="contenu" id="message-input" rows="2" placeholder="Type your message... Use @ to mention someone" required></textarea>
+                                        <div id="mention-container" class="mention-container"></div>
+                                </div>
+                                <div class="form-group mt-2">
+                                    <select class="form-control" name="type">
+                                        <option value="QUESTION">Question</option>
+                                        <option value="REPONSE">Response</option>
+                                        <option value="SUGGESTION">Suggestion</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-2">Send Message</button>
+                                </form>
                             </div>
-                            <div class="form-group mt-2">
-                                <select class="form-control" name="type">
-                                    <option value="QUESTION">Question</option>
-                                    <option value="REPONSE">Response</option>
-                                    <option value="SUGGESTION">Suggestion</option>
-                                </select>
+                            <div class="col-md-4" id="chat-polls-container" style="display: none;">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0">Polls</h5>
+                                    </div>
+                                    <div class="card-body" id="polls-container">
+                                        <!-- Polls will be loaded here dynamically -->
+                                        <p class="text-center text-muted">No polls available</p>
+                                    </div>
+                                </div>
                             </div>
-                            <button type="submit" class="btn btn-primary mt-2">Send Message</button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1041,20 +1300,20 @@
     </div>
 
     <!-- Polls Sidebar -->
-    <div class="polls-sidebar" id="polls-sidebar">
+    <div class="polls-sidebar" id="polls-sidebar" style="display: none;">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="card-title mb-0">Polls</h5>
             <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#createPollModal">
                 <i class="fas fa-plus"></i> New Poll
             </button>
         </div>
-        <div id="polls-container">
+        <div id="sidebar-polls-container">
             <!-- Polls will be loaded here dynamically -->
         </div>
     </div>
 
     <!-- Toggle Polls Button -->
-    <button class="btn btn-primary toggle-polls" id="toggle-polls">
+    <button class="btn btn-primary toggle-polls" id="toggle-polls" style="display: none;">
         <i class="fas fa-poll"></i>
     </button>
 
@@ -1106,9 +1365,9 @@
     function debugLog(message, data = null) {
         try {
             if (data !== null) {
-                console.log(message, data);
-            } else {
-                console.log(message);
+            console.log(message, data);
+        } else {
+            console.log(message);
             }
         } catch (e) {
             // Handle console errors in older browsers
@@ -1132,6 +1391,9 @@
     let currentUserId = {{ app.user ? app.user.id : 'null' }};
     let communauteId = {{ communaute.id }};
     let communityMembers = [];
+    
+    // Store user role globally
+    let userRole = '{{ app.user ? app.user.roles[0] : "ROLE_USER" }}';
     
     // Initialize variables for mentions
     let mentionContainer = null;
@@ -1288,7 +1550,7 @@
         updateCountdown();
         setInterval(updateCountdown, 1000);
     });
-    
+
     // Setup reaction functionality
     function setupReactions() {
         debugLog('Setting up reactions functionality');
@@ -1401,7 +1663,7 @@
             const chatName = this.dataset.chatName;
             const chatType = this.dataset.chatType;
             debugLog('Chat selected:', { chatId, chatName, chatType });
-            
+
             // Update UI for selected chat
             document.querySelectorAll('.chat-link').forEach(el => el.classList.remove('active'));
             this.classList.add('active');
@@ -1413,8 +1675,42 @@
             currentChatId = chatId;
             
             // Check if the user has permission to post in this chat
-            const userRole = '{{ app.user ? app.user.roles[0] : "ROLE_USER" }}';
-            const canPost = !(userRole === 'ROLE_PARTICIPANT' && (chatType === 'ANNONCES' || chatType === 'COACH'));
+            debugLog('Current user role for posting:', userRole);
+            
+            const isParticipant = userRole.includes('PARTICIPANT');
+            const isRestrictedChat = chatType === 'ANNONCES' || chatType === 'COACH';
+            
+            // Participants can't post in ANNONCES or COACH chats
+            const canPost = !(isParticipant && isRestrictedChat);
+            
+            // Show the poll button for all users, but disable it for non-admin/organizer users
+            const createPollBtn = document.getElementById('create-poll-btn');
+            createPollBtn.style.display = 'inline-block';
+            
+            // Debug the user role
+            debugLog('Current user role for poll creation:', userRole);
+            
+            // Only enable poll creation for ADMIN and ORGANISATEUR roles
+            const isAdmin = userRole.includes('ADMIN');
+            const isOrganisateur = userRole.includes('ORGANISATEUR');
+            
+            debugLog('Is admin:', isAdmin);
+            debugLog('Is organisateur:', isOrganisateur);
+            
+            if (isAdmin || isOrganisateur) {
+                createPollBtn.disabled = false;
+                createPollBtn.classList.remove('btn-secondary');
+                createPollBtn.classList.add('btn-light');
+                createPollBtn.title = 'Create a new poll';
+            } else {
+                createPollBtn.disabled = true;
+                createPollBtn.classList.remove('btn-light');
+                createPollBtn.classList.add('btn-secondary');
+                createPollBtn.title = 'Only administrators and organizers can create polls';
+            }
+            
+            // Show polls container
+            document.getElementById('chat-polls-container').style.display = 'block';
             
             // Show or hide input form based on permissions
             const messageForm = document.getElementById('message-form');
@@ -1514,11 +1810,17 @@
                             `;
                         }
                         
+                        // Process message content for mentions
+                        let messageContent = message.contenu;
+                        
+                        // Replace @mentions with styled spans
+                        messageContent = processMentionsInContent(messageContent);
+                        
                         // Generate message content
                         let contentHTML = '';
                         if (isBotMessage) {
                             // Format bot content with proper styling
-                            const formattedResponse = formatBotResponse(message.contenu);
+                            const formattedResponse = formatBotResponse(messageContent);
                             contentHTML = `
                                 <div class="message-wrapper">
                                     <div class="message-meta">
@@ -1537,7 +1839,7 @@
                                         <div class="message-sender">${senderName}</div>
                                     </div>
                                     <div class="message-content">
-                                        <div>${message.contenu}</div>
+                                        <div>${messageContent}</div>
                                         <div class="message-time">${message.post_time}</div>
                                         <div class="message-reactions">
                                             <div class="reaction-buttons">
@@ -1577,7 +1879,10 @@
             .then(response => {
                 debugLog('Polls fetch response status:', response.status);
                 if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.statusText);
+                    return response.text().then(text => {
+                        debugLog('Error response text:', text);
+                        throw new Error('Network response was not ok: ' + response.statusText);
+                    });
                 }
                 return response.json();
             })
@@ -1585,39 +1890,129 @@
                 debugLog('Polls data:', data);
                 const pollsContainer = document.getElementById('polls-container');
                 pollsContainer.innerHTML = '';
+                
+                // Check if data has an error field
+                if (data.error) {
+                    debugLog('Error in poll data:', data.error);
+                    pollsContainer.innerHTML = `<p class="text-center text-danger">Error: ${data.error}</p>`;
+                    return;
+                }
+                
                 if (data.polls && data.polls.length > 0) {
+                    // Log user role for debugging poll rendering
+                    debugLog('User role for poll rendering:', userRole);
+                    
                     data.polls.forEach(poll => {
                         const pollElement = document.createElement('div');
                         pollElement.className = 'poll-card mb-3';
+                        
+                        // Calculate total votes for percentage calculation
+                        const totalVotes = poll.poll_option.reduce((sum, opt) => sum + opt.vote_count, 0);
+                        
                         let optionsHtml = '';
                         poll.poll_option.forEach(option => {
-                            const percentage = poll.is_closed ? ((option.vote_count / Math.max(1, poll.poll_option.reduce((sum, opt) => sum + opt.vote_count, 0))) * 100).toFixed(1) : 0;
+                            const percentage = totalVotes > 0 ? ((option.vote_count / totalVotes) * 100).toFixed(1) : '0.0';
+                            
+                            // Create vote button for active polls
+                            const voteButton = !poll.is_closed ? 
+                                `<button class="btn btn-sm btn-outline-primary vote-btn" data-poll-id="${poll.id}" data-option-id="${option.id}">Vote</button>` 
+                                : '';
+                                
                             optionsHtml += `
-                                <div class="mb-2">
-                                    <p class="mb-1">${option.text}</p>
-                                    <div class="progress">
-                                        <div class="progress-bar" style="width: ${percentage}%">${percentage}%</div>
+                                <div class="mb-3 poll-option">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <p class="mb-0">${option.text}</p>
+                                        ${voteButton}
+                                    </div>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar" style="width: ${percentage}%; height: 20px;">
+                                            ${option.vote_count} (${percentage}%)
+                                        </div>
                                     </div>
                                 </div>
                             `;
                         });
+                        
+                        // Add close button for admins/organizers
+                        // Get current user role from the parent scope
+                        debugLog('User role for poll closing:', userRole);
+                        const isAdmin = userRole.includes('ADMIN');
+                        const isOrganisateur = userRole.includes('ORGANISATEUR');
+                        const canClosePoll = (isAdmin || isOrganisateur) && !poll.is_closed;
+                        const closeButton = canClosePoll ? 
+                            `<button class="btn btn-sm btn-outline-secondary close-poll-btn" data-poll-id="${poll.id}">Close Poll</button>` 
+                            : '';
+                        
                         pollElement.innerHTML = `
                             <div class="card-body">
-                                <h6>${poll.question}</h6>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="mb-0">${poll.question}</h6>
+                                    <span class="badge ${poll.is_closed ? 'bg-secondary' : 'bg-success'}">${poll.is_closed ? 'Closed' : 'Active'}</span>
+                                </div>
                                 ${optionsHtml}
-                                <span class="badge ${poll.is_closed ? 'badge-closed' : 'badge-active'}">${poll.is_closed ? 'Closed' : 'Active'}</span>
+                                <div class="d-flex justify-content-end">
+                                    ${closeButton}
+                                </div>
                             </div>
                         `;
+                        
                         pollsContainer.appendChild(pollElement);
                     });
+                    
+                    // Add event listeners for vote buttons
+                    document.querySelectorAll('.vote-btn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const pollId = this.dataset.pollId;
+                            const optionId = this.dataset.optionId;
+                            votePoll(pollId, optionId);
+                        });
+                    });
+                    
+                    // Add event listeners for close buttons
+                    document.querySelectorAll('.close-poll-btn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const pollId = this.dataset.pollId;
+                            closePoll(pollId);
+                        });
+                    });
+                    
                 } else {
                     pollsContainer.innerHTML = '<p class="text-center text-muted">No polls available.</p>';
                 }
             })
             .catch(error => {
                 debugLog('Error loading polls:', error);
+                const pollsContainer = document.getElementById('polls-container');
                 pollsContainer.innerHTML = '<p class="text-center text-danger">Error loading polls: ' + error.message + '</p>';
             });
+    }
+
+    // Function to process mentions in message content
+    function processMentionsInContent(content) {
+        if (!content) return '';
+        
+        // Regular expression to match @mentions
+        const mentionRegex = /@([A-Za-z\s]+)/g;
+        
+        // Replace mentions with styled spans
+        return content.replace(mentionRegex, (match, name) => {
+            // Look up the mentioned user to get their role
+            const mentionedUser = findUserByName(name.trim());
+            const roleClass = mentionedUser ? mentionedUser.role.toLowerCase() : 'participant';
+            
+            // Add animation class randomly to some mentions for visual appeal
+            const animateClass = Math.random() > 0.5 ? 'animate' : '';
+            
+            // Create a gradient mention span with the appropriate role class
+            return `<span class="gradient-mention ${roleClass} ${animateClass}">@${name}</span>`;
+        });
+    }
+    
+    // Function to find a user by name in the community members list
+    function findUserByName(name) {
+        return communityMembers.find(member => 
+            member.name.toLowerCase() === name.toLowerCase()
+        );
     }
 
     // Handle message form submission
@@ -1628,7 +2023,7 @@
             alert('Please select a chat first.');
             return;
         }
-        
+
         const messageInput = document.getElementById('message-input');
         const content = messageInput.value.trim();
         
@@ -1638,10 +2033,13 @@
         
         // Check permissions based on chat type and user role
         const chatType = document.querySelector(`.chat-link[data-chat-id="${currentChatId}"]`).dataset.chatType;
-        const userRole = '{{ app.user ? app.user.roles[0] : "ROLE_USER" }}';
+        
+        // Use the existing userRole from parent scope
+        debugLog('User role for message posting:', userRole);
+        const isParticipant = userRole.includes('PARTICIPANT');
         
         // Participants can't post in ANNONCES or COACH chats
-        if (userRole === 'ROLE_PARTICIPANT' && (chatType === 'ANNONCES' || chatType === 'COACH')) {
+        if (isParticipant && (chatType === 'ANNONCES' || chatType === 'COACH')) {
             const chatName = document.querySelector(`.chat-link[data-chat-id="${currentChatId}"]`).dataset.chatName;
             showPermissionDeniedAlert(chatName, chatType);
             return;
@@ -1660,18 +2058,18 @@
         }
         
         debugLog('Sending message to chat ID:', currentChatId);
-        
+
         // Choose the correct endpoint based on chat type
         const endpoint = chatType === 'BOT_SUPPORT' 
             ? `/chat/${currentChatId}/message/gemini`
             : `/chat/${currentChatId}/message/new`;
-            
+
         // Disable submit button during request
         const submitButton = this.querySelector('button[type="submit"]');
         const originalButtonText = submitButton.innerHTML;
         submitButton.disabled = true;
         submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-        
+
         fetch(endpoint, {
             method: 'POST',
             body: formData
@@ -1693,7 +2091,7 @@
                 messageInput.value = '';
                 
                 // Reload chat to show new message
-                loadChatContent(currentChatId);
+            loadChatContent(currentChatId);
             } else if (data.error) {
                 throw new Error(data.error);
             }
@@ -1792,14 +2190,30 @@
         }
 
         const formData = new FormData(this);
+        
+        // Log the form data for debugging
+        const formEntries = Array.from(formData.entries());
+        debugLog('Poll form data:', formEntries);
+        
+        // Add CSRF token if not already included
+        if (!formData.has('_token')) {
+            formData.append('_token', '{{ csrf_token('poll_token') }}');
+        }
+        
         fetch(`/chat/${currentChatId}/poll/new`, {
             method: 'POST',
-            body: formData
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
         })
         .then(response => {
             debugLog('Poll submission response status:', response.status);
             if (!response.ok) {
-                throw new Error('Network response was not ok: ' + response.statusText);
+                return response.text().then(text => {
+                    debugLog('Error response text:', text);
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                });
             }
             return response.json();
         })
@@ -1809,7 +2223,18 @@
                 alert(data.error);
                 return;
             }
-            bootstrap.Modal.getInstance(document.getElementById('createPollModal')).hide();
+            
+            // Reset the form
+            this.reset();
+            
+            // Close the modal
+            const pollModal = document.getElementById('createPollModal');
+            if (pollModal && typeof bootstrap !== 'undefined') {
+                const modal = bootstrap.Modal.getInstance(pollModal);
+                if (modal) modal.hide();
+            }
+            
+            // Reload the chat content to show the new poll
             loadChatContent(currentChatId);
         })
         .catch(error => {
@@ -1827,7 +2252,7 @@
         resultsContainer.innerHTML = '<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>';
         resultsContainer.classList.add('show');
 
-        fetch(`/community/${communauteId}/search-ajax?query=${encodeURIComponent(query)}`)
+        fetch(`/chat/community/${communauteId}/search-ajax?query=${encodeURIComponent(query)}`)
             .then(response => {
                 debugLog('Search response status:', response.status);
                 if (!response.ok) {
@@ -1939,24 +2364,48 @@
         // Get caret position
         const caretPos = getCaretCoordinates(messageTextarea, lastAtPos);
         
-        // Position the container at the @ symbol
+        // Position the container above the textarea
         mentionContainer.style.position = 'absolute';
-        mentionContainer.style.width = '250px';
+        mentionContainer.style.width = '280px';
         
         // Get the left position based on the caret
         let left = textareaRect.left + caretPos.left;
         
-        // Make sure it doesn't go off-screen
-        if (left + 250 > window.innerWidth) {
-            left = window.innerWidth - 260;
+        // Make sure it doesn't go off-screen to the right
+        if (left + 280 > window.innerWidth) {
+            left = window.innerWidth - 290;
+        }
+        
+        // Make sure it doesn't go off-screen to the left
+        if (left < 10) {
+            left = 10;
+        }
+        
+        // Calculate height for dropdown - limit based on number of members
+        const dropdownHeight = Math.min(members.length * 60 + 40, 250); // 40px for title, ~60px per item
+        
+        // Calculate top position - ABOVE the textarea
+        let top = textareaRect.top - dropdownHeight - 10; // 10px extra margin
+        
+        // Check if the dropdown would go above the viewport
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        if (top < scrollTop) {
+            // If it would go above viewport, position it below instead
+            top = textareaRect.bottom + 10; // 10px margin below textarea
         }
         
         // Set the position
         mentionContainer.style.left = `${left}px`;
-        mentionContainer.style.top = `${textareaRect.top + caretPos.top + 25}px`;
+        mentionContainer.style.top = `${top}px`;
         
         // Clear previous content
         mentionContainer.innerHTML = '';
+        
+        // Add a title to the dropdown
+        const titleElement = document.createElement('div');
+        titleElement.className = 'mention-title';
+        titleElement.innerHTML = 'Select a member to mention:';
+        mentionContainer.appendChild(titleElement);
         
         // Create a div for each member
         members.forEach((member, index) => {
@@ -2214,6 +2663,80 @@
         
         // Focus back on the textarea
         messageTextarea.focus();
+    }
+
+    // Function to vote on a poll
+    function votePoll(pollId, optionId) {
+        debugLog('Voting on poll:', { pollId, optionId });
+        
+        fetch(`/chat/poll/${pollId}/vote`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ option_id: optionId })
+        })
+        .then(response => {
+            debugLog('Vote response status:', response.status);
+            if (!response.ok) {
+                return response.text().then(text => {
+                    debugLog('Error response text:', text);
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            debugLog('Vote data:', data);
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+            
+            // Reload the chat content to update the polls
+            loadChatContent(currentChatId);
+        })
+        .catch(error => {
+            debugLog('Error voting on poll:', error);
+            alert('Error voting on poll: ' + error.message);
+        });
+    }
+    
+    // Function to close a poll
+    function closePoll(pollId) {
+        debugLog('Closing poll:', pollId);
+        
+        fetch(`/chat/poll/${pollId}/close`, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            debugLog('Close poll response status:', response.status);
+            if (!response.ok) {
+                return response.text().then(text => {
+                    debugLog('Error response text:', text);
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            debugLog('Close poll data:', data);
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+            
+            // Reload the chat content to update the polls
+            loadChatContent(currentChatId);
+        })
+        .catch(error => {
+            debugLog('Error closing poll:', error);
+            alert('Error closing poll: ' + error.message);
+        });
     }
 </script>
 {% endblock %}

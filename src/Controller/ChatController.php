@@ -283,81 +283,132 @@ class ChatController extends AbstractController
     #[Route('/{id}/poll/new', name: 'app_chat_poll_new', methods: ['POST'])]
     public function newPoll(Request $request, Chat $chat): JsonResponse
     {
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->json(['error' => 'You must be logged in to create polls'], 401);
-        }
-
-        $poll = new Poll();
-        $poll->setChat_id($chat);
-        $poll->setQuestion($request->request->get('question'));
-        $poll->setIs_closed(false);
-        $poll->setCreated_at(new \DateTime());
-
-        $this->entityManager->persist($poll);
-        $this->entityManager->flush();
-
-        $options = $request->request->all('options');
-        foreach ($options as $optionText) {
-            if (!empty(trim($optionText))) {
-                $option = new PollOption();
-                $option->setPoll_id($poll);
-                $option->setText($optionText);
-                $option->setVote_count(0);
-                $this->entityManager->persist($option);
+        try {
+            $user = $this->getUser();
+            if (!$user) {
+                return $this->json(['error' => 'You must be logged in to create polls'], 401);
             }
+            
+            // Check user permissions
+            if (!in_array('ROLE_ADMIN', $user->getRoles()) && !in_array('ROLE_ORGANISATEUR', $user->getRoles())) {
+                return $this->json(['error' => 'You do not have permission to create polls'], 403);
+            }
+            
+            // Debug request data
+            $requestData = $request->request->all();
+            
+            // Check if question exists
+            $question = $request->request->get('question');
+            if (empty($question)) {
+                return $this->json(['error' => 'Poll question is required'], 400);
+            }
+            
+            // Create the poll
+            $poll = new Poll();
+            $poll->setChat_id($chat);
+            $poll->setQuestion($question);
+            $poll->setIs_closed(false);
+            $poll->setCreated_at(new \DateTime());
+            
+            $this->entityManager->persist($poll);
+            $this->entityManager->flush();
+            
+            // Add options
+            $options = $request->request->all('options');
+            if (empty($options)) {
+                return $this->json(['error' => 'At least one option is required'], 400);
+            }
+            
+            foreach ($options as $optionText) {
+                if (!empty(trim($optionText))) {
+                    $option = new PollOption();
+                    $option->setPoll_id($poll);
+                    $option->setText($optionText);
+                    $option->setVote_count(0);
+                    $this->entityManager->persist($option);
+                }
+            }
+            
+            $this->entityManager->flush();
+            
+            return $this->json([
+                'success' => true, 
+                'message' => 'Poll created successfully',
+                'poll_id' => $poll->getId()
+            ]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'error' => 'Error creating poll: ' . $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
         }
-
-        $this->entityManager->flush();
-
-        return $this->json(['success' => true, 'message' => 'Poll created successfully']);
     }
 
     #[Route('/poll/{id}/vote', name: 'app_poll_vote', methods: ['POST'])]
     #[Route('poll/{id}/vote', name: 'app_poll_vote_alt', methods: ['POST'])]
     public function vote(Request $request, Poll $poll): JsonResponse
     {
-        $user = $this->getUser();
-        if (!$user) {
-            return $this->json(['error' => 'You must be logged in to vote'], 401);
+        try {
+            $user = $this->getUser();
+            if (!$user) {
+                return $this->json(['error' => 'You must be logged in to vote'], 401);
+            }
+
+            // Parse the request content based on content type
+            $optionId = null;
+            $contentType = $request->headers->get('Content-Type');
+            
+            if (str_contains($contentType, 'application/json')) {
+                $data = json_decode($request->getContent(), true);
+                $optionId = $data['option_id'] ?? null;
+            } else {
+                // Form data submission
+                $optionId = $request->request->get('option_id');
+            }
+
+            if (!$optionId) {
+                return $this->json(['error' => 'No option selected'], 400);
+            }
+
+            $option = $this->entityManager->getRepository(PollOption::class)->find($optionId);
+            if (!$option) {
+                return $this->json(['error' => 'Option not found'], 404);
+            }
+
+            if ($poll->getIs_closed()) {
+                return $this->json(['error' => 'Poll is closed'], 400);
+            }
+
+            $existingVote = $this->entityManager->getRepository(PollVote::class)->findOneBy([
+                'poll_id' => $poll,
+                'user_id' => $user
+            ]);
+
+            if ($existingVote) {
+                return $this->json(['error' => 'You have already voted'], 400);
+            }
+
+            $vote = new PollVote();
+            $vote->setPoll_id($poll);
+            $vote->setOption_id($option);
+            $vote->setUser_id($user);
+
+            // Update the vote count
+            $option->setVote_count($option->getVote_count() + 1);
+
+            $this->entityManager->persist($vote);
+            $this->entityManager->flush();
+
+            return $this->json([
+                'success' => true, 
+                'message' => 'Vote recorded successfully',
+                'option_id' => $optionId
+            ]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'error' => 'Error recording vote: ' . $e->getMessage()
+            ], 500);
         }
-
-        $data = json_decode($request->getContent(), true);
-        $optionId = $data['option_id'] ?? null;
-
-        if (!$optionId) {
-            return $this->json(['error' => 'No option selected'], 400);
-        }
-
-        $option = $this->entityManager->getRepository(PollOption::class)->find($optionId);
-        if (!$option) {
-            return $this->json(['error' => 'Option not found'], 404);
-        }
-
-        if ($poll->getIs_closed()) {
-            return $this->json(['error' => 'Poll is closed'], 400);
-        }
-
-        $existingVote = $this->entityManager->getRepository(PollVote::class)->findOneBy([
-            'poll_id' => $poll,
-            'user_id' => $user
-        ]);
-
-        if ($existingVote) {
-            return $this->json(['error' => 'You have already voted'], 400);
-        }
-
-        $vote = new PollVote();
-        $vote->setPoll_id($poll);
-        $vote->setOption_id($option);
-        $vote->setUser_id($user);
-
-        $option->setVoteCount($option->getVoteCount() + 1);
-
-        $this->entityManager->persist($vote);
-        $this->entityManager->flush();
-
-        return $this->json(['success' => true, 'message' => 'Vote recorded successfully']);
     }
 
     #[Route('/poll/{id}/close', name: 'app_poll_close', methods: ['POST'])]
@@ -381,30 +432,47 @@ class ChatController extends AbstractController
     #[Route('/{id}/polls', name: 'app_chat_polls', methods: ['GET'])]
     public function getPolls(Chat $chat): JsonResponse
     {
-        $polls = $chat->getPolls();
-        $data = [];
+        try {
+            $polls = $chat->getPolls();
+            $data = [];
 
-        foreach ($polls as $poll) {
-            $pollData = [
-                'id' => $poll->getId(),
-                'question' => $poll->getQuestion(),
-                'is_closed' => $poll->getIs_closed(),
-                'created_at' => $poll->getCreated_at()->format('Y-m-d H:i:s'),
-                'poll_option' => []
-            ];
-
-            foreach ($poll->getPollOptions() as $option) {
-                $pollData['poll_option'][] = [
-                    'id' => $option->getId(),
-                    'text' => $option->getText(),
-                    'vote_count' => $option->getVoteCount()
+            foreach ($polls as $poll) {
+                $pollData = [
+                    'id' => $poll->getId(),
+                    'question' => $poll->getQuestion(),
+                    'is_closed' => $poll->getIs_closed(),
+                    'created_at' => $poll->getCreated_at()->format('Y-m-d H:i:s'),
+                    'poll_option' => []
                 ];
+
+                foreach ($poll->getPollOptions() as $option) {
+                    // Catch any issues with the PollOption entity
+                    try {
+                        $pollData['poll_option'][] = [
+                            'id' => $option->getId(),
+                            'text' => $option->getText(),
+                            'vote_count' => $option->getVote_count() // Using the correct getter
+                        ];
+                    } catch (\Exception $e) {
+                        error_log('Error processing poll option: ' . $e->getMessage());
+                        // Continue with the next option
+                        continue;
+                    }
+                }
+
+                $data[] = $pollData;
             }
 
-            $data[] = $pollData;
+            return $this->json(['polls' => $data]);
+        } catch (\Exception $e) {
+            // Log the error for server-side debugging
+            error_log('Error in getPolls: ' . $e->getMessage());
+            error_log('Error trace: ' . $e->getTraceAsString());
+            
+            return $this->json([
+                'error' => 'Error loading polls: ' . $e->getMessage()
+            ], 500);
         }
-
-        return $this->json(['polls' => $data]);
     }
 
     // --- Search Functionality ---
@@ -458,15 +526,15 @@ class ChatController extends AbstractController
                 'id' => $message->getId(),
                 'contenu' => $message->getContenu(),
                 'type' => $message->getType(),
-                'post_time' => $message->getPostTime()->format('Y-m-d H:i:s'),
+                'post_time' => $message->getPost_time()->format('Y-m-d H:i:s'),
                 'chat_id' => [
-                    'id' => $message->getChatId()->getId(),
-                    'nom' => $message->getChatId()->getNom()
+                    'id' => $message->getChat_id()->getId(),
+                    'nom' => $message->getChat_id()->getNom()
                 ],
                 'posted_by' => [
-                    'id' => $message->getPostedBy()->getId(),
-                    'nomUser' => $message->getPostedBy()->getNomUser(),
-                    'prenomUser' => $message->getPostedBy()->getPrenomUser()
+                    'id' => $message->getPosted_by()->getId(),
+                    'nomUser' => $message->getPosted_by()->getNomUser(),
+                    'prenomUser' => $message->getPosted_by()->getPrenomUser()
                 ]
             ];
         }
