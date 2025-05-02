@@ -23,6 +23,11 @@ class Projets
         minMessage: "Le nom doit contenir au moins {{ limit }} caractères.",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères."
     )]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-ZÀ-ÿ]+(?:\\s[a-zA-ZÀ-ÿ]+)*$/u",
+        message: "Le nom du projet ne doit contenir que des lettres sans aucun caractère spécial.",
+        groups: ["create", "update"]
+    )]
     private string $nom;
 
     #[ORM\Column(type: "string", length: 255)]

@@ -31,9 +31,12 @@
                                 <div class="d-flex align-items-center justify-content-between">
                                     <p class="m-0">Toutes les technologies.</p>
                                     
-                                    <div style="width: 20%;">
-                                        <a href="{{ path('ajouter_technologie') }}" class="btn bg-gradient-info btn-lg w-100">
+                                    <div class="d-flex gap-2" style="width: 30%;">
+                                        <a href="{{ path('ajouter_technologie') }}" class="btn bg-gradient-info btn-lg w-50">
                                             Nouvelle technologie
+                                        </a>
+                                        <a href="{{ path('technologies_statistiques') }}" class="btn bg-gradient-success btn-lg w-50">
+                                            📊 Statistiques
                                         </a>
                                     </div>
                                 </div>

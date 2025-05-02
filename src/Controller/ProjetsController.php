@@ -209,6 +209,57 @@ public function ajouterTechnologie(Request $request, EntityManagerInterface $em)
         'form' => $form->createView(),
     ]);
 }
+
+    #[Route('/technologies/statistiques', name: 'technologies_statistiques')]
+    public function technologiesStatistiques(EntityManagerInterface $em): Response
+    {
+        // Get all technologies
+        $technologies = $em->getRepository(Technologies::class)->findAll();
+        
+        // Get all projects
+        $projets = $em->getRepository(Projets::class)->findAll();
+        
+        // Calculate technology usage statistics
+        $techStats = [];
+        $totalProjects = count($projets);
+        
+        // Debug: Log total number of projects
+        $this->addFlash('debug', "Total Projects: $totalProjects");
+        
+        foreach ($technologies as $tech) {
+            // Get projects for this technology
+            $techProjects = $tech->getProjets();
+            $usageCount = count($techProjects);
+            $percentage = $totalProjects > 0 ? round(($usageCount / $totalProjects) * 100, 2) : 0;
+            
+            // Debug: Log details for each technology
+            $this->addFlash('debug', "Technology: {$tech->getNomTech()}, Projects: $usageCount");
+            
+            // Debug: Log project details for this technology
+            foreach ($techProjects as $projet) {
+                $this->addFlash('debug', "- Projet: {$projet->getNom()}");
+            }
+            
+            $techStats[] = [
+                'nom' => $tech->getNomTech(),
+                'type' => $tech->getTypeTech(),
+                'usageCount' => $usageCount,
+                'percentage' => $percentage,
+                'projects' => array_map(function($projet) { return $projet->getNom(); }, $techProjects->toArray())
+            ];
+        }
+        
+        // Sort technologies by usage percentage in descending order
+        usort($techStats, function($a, $b) {
+            return $b['percentage'] - $a['percentage'];
+        });
+        
+        return $this->render('backoffice/technologies/statistiques.html.twig', [
+            'techStats' => $techStats,
+            'totalProjects' => $totalProjects
+        ]);
+    }
+
 #[Route('/technologies/modifier/{id}', name: 'modifier_technologie')]
 public function updatetech(Request $request, Technologies $projet, EntityManagerInterface $em): Response
 {
