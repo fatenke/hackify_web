@@ -10,8 +10,6 @@
 {% endblock %}
 
 {% block title %}Liste des Hackathons{% endblock %}
-
-
   {% block body %}
 
 
@@ -109,10 +107,11 @@
           </div>
         {% endfor %}
       </div>
+      
     </div>
 
 
-    <!-- les hackathon a ve,ir -->
+    <!-- les hackathon a venir -->
     <div class="tab-pane " id="hackathon-upcoming">
       <div class="tab-header text-center">
         <h3>Nos Hackathons à venir</h3>
@@ -157,7 +156,7 @@
    <!-- hackathon en cours -->
     <div class="tab-pane fade" id="hackathon-ongoing">
       <div class="tab-header text-center">
-        <h3>Hackathons en cours</h3>
+        <h3>Nos hackathons à ne pas manquer</h3>
       </div>
       <div class="row gy-5">
         {% for hackathon in hackathons %}
@@ -326,7 +325,7 @@
           {% endif %}
         </div>
       </div>
-
+  
   </div>
 
   <!-- calendrier !-->
@@ -335,7 +334,11 @@
             <i class="bi bi-calendar3"></i> Voir le calendrier des hackathons
         </a>
     </div>
+    
 </div>
+
+
+
 
 
 
@@ -377,7 +380,7 @@
   });
 </script>
 
-
+<!-- style pour le chronometre -->
 <style>
 .countdown {
   background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
@@ -416,6 +419,49 @@
 }
 
 </style>
+
+<style>
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    gap: 6px;
+}
+
+.pagination li {
+    display: inline-block;
+}
+
+.pagination a,
+.pagination span {
+    display: inline-block;
+    padding: 8px 12px;
+    background-color: #f2f2f2;
+    color: #333;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    font-size: 14px;
+}
+
+.pagination a:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.pagination .current {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+</style>
+
 
 
 {% endblock %}

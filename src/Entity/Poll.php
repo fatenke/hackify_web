@@ -36,7 +36,7 @@ class Poll
     #[ORM\OneToMany(mappedBy: "poll_id", targetEntity: PollOption::class)]
     private Collection $poll_options;
 
-    #[ORM\OneToMany(mappedBy: "poll_id", targetEntity: PollVote::class)]
+    #[ORM\OneToMany(mappedBy: "poll", targetEntity: PollVote::class)]
     private Collection $poll_votes;
 
     public function __construct()

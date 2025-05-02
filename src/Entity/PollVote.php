@@ -11,7 +11,7 @@ class PollVote
     
     #[ORM\ManyToOne(targetEntity: Poll::class, inversedBy: 'poll_votes')]
     #[ORM\JoinColumn(name: 'poll_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private ?Poll $poll_id = null;
+    private ?Poll $poll = null;
     
     #[ORM\ManyToOne(targetEntity: PollOption::class, inversedBy: 'poll_votes')]
     #[ORM\JoinColumn(name: 'option_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
@@ -32,14 +32,14 @@ class PollVote
         return $this;
     }
     
-    public function getPoll_id(): ?Poll
+    public function getPoll(): ?Poll
     {
-        return $this->poll_id;
+        return $this->poll;
     }
     
-    public function setPoll_id(?Poll $value): self
+    public function setPoll(?Poll $value): self
     {
-        $this->poll_id = $value;
+        $this->poll = $value;
         return $this;
     }
     
