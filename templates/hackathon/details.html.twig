@@ -106,7 +106,7 @@ const marker = L.marker([{{ coords.lat }}, {{ coords.lon }}], {icon: hackathonIc
     popupAnchor: [0, -30]
   })
 };
-      fetch(`https://api.geoapify.com/v2/places?categories=catering.restaurant,accommodation.hotel&filter=circle:{{ coords.lon }},{{ coords.lat }},1000&bias=proximity:{{ coords.lon }},{{ coords.lat }}&limit=20&apiKey={{ geoapify_key }}`)
+      fetch(`https://api.geoapify.com/v2/places?categories=catering.restaurant,accommodation.hotel&filter=circle:{{ coords.lon }},{{ coords.lat }},20000&bias=proximity:{{ coords.lon }},{{ coords.lat }}&limit=20&apiKey={{ geoapify_key }}`)
         .then(r => r.json())
         .then(data => {
           if (data.features && data.features.length > 0) {
