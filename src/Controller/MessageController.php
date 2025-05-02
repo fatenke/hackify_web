@@ -36,8 +36,11 @@ class MessageController extends AbstractController
         if ($request->isMethod('POST')) {
             $content = $request->request->get('contenu');
             
+            // Strip HTML tags for better content analysis
+            $plainTextContent = strip_tags($content);
+            
             // Check message content with Perspective API
-            $contentAnalysis = $perspectiveApiService->analyzeText($content);
+            $contentAnalysis = $perspectiveApiService->analyzeText($plainTextContent);
             
             if ($contentAnalysis['isFlagged']) {
                 $this->addFlash('error', 'Your message may contain inappropriate content and cannot be posted.');
@@ -50,7 +53,7 @@ class MessageController extends AbstractController
             }
             
             $message->setChat_id($chat_id);
-            $message->setContenu($content);
+            $message->setContenu($content); // Store the original content with HTML
             $message->setType($request->request->get('type', 'QUESTION'));
             $message->setPost_time(new \DateTime());
             // Set the current user as the message sender

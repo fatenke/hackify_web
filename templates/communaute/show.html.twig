@@ -2,6 +2,18 @@
 
 {% block title %}Community: {{ communaute.nom }}{% endblock %}
 
+{% block head %}
+    <!-- Load CKEditor 5 from CDN directly in head to ensure it's loaded before any scripts that need it -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/translations/fr.js"></script>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <!-- Add the mentions debug script -->
+    <script src="{{ asset('js/mentions-debug.js') }}"></script>
+{% endblock %}
+
 {% block stylesheets %}
     {{ parent() }}
     <style>
@@ -830,46 +842,77 @@
         }
         /* END CLEAN CHAT STYLING */
 
-        /* Mention feature styling */
+        /* Additional Mention Styles */
+        .cke_focus {
+            z-index: 9999 !important;
+        }
+        
         .mention-container {
             position: absolute;
             background: #ffffff;
-            border: 1px solid #d0d0d0;
+            border: 3px solid #ff5722 !important; /* Very noticeable border color */
             border-radius: 8px;
-            max-height: 220px;
+            max-height: 300px;
             overflow-y: auto;
-            width: 280px;
-            z-index: 9999;
+            width: 300px;
+            z-index: 100000 !important; /* Higher than CKEditor */
             display: none;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5) !important;
+            animation: fadeInUp 0.3s ease;
+        }
+        
+        /* Make test button super visible */
+        #test-mentions-btn {
+            background-color: #ff5722 !important;
+            border-color: #ff5722 !important;
+            color: white !important;
+            font-weight: bold !important;
+            padding: 10px 15px !important;
+            border-radius: 20px !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+            animation: pulse 2s infinite !important;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 4px 15px rgba(255,87,34,0.5);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            }
         }
         
         .mention-container.show {
             display: block !important;
-            animation: fadeIn 0.25s ease;
         }
         
         .mention-title {
-            padding: 8px 12px;
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
+            padding: 12px 15px;
+            background-color: #f0f5ff;
+            border-bottom: 1px solid #d0e0ff;
             font-weight: 600;
-            color: #212529;
+            color: #0d6efd;
             font-size: 14px;
             border-radius: 8px 8px 0 0;
             position: sticky;
             top: 0;
-            z-index: 1;
+            z-index: 100001;
         }
         
         .mention-item {
-            padding: 10px 12px;
+            padding: 10px 15px;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 12px;
             transition: all 0.2s ease;
-            border-bottom: 1px solid #eaeaea;
+            border-bottom: 1px solid #f0f0f0;
         }
         
         .mention-item:last-child {
@@ -878,6 +921,11 @@
         
         .mention-item:hover, .mention-item.active {
             background-color: #f0f5ff;
+        }
+        
+        .mention-item.active {
+            background-color: #e0edff;
+            border-left: 3px solid #0d6efd;
         }
         
         .mention-avatar {
@@ -1159,6 +1207,70 @@
             -webkit-background-clip: text;
             animation: gradientShift 3s ease infinite;
         }
+        
+        /* CKEditor Styles */
+        .cke_chrome {
+            border: 1px solid #ddd !important;
+            border-radius: 4px !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+        }
+        
+        .cke_top {
+            background: #f8f9fa !important;
+            border-bottom: 1px solid #ddd !important;
+            padding: 6px 8px !important;
+        }
+        
+        .cke_button {
+            padding: 4px 6px !important;
+        }
+        
+        .cke_button:hover {
+            background-color: #e9ecef !important;
+            border-radius: 3px !important;
+        }
+        
+        .cke_button_on {
+            background-color: #e9ecef !important;
+            border-radius: 3px !important;
+        }
+        
+        .cke_contents {
+            min-height: 150px !important;
+        }
+        
+        /* Make sure CKEditor is visible above other elements */
+        .cke_dialog_container {
+            z-index: 100000 !important;
+        }
+        
+        .cke_dialog_background_cover {
+            z-index: 99999 !important;
+        }
+        
+        /* Add styles for the mentions trigger button */
+        .mention-trigger-btn {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            z-index: 1000;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 2px 8px;
+            border-radius: 50%;
+            background: #f0f5ff;
+            border: 1px solid #d0e0ff;
+            color: #0d6efd;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .mention-trigger-btn:hover {
+            background: #d0e0ff;
+            transform: scale(1.1);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
     </style>
 {% endblock %}
 
@@ -1261,26 +1373,29 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-8 chat-divider">
-                                <div id="messages-container" style="max-height: 600px; overflow-y: auto;">
-                                    <p class="text-center text-muted">Select a chat from the list to view messages</p>
-                                </div>
+                        <div id="messages-container" style="max-height: 600px; overflow-y: auto;">
+                            <p class="text-center text-muted">Select a chat from the list to view messages</p>
+                        </div>
 
                                 <form id="message-form" class="mt-3 d-none">
-                                <input type="hidden" name="_token" value="{{ csrf_token('message_token') }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('message_token') }}">
                                     <div class="form-group position-relative">
-                                        <textarea class="form-control" name="contenu" id="message-input" rows="2" placeholder="Type your message... Use @ to mention someone" required></textarea>
+                                        <textarea class="form-control ckeditor" name="contenu" id="message-input" rows="5" placeholder="Type your message... Use @ to mention someone. Format with toolbar above." style="width:100%; min-height:150px; border:1px solid #ddd;"></textarea>
                                         <div id="mention-container" class="mention-container"></div>
-                                </div>
-                                <div class="form-group mt-2">
-                                    <select class="form-control" name="type">
-                                        <option value="QUESTION">Question</option>
-                                        <option value="REPONSE">Response</option>
-                                        <option value="SUGGESTION">Suggestion</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-primary mt-2">Send Message</button>
-                                </form>
-                            </div>
+                        </div>
+                        <div class="form-group mt-2">
+                            <select class="form-control" name="type">
+                                <option value="QUESTION">Question</option>
+                                <option value="REPONSE">Response</option>
+                                <option value="SUGGESTION">Suggestion</option>
+                            </select>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <button type="submit" class="btn btn-primary">Send Message</button>
+                            <button type="button" id="test-mentions-btn" class="btn btn-warning"><strong>@</strong> Test @Mentions</button>
+                        </div>
+</form>
+                    </div>
                             <div class="col-md-4" id="chat-polls-container" style="display: none;">
                                 <div class="card">
                                     <div class="card-header bg-light">
@@ -1330,7 +1445,7 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="question" class="form-label">Poll Question</label>
-                            <input type="text" class="form-control" id="question" name="question" required>
+                            <textarea class="form-control ckeditor" id="question" name="question" rows="5" placeholder="Enter your poll question..." required style="width:100%; min-height:200px; border:1px solid #ddd;"></textarea>
                         </div>
                         <div id="pollOptions" class="mb-3">
                             <div class="mb-2 option-input-group">
@@ -1361,6 +1476,11 @@
 
    <!-- Only showing the updated JavaScript section -->
 <script>
+    // Function to create avatar placeholder
+    function createAvatarPlaceholder(initials) {
+        return '<div class="avatar-placeholder" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background-color:#6c757d; color:white; font-weight:bold; font-size:16px;">' + initials + '</div>';
+    }
+
     // Enhanced debug log function
     function debugLog(message, data = null) {
         try {
@@ -1373,6 +1493,11 @@
             // Handle console errors in older browsers
             console.error("Debug logging error:", e);
         }
+    }
+    
+    // Function to check if CKEditor is loaded
+    function isCkeditorLoaded() {
+        return typeof CKEDITOR !== 'undefined';
     }
     
     // Global error handler for better debugging
@@ -1408,55 +1533,132 @@
         const apiUrl = `/chat/community/${communauteId}/members`;
         debugLog('Fetching community members from:', apiUrl);
         
-        fetch(apiUrl)
+        // Show loading indicator if we're fetching for the mention dropdown
+        if (mentionActive && mentionContainer) {
+            mentionContainer.innerHTML = `
+                <div class="mention-title">Loading Members...</div>
+                <div style="padding: 20px; text-align: center;">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2 mb-0 text-muted">Fetching community members...</p>
+                </div>
+            `;
+            mentionContainer.style.display = 'block';
+        }
+        
+        // Use a timeout to handle slow API responses
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error("Request timeout")), 5000);
+        });
+        
+        // Create the fetch request
+        const fetchPromise = fetch(apiUrl);
+        
+        // Race between the fetch and the timeout
+        Promise.race([fetchPromise, timeoutPromise])
             .then(response => {
                 debugLog('API response status:', response.status);
                 if (!response.ok) {
-                    throw new Error('Failed to load community members');
+                    throw new Error(`Failed to load community members: ${response.status} ${response.statusText}`);
                 }
                 return response.json();
             })
             .then(data => {
                 debugLog('Community members loaded:', data);
-                communityMembers = data.members || [];
+                if (data.success && data.members) {
+                    communityMembers = data.members;
+                    debugLog('Successfully stored community members:', communityMembers.length);
+                    
+                    // If mentions are active, show the members
+                    if (mentionActive) {
+                        showMentionSuggestions(mentionSearchText || '');
+                    }
+                    
+                    return true;
+                } else {
+                    debugLog('API returned success=false or no members array');
+                    throw new Error('Invalid API response format');
+                }
             })
             .catch(error => {
                 debugLog('Error loading community members:', error);
-                // Fallback: Use test data if API fails
-                debugLog('Using fallback test data for members');
-                communityMembers = [
-                    {
-                        id: 1, 
-                        name: 'John Doe',
-                        email: 'john@example.com',
-                        role: 'ADMIN'
-                    },
-                    {
-                        id: 2,
-                        name: 'Jane Smith',
-                        email: 'jane@example.com',
-                        role: 'ORGANISATEUR'
-                    },
-                    {
-                        id: 3,
-                        name: 'Alice Johnson',
-                        email: 'alice@example.com',
-                        role: 'COACH'
-                    },
-                    {
-                        id: 4,
-                        name: 'Bob Brown',
-                        email: 'bob@example.com',
-                        role: 'PARTICIPANT'
-                    },
-                    {
-                        id: 5,
-                        name: 'Charlie Davis',
-                        email: 'charlie@example.com',
-                        role: 'PARTICIPANT'
-                    }
-                ];
+                
+                // Try alternative URL without /chat prefix as a backup
+                const alternativeUrl = `/community/${communauteId}/members`;
+                debugLog('Trying alternative URL:', alternativeUrl);
+                
+                fetch(alternativeUrl)
+                    .then(response => {
+                        debugLog('Alternative API response status:', response.status);
+                        if (!response.ok) {
+                            throw new Error('Failed with alternative URL too');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        debugLog('Community members loaded from alternative URL:', data);
+                        if (data.success && data.members) {
+                            communityMembers = data.members;
+                            debugLog('Successfully stored community members from alternative URL:', communityMembers.length);
+                            
+                            // If mentions are active, show the members
+                            if (mentionActive) {
+                                showMentionSuggestions(mentionSearchText || '');
+                            }
+                            
+                            return true;
+                        } else {
+                            throw new Error('Alternative URL returned success=false or no members array');
+                        }
+                    })
+                    .catch(altError => {
+                        debugLog('Both URLs failed, using fallback test data');
+                        useTestMembers();
+                        
+                        // If mentions are active, show the test members
+                        if (mentionActive) {
+                            showMentionSuggestions(mentionSearchText || '');
+                        }
+                    });
             });
+    }
+    
+    // Helper function to set test members data
+    function useTestMembers() {
+        debugLog('Using fallback test data for members');
+        communityMembers = [
+            {
+                id: 1, 
+                name: 'John Doe',
+                email: 'john@example.com',
+                role: 'ADMIN'
+            },
+            {
+                id: 2,
+                name: 'Jane Smith',
+                email: 'jane@example.com',
+                role: 'ORGANISATEUR'
+            },
+            {
+                id: 3,
+                name: 'Alice Johnson',
+                email: 'alice@example.com',
+                role: 'COACH'
+            },
+            {
+                id: 4,
+                name: 'Bob Brown',
+                email: 'bob@example.com',
+                role: 'PARTICIPANT'
+            },
+            {
+                id: 5,
+                name: 'Charlie Davis',
+                email: 'charlie@example.com',
+                role: 'PARTICIPANT'
+            }
+        ];
     }
     
     // Function to initialize/reinitialize the message form
@@ -1469,8 +1671,6 @@
             return;
         }
         
-        debugLog('Setting up mention handlers on textarea');
-        
         // Make sure we have the mention container
         mentionContainer = document.getElementById('mention-container');
         if (!mentionContainer) {
@@ -1481,13 +1681,158 @@
             document.body.appendChild(mentionContainer);
         }
         
-        // Remove any existing listeners to avoid duplicates
-        messageTextarea.removeEventListener('keyup', handleMentionKeyup);
-        messageTextarea.removeEventListener('keydown', handleMentionKeydown);
+        // CKEditor-specific handling for mentions
+        if (isCkeditorLoaded() && CKEDITOR.instances['message-input']) {
+            debugLog('Setting up CKEditor mention handling');
+            
+            // Create a flag to track if @ is being entered
+            let atDetected = false;
+            
+            // Listen for key events in the CKEditor instance
+            CKEDITOR.instances['message-input'].on('key', function(e) {
+                const editor = e.editor;
+                const event = e.data.domEvent;
+                const keyCode = event.data ? event.data.keyCode : event.keyCode;
+                
+                // Log detailed key info to help with debugging
+                debugLog('CKEditor key pressed:', { 
+                    keyCode: keyCode, 
+                    shiftKey: event.shiftKey,
+                    ctrlKey: event.ctrlKey,
+                    key: event.key || "unknown" 
+                });
+                
+                // If @ is pressed - detect multiple ways to capture it
+                // 1. Shift+2 (key code 50 with shift) - traditional @ on QWERTY
+                // 2. Alt+0 followed by 6 and 4 - Alt code for @
+                // 3. Direct @ character detection
+                if ((keyCode === 50 && event.shiftKey) || // Shift+2
+                    (event.key === '@') ||               // Direct @ character
+                    (atDetected)) {                      // @ already being entered
+                    
+                    debugLog('@ character detected in CKEditor');
+                    
+                    // Set the flag to track @ is being entered
+                    atDetected = true;
+                    
+                    // Get selection position to show the dropdown near the cursor
+                    const selection = editor.getSelection();
+                    const ranges = selection.getRanges();
+                    
+                    if (ranges.length > 0) {
+                        const range = ranges[0];
+                        mentionActive = true;
+                        mentionSearchText = '';
+                        mentionSelectedIndex = 0;
+                        
+                        // Position the dropdown
+                        const cursorElement = range.startContainer.$;
+                        if (cursorElement) {
+                            const cursorPosition = range.startOffset;
+                            const editorRect = editor.container.$.getBoundingClientRect();
+                            
+                            // For proper positioning, we need to know where the cursor is
+                            // Get position of cursor element relative to editor
+                            const cursorRect = editor.getSelection().getStartElement().$.getBoundingClientRect();
+                            
+                            // Position dropdown below cursor
+                            mentionContainer.style.position = 'absolute';
+                            mentionContainer.style.top = (cursorRect.bottom + 5) + 'px';
+                            mentionContainer.style.left = cursorRect.left + 'px';
+                        }
+                        
+                        // Make sure we have community members before showing the dropdown
+                        if (!communityMembers || communityMembers.length === 0) {
+                            debugLog('No community members loaded yet, fetching...');
+                            fetchCommunityMembers();
+                            // Wait for fetch to complete before showing mentions
+                            setTimeout(() => {
+                                showMentionSuggestions('');
+                            }, 500);
+                        } else {
+                            // Show mention suggestions immediately if we have members
+                            showMentionSuggestions('');
+                        }
+                    }
+                } else {
+                    // If a key other than @ is pressed and we're not actively showing mentions,
+                    // reset the @ detection flag
+                    if (!mentionActive) {
+                        atDetected = false;
+                    }
+                }
+                
+                // If mentions are active and we press Escape, close the mentions
+                if (mentionActive && keyCode === 27) { // Escape key
+                    closeMentionContainer();
+                }
+                
+                // If mentions are active and we press Enter, select the current suggestion
+                if (mentionActive && keyCode === 13) { // Enter key
+                    const mentionItems = mentionContainer.querySelectorAll('.mention-item');
+                    if (mentionItems.length > 0 && mentionSelectedIndex >= 0 && mentionSelectedIndex < mentionItems.length) {
+                        e.cancel(); // Prevent default Enter behavior (new line)
+                        selectMention(mentionItems[mentionSelectedIndex]);
+                    }
+                }
+                
+                // If mentions are active and arrow keys are pressed, navigate the suggestions
+                if (mentionActive) {
+                    if (keyCode === 40) { // Down arrow
+                        e.cancel(); // Prevent default
+                        handleMentionArrowKey('down');
+                    } else if (keyCode === 38) { // Up arrow
+                        e.cancel(); // Prevent default
+                        handleMentionArrowKey('up');
+                    }
+                }
+            });
+            
+            // Add special handling for input events to capture @ and typed text after it
+            CKEDITOR.instances['message-input'].on('change', function(e) {
+                if (mentionActive) {
+                    // Get current editor content
+                    const content = e.editor.getData();
+                    
+                    // Extract the search text after @ using regex
+                    const matches = content.match(/@([^<\s]*)$/);
+                    if (matches && matches[1]) {
+                        mentionSearchText = matches[1];
+                        debugLog('Detected search text:', mentionSearchText);
+                        showMentionSuggestions(mentionSearchText);
+                    }
+                }
+            });
+        }
+    }
+    
+    // Function to handle arrow key navigation in mention dropdown
+    function handleMentionArrowKey(direction) {
+        const mentionItems = mentionContainer.querySelectorAll('.mention-item');
+        if (mentionItems.length === 0) return;
         
-        // Add event listeners
-        messageTextarea.addEventListener('keyup', handleMentionKeyup);
-        messageTextarea.addEventListener('keydown', handleMentionKeydown);
+        // Remove active class from current item
+        if (mentionSelectedIndex >= 0 && mentionSelectedIndex < mentionItems.length) {
+            mentionItems[mentionSelectedIndex].classList.remove('active');
+        }
+        
+        // Update the selected index
+        if (direction === 'down') {
+            mentionSelectedIndex = (mentionSelectedIndex + 1) % mentionItems.length;
+        } else {
+            mentionSelectedIndex = (mentionSelectedIndex - 1 + mentionItems.length) % mentionItems.length;
+        }
+        
+        // Add active class to new selected item
+        mentionItems[mentionSelectedIndex].classList.add('active');
+        
+        // Scroll to ensure the selected item is visible
+        const selectedItem = mentionItems[mentionSelectedIndex];
+        if (selectedItem.offsetTop < mentionContainer.scrollTop) {
+            mentionContainer.scrollTop = selectedItem.offsetTop;
+        } else if (selectedItem.offsetTop + selectedItem.offsetHeight > mentionContainer.scrollTop + mentionContainer.offsetHeight) {
+            mentionContainer.scrollTop = selectedItem.offsetTop + selectedItem.offsetHeight - mentionContainer.offsetHeight;
+        }
     }
     
     // Call this when the page loads
@@ -1502,6 +1847,26 @@
         
         // Initialize message form if available
         initializeMessageForm();
+
+        // Add a global click handler to close the mention container when clicking outside
+        document.addEventListener('click', function(e) {
+            if (mentionActive && mentionContainer && !mentionContainer.contains(e.target)) {
+                // Check if it's a click on the editor
+                let clickedInEditor = false;
+                
+                if (isCkeditorLoaded() && CKEDITOR.instances['message-input']) {
+                    const editor = CKEDITOR.instances['message-input'];
+                    if (editor.container && editor.container.$.contains(e.target)) {
+                        clickedInEditor = true;
+                    }
+                }
+                
+                // Don't close if clicked in editor or on the mention button
+                if (!clickedInEditor && !e.target.classList.contains('mention-trigger-btn')) {
+                    closeMentionContainer();
+                }
+            }
+        });
 
         // Countdown initialization
         const elements = {
@@ -1549,6 +1914,29 @@
 
         updateCountdown();
         setInterval(updateCountdown, 1000);
+
+        // Initialize all CKEditor instances on the page that have ckeditor class
+        if (isCkeditorLoaded()) {
+            debugLog('Initializing CKEditor instances on page load');
+            var textareas = document.querySelectorAll('textarea.ckeditor');
+            for (var i = 0; i < textareas.length; i++) {
+                var textarea = textareas[i];
+                if (textarea.id && !CKEDITOR.instances[textarea.id]) {
+                    CKEDITOR.replace(textarea.id, {
+                        toolbar: [
+                            ['Bold', 'Italic', 'Underline', '-', 'Link', '-', 'NumberedList', 'BulletedList', '-', 'Image', '-', 'TextColor']
+                        ],
+                        height: textarea.getAttribute('rows') * 20,
+                        width: '100%',
+                        removePlugins: 'elementspath',
+                        resize_enabled: true
+                    });
+                    debugLog('CKEditor initialized for:', textarea.id);
+                }
+            }
+        } else {
+            debugLog('CKEditor not available on page load');
+        }
     });
 
     // Setup reaction functionality
@@ -1724,6 +2112,29 @@
                     if (permissionAlert) {
                         permissionAlert.remove();
                     }
+                    
+                    // Initialize CKEditor for the message input with a small delay to ensure DOM is ready
+                    setTimeout(function() {
+                        if (isCkeditorLoaded()) {
+                            // Destroy any existing instance first
+                            if (CKEDITOR.instances['message-input']) {
+                                CKEDITOR.instances['message-input'].destroy();
+                            }
+                            
+                            // Create a new CKEditor instance with message_config
+                            CKEDITOR.replace('message-input', {
+                                toolbar: [
+                                    ['Bold', 'Italic', 'Underline', '-', 'Link', '-', 'NumberedList', 'BulletedList', '-', 'Image', '-', 'TextColor']
+                                ],
+                                height: 150,
+                                width: '100%',
+                                uiColor: '#f8f9fa'
+                            });
+                            debugLog('Message editor initialized in chat link click handler');
+                        } else {
+                            debugLog('CKEditor not available in chat link click handler');
+                        }
+                    }, 300);
                 } else {
                     messageForm.style.display = 'none';
                     // Show permission alert
@@ -1793,10 +2204,12 @@
                         // Generate avatar HTML
                         let avatarHTML = '';
                         if (photoUrl) {
-                            // Use actual profile photo
+                            // Use actual profile photo with proper error handling using a function
                             avatarHTML = `
                                 <div class="avatar-container" style="width:40px; height:40px; border-radius:50%; overflow:hidden;">
-                                    <img src="${photoUrl}" alt="${senderName}" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='<div class=\'avatar-placeholder\' style=\'width:100%; height:100%; display:flex; align-items:center; justify-content:center; background-color:#6c757d; color:white; font-weight:bold; font-size:16px;\'>${initials}</div>';" />
+                                    <img src="${photoUrl}" alt="${senderName}" 
+                                        style="width:100%; height:100%; object-fit:cover;" 
+                                        onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML=createAvatarPlaceholder('${initials}');" />
                                 </div>
                             `;
                         } else {
@@ -1881,7 +2294,7 @@
                 if (!response.ok) {
                     return response.text().then(text => {
                         debugLog('Error response text:', text);
-                        throw new Error('Network response was not ok: ' + response.statusText);
+                    throw new Error('Network response was not ok: ' + response.statusText);
                     });
                 }
                 return response.json();
@@ -2016,18 +2429,25 @@
     }
 
     // Handle message form submission
-    document.getElementById('message-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
+    function submitMessageWithPerspectiveCheck() {
         if (!currentChatId) {
             alert('Please select a chat first.');
             return;
         }
 
-        const messageInput = document.getElementById('message-input');
-        const content = messageInput.value.trim();
+        // Get content safely with checks for CKEDITOR
+        let content = '';
+        if (isCkeditorLoaded() && CKEDITOR.instances['message-input']) {
+            content = CKEDITOR.instances['message-input'].getData().trim();
+            debugLog('Getting content from CKEditor instance');
+        } else {
+            const messageInput = document.getElementById('message-input');
+            content = messageInput ? messageInput.value.trim() : '';
+            debugLog('Getting content from textarea directly');
+        }
         
         if (!content) {
+            debugLog('Empty content, not sending message');
             return; // Don't send empty messages
         }
         
@@ -2045,8 +2465,11 @@
             return;
         }
         
-        // Create FormData from the form to capture all fields
-        const formData = new FormData(this);
+        // Create FormData from the form
+        const formData = new FormData(document.getElementById('message-form'));
+        
+        // Update the content with CKEditor content
+        formData.set('contenu', content);
         
         // Extract mentions from message
         const mentions = extractMentions(content);
@@ -2057,29 +2480,62 @@
             formData.append('mentions', JSON.stringify(mentions));
         }
         
-        debugLog('Sending message to chat ID:', currentChatId);
-
-        // Choose the correct endpoint based on chat type
-        const endpoint = chatType === 'BOT_SUPPORT' 
-            ? `/chat/${currentChatId}/message/gemini`
-            : `/chat/${currentChatId}/message/new`;
-
         // Disable submit button during request
-        const submitButton = this.querySelector('button[type="submit"]');
+        const submitButton = document.querySelector('#message-form button[type="submit"]');
         const originalButtonText = submitButton.innerHTML;
         submitButton.disabled = true;
         submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-
-        fetch(endpoint, {
+        
+        // First check content with Perspective API directly
+        fetch(`/chat/${currentChatId}/content-check`, {
             method: 'POST',
-            body: formData
+            body: JSON.stringify({
+                content: content,
+                type: 'message'
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.flagged) {
+                // Content was flagged, show alert
+                showToxicityAlert(result.scores);
+                throw new Error('Content flagged as inappropriate');
+            }
+            
+            debugLog('Content passed moderation check, sending message to chat ID:', currentChatId);
+            
+            // Content is ok, choose the correct endpoint based on chat type
+            const endpoint = chatType === 'BOT_SUPPORT' 
+                ? `/chat/${currentChatId}/message/gemini`
+                : `/chat/${currentChatId}/message/new`;
+                
+            // Send the message
+            return fetch(endpoint, {
+                method: 'POST',
+                body: formData
+            });
         })
         .then(response => {
             if (!response.ok) {
                 if (response.status === 403) {
                     throw new Error('You do not have permission to post in this chat.');
                 } else {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    return response.json().then(data => {
+                        if (data.error) {
+                            throw new Error(data.error);
+                        } else {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                    }).catch(error => {
+                        if (error instanceof SyntaxError) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        throw error;
+                    });
                 }
             }
             return response.json();
@@ -2087,11 +2543,16 @@
         .then(data => {
             debugLog('Message sent response:', data);
             if (data.success) {
-                // Clear the input
-                messageInput.value = '';
+                // Clear the input safely
+                if (isCkeditorLoaded() && CKEDITOR.instances['message-input']) {
+                    CKEDITOR.instances['message-input'].setData('');
+                } else {
+                    const messageInput = document.getElementById('message-input');
+                    if (messageInput) messageInput.value = '';
+                }
                 
                 // Reload chat to show new message
-            loadChatContent(currentChatId);
+                loadChatContent(currentChatId);
             } else if (data.error) {
                 throw new Error(data.error);
             }
@@ -2099,13 +2560,15 @@
         .catch(error => {
             debugLog('Error sending message:', error);
             
-            if (error.message.includes('permission')) {
-                // This is a permission error
-                const chatName = document.querySelector(`.chat-link[data-chat-id="${currentChatId}"]`).dataset.chatName;
-                showPermissionDeniedAlert(chatName, chatType);
-            } else {
-                // Other errors
-                alert('Error sending message: ' + error.message);
+            if (!error.message.includes('Content flagged')) {
+                if (error.message && error.message.includes('permission')) {
+                    // This is a permission error
+                    const chatName = document.querySelector(`.chat-link[data-chat-id="${currentChatId}"]`).dataset.chatName;
+                    showPermissionDeniedAlert(chatName, chatType);
+                } else {
+                    // Other errors
+                    alert('Error sending message: ' + error.message);
+                }
             }
         })
         .finally(() => {
@@ -2113,8 +2576,55 @@
             submitButton.disabled = false;
             submitButton.innerHTML = originalButtonText;
         });
+    }
+
+    // Add this function to display toxicity information
+    function showToxicityAlert(scores) {
+        // Create or get the alert container
+        let alertContainer = document.getElementById('toxicity-alert');
+        if (!alertContainer) {
+            alertContainer = document.createElement('div');
+            alertContainer.id = 'toxicity-alert';
+            alertContainer.className = 'alert alert-warning alert-dismissible fade show';
+            alertContainer.setAttribute('role', 'alert');
+            
+            // Insert it before the messages container
+            const messagesContainer = document.getElementById('messages-container');
+            messagesContainer.parentNode.insertBefore(alertContainer, messagesContainer);
+        }
+        
+        // Format scores for display
+        let scoresHtml = '<ul class="mb-0 mt-2">';
+        for (const [attribute, score] of Object.entries(scores)) {
+            const percentage = Math.round(score * 100);
+            const colorClass = percentage > 70 ? 'text-danger' : 
+                              percentage > 50 ? 'text-warning' : 'text-success';
+            scoresHtml += `<li><strong>${attribute}:</strong> <span class="${colorClass}">${percentage}%</span></li>`;
+        }
+        scoresHtml += '</ul>';
+        
+        // Set the alert content
+        alertContainer.innerHTML = `
+            <strong>Message Not Sent:</strong> Your message was flagged for potentially inappropriate content.
+            <p>The content was analyzed and found to have high scores in the following categories:</p>
+            ${scoresHtml}
+            <p class="mb-0">Please revise your message and try again.</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        // Auto-dismiss after 10 seconds
+        setTimeout(() => {
+            const bsAlert = new bootstrap.Alert(alertContainer);
+            bsAlert.close();
+        }, 10000);
+    }
+
+    // Replace the existing event listener with our new function
+    document.getElementById('message-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitMessageWithPerspectiveCheck();
     });
-    
+
     // Function to show a nice permission denied alert
     function showPermissionDeniedAlert(chatName, chatType) {
         // Create or get the alert container
@@ -2182,6 +2692,7 @@
         pollOptions.appendChild(optionDiv);
     }
 
+    // Update poll form submission to use Perspective API too
     document.getElementById('create-poll-form').addEventListener('submit', function(e) {
         e.preventDefault();
         if (!currentChatId) {
@@ -2191,55 +2702,94 @@
 
         const formData = new FormData(this);
         
-        // Log the form data for debugging
-        const formEntries = Array.from(formData.entries());
-        debugLog('Poll form data:', formEntries);
-        
-        // Add CSRF token if not already included
-        if (!formData.has('_token')) {
-            formData.append('_token', '{{ csrf_token('poll_token') }}');
+        // Update the question with CKEditor content safely
+        let questionContent = '';
+        if (isCkeditorLoaded() && CKEDITOR.instances['question']) {
+            questionContent = CKEDITOR.instances['question'].getData().trim();
+            formData.set('question', questionContent);
         }
         
-        fetch(`/chat/${currentChatId}/poll/new`, {
+        // Check permissions based on chat type and user role
+        const chatType = document.querySelector(`.chat-link[data-chat-id="${currentChatId}"]`).dataset.chatType;
+        
+        debugLog('User role for poll creation:', userRole);
+        
+        // Only Coachs and Admins can create polls
+        const canCreatePoll = userRole.includes('COACH') || userRole.includes('ADMIN');
+        if (!canCreatePoll) {
+            alert('You do not have permission to create polls.');
+            return;
+        }
+        
+        // Disable the submit button
+        const submitButton = document.querySelector('#create-poll-form button[type="submit"]');
+        const originalButtonText = submitButton.innerHTML;
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+        
+        // First, check content with Perspective API
+        fetch(`/chat/${currentChatId}/content-check`, {
             method: 'POST',
-            body: formData,
+            body: JSON.stringify({
+                content: questionContent,
+                type: 'poll'
+            }),
             headers: {
+                'Content-Type': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest'
             }
         })
+        .then(response => response.json())
+        .then(result => {
+            if (result.flagged) {
+                // Content was flagged, show alert
+                showToxicityAlert(result.scores);
+                throw new Error('Content flagged as inappropriate');
+            }
+
+            // Content is ok, proceed with creating the poll
+            return fetch(`/chat/${currentChatId}/poll/new`, {
+                method: 'POST',
+                body: formData
+            });
+        })
         .then(response => {
-            debugLog('Poll submission response status:', response.status);
             if (!response.ok) {
-                return response.text().then(text => {
-                    debugLog('Error response text:', text);
-                    throw new Error('Network response was not ok: ' + response.statusText);
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Failed to create poll');
                 });
             }
             return response.json();
         })
         .then(data => {
-            debugLog('Poll submission data:', data);
-            if (data.error) {
-                alert(data.error);
-                return;
+            debugLog('Poll created successfully:', data);
+            
+            // Reset form fields
+            document.getElementById('pollOptions').innerHTML = '';
+            addOption(); // Add a single empty option
+            
+            // Reset CKEditor content safely
+            if (isCkeditorLoaded() && CKEDITOR.instances['question']) {
+                CKEDITOR.instances['question'].setData('');
             }
             
-            // Reset the form
-            this.reset();
+            // Hide the modal
+            const pollModal = bootstrap.Modal.getInstance(document.getElementById('createPollModal'));
+            pollModal.hide();
             
-            // Close the modal
-            const pollModal = document.getElementById('createPollModal');
-            if (pollModal && typeof bootstrap !== 'undefined') {
-                const modal = bootstrap.Modal.getInstance(pollModal);
-                if (modal) modal.hide();
-            }
-            
-            // Reload the chat content to show the new poll
+            // Reload chat content to show new poll
             loadChatContent(currentChatId);
         })
         .catch(error => {
             debugLog('Error creating poll:', error);
-            alert('Error creating poll: ' + error.message);
+            if (!error.message.includes('Content flagged')) {
+                alert('Error creating poll: ' + error.message);
+            }
+        })
+        .finally(() => {
+            // Re-enable submit button
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonText;
         });
     });
 
@@ -2332,165 +2882,162 @@
 
     function renderMentionSuggestions(members) {
         debugLog('Rendering mention suggestions for members:', members);
-        if (!members || members.length === 0) {
-            debugLog('No members to render');
-            closeMentionContainer();
-            return;
+        
+        // Make sure we have the mentionContainer element
+        if (!mentionContainer) {
+            debugLog('Creating mention container');
+            mentionContainer = document.createElement('div');
+            mentionContainer.id = 'mention-container';
+            mentionContainer.className = 'mention-container';
+            document.body.appendChild(mentionContainer);
         }
         
-        // Make sure we have the textarea element
-        if (!messageTextarea) {
-            debugLog('Message textarea not found');
-            return;
-        }
-        
-        // Force the container to be visible in the DOM before positioning
-        mentionContainer.style.display = 'block';
-        
-        // Find the position of the @ symbol in the textarea
-        const cursorPosition = messageTextarea.selectionStart;
-        const text = messageTextarea.value.substring(0, cursorPosition);
-        const lastAtPos = text.lastIndexOf('@');
-        
-        if (lastAtPos === -1) {
-            debugLog('@ symbol not found in text');
-            closeMentionContainer();
-            return;
-        }
-        
-        // Get the text area position and cursor position for better positioning
-        const textareaRect = messageTextarea.getBoundingClientRect();
-        
-        // Get caret position
-        const caretPos = getCaretCoordinates(messageTextarea, lastAtPos);
-        
-        // Position the container above the textarea
-        mentionContainer.style.position = 'absolute';
-        mentionContainer.style.width = '280px';
-        
-        // Get the left position based on the caret
-        let left = textareaRect.left + caretPos.left;
-        
-        // Make sure it doesn't go off-screen to the right
-        if (left + 280 > window.innerWidth) {
-            left = window.innerWidth - 290;
-        }
-        
-        // Make sure it doesn't go off-screen to the left
-        if (left < 10) {
-            left = 10;
-        }
-        
-        // Calculate height for dropdown - limit based on number of members
-        const dropdownHeight = Math.min(members.length * 60 + 40, 250); // 40px for title, ~60px per item
-        
-        // Calculate top position - ABOVE the textarea
-        let top = textareaRect.top - dropdownHeight - 10; // 10px extra margin
-        
-        // Check if the dropdown would go above the viewport
-        const scrollTop = window.scrollY || document.documentElement.scrollTop;
-        if (top < scrollTop) {
-            // If it would go above viewport, position it below instead
-            top = textareaRect.bottom + 10; // 10px margin below textarea
-        }
-        
-        // Set the position
-        mentionContainer.style.left = `${left}px`;
-        mentionContainer.style.top = `${top}px`;
-        
-        // Clear previous content
+        // Clear any existing content
         mentionContainer.innerHTML = '';
+        
+        // Set explicit visibility and styles
+        mentionContainer.style.display = 'block';
+        mentionContainer.style.zIndex = '10001'; // Higher than editor elements
+        mentionContainer.style.position = 'absolute';
+        mentionContainer.style.minWidth = '300px';
+        mentionContainer.style.maxWidth = '400px';
+        mentionContainer.style.maxHeight = '300px';
+        mentionContainer.style.overflow = 'auto';
+        mentionContainer.style.backgroundColor = '#ffffff';
+        mentionContainer.style.border = '1px solid #d0d0d0';
+        mentionContainer.style.borderRadius = '8px';
+        mentionContainer.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
+        
+        // For CKEditor, position near the editor instance
+        if (isCkeditorLoaded() && CKEDITOR.instances['message-input']) {
+            try {
+                const editor = CKEDITOR.instances['message-input'];
+                const selection = editor.getSelection();
+                
+                if (selection) {
+                    const range = selection.getRanges()[0];
+                    if (range) {
+                        // Get the cursor position
+                        const cursorElement = selection.getStartElement();
+                        if (cursorElement) {
+                            const cursorRect = cursorElement.$.getBoundingClientRect();
+                            
+                            // Position dropdown below cursor
+                            mentionContainer.style.top = (cursorRect.bottom + 5) + 'px';
+                            mentionContainer.style.left = cursorRect.left + 'px';
+                            debugLog('Positioned mention container below cursor');
+                        } else {
+                            // Fallback to editor position
+                            const editorRect = editor.container.$.getBoundingClientRect();
+                            mentionContainer.style.top = (editorRect.top + 30) + 'px';
+                            mentionContainer.style.left = editorRect.left + 'px';
+                            debugLog('Positioned mention container relative to editor (cursor element not found)');
+                        }
+                    } else {
+                        positionFallback();
+                    }
+                } else {
+                    positionFallback();
+                }
+            } catch (err) {
+                debugLog('Error positioning mention container for CKEditor:', err);
+                positionFallback();
+            }
+        } else {
+            // Regular textarea positioning
+            positionFallback();
+        }
+        
+        // Fallback positioning function
+        function positionFallback() {
+            // Center in viewport as fallback
+            mentionContainer.style.top = '50%';
+            mentionContainer.style.left = '50%';
+            mentionContainer.style.transform = 'translate(-50%, -50%)';
+            debugLog('Using fallback central positioning for mention container');
+        }
         
         // Add a title to the dropdown
         const titleElement = document.createElement('div');
         titleElement.className = 'mention-title';
-        titleElement.innerHTML = 'Select a member to mention:';
+        titleElement.innerHTML = members.length > 0 
+            ? 'Select a member to mention:'
+            : 'No matching members found';
         mentionContainer.appendChild(titleElement);
         
-        // Create a div for each member
-        members.forEach((member, index) => {
-            const mentionItem = document.createElement('div');
-            mentionItem.className = 'mention-item';
-            
-            // Determine role class based on member data or default to 'participant'
-            const role = member.role || 'participant';
-            mentionItem.classList.add(`role-${role.toLowerCase()}`);
-            
-            mentionItem.dataset.id = member.id;
-            mentionItem.dataset.name = member.name;
-            
-            // Get initials for avatar
-            const name = member.name;
-            const nameParts = name.split(' ');
-            const initials = nameParts.length > 1 
-                ? (nameParts[0].charAt(0) + nameParts[1].charAt(0)).toUpperCase()
-                : name.substring(0, 2).toUpperCase();
-            
-            mentionItem.innerHTML = `
-                <div class="mention-avatar">${initials}</div>
-                <div class="mention-info">
-                    <div class="mention-name">${member.name}</div>
-                    <div class="mention-role">${role.toLowerCase().replace('_', ' ')}</div>
+        // Create a div for each member or show "no results" message
+        if (members.length === 0) {
+            const noResultsItem = document.createElement('div');
+            noResultsItem.className = 'mention-item mention-no-results';
+            noResultsItem.innerHTML = `
+                <div style="padding: 15px; text-align: center; color: #666;">
+                    <i>No matching members found</i><br>
+                    <small>Try a different search term or click outside to cancel</small>
                 </div>
             `;
-            
-            // Add highlight for first item
-            if (index === 0) {
-                mentionItem.classList.add('active');
-                mentionSelectedIndex = 0;
-            }
-            
-            // Add click handler
-            mentionItem.addEventListener('click', () => {
-                selectMention(mentionItem);
+            mentionContainer.appendChild(noResultsItem);
+        } else {
+            members.forEach((member, index) => {
+                const mentionItem = document.createElement('div');
+                mentionItem.className = 'mention-item';
+                
+                // Determine role class based on member data or default to 'participant'
+                const role = member.role ? member.role.toLowerCase() : 'participant';
+                mentionItem.classList.add(`role-${role}`);
+                
+                mentionItem.dataset.id = member.id;
+                mentionItem.dataset.name = member.name;
+                
+                // Get initials for avatar
+                const name = member.name || '';
+                const nameParts = name.split(' ');
+                const initials = nameParts.length > 1 
+                    ? (nameParts[0].charAt(0) + nameParts[1].charAt(0)).toUpperCase()
+                    : name.substring(0, 2).toUpperCase();
+                
+                mentionItem.innerHTML = `
+                    <div class="mention-avatar">${initials}</div>
+                    <div class="mention-info">
+                        <div class="mention-name">${member.name || 'Unknown'}</div>
+                        <div class="mention-role">${role.toLowerCase().replace('_', ' ')}</div>
+                    </div>
+                `;
+                
+                // Add highlight for first item
+                if (index === 0) {
+                    mentionItem.classList.add('active');
+                    mentionSelectedIndex = 0;
+                }
+                
+                // Add click handler
+                mentionItem.addEventListener('click', () => {
+                    selectMention(mentionItem);
+                });
+                
+                mentionContainer.appendChild(mentionItem);
             });
-            
-            mentionContainer.appendChild(mentionItem);
-        });
+        }
         
-        // Show the container
+        // Show the container and add active class
         mentionContainer.classList.add('show');
-    }
-    
-    // Helper function to get caret coordinates
-    function getCaretCoordinates(element, position) {
-        // Create a div with the same styling as the textarea
-        const mirror = document.createElement('div');
-        const style = window.getComputedStyle(element);
+        mentionContainer.style.display = 'block';
         
-        mirror.style.position = 'absolute';
-        mirror.style.visibility = 'hidden';
-        mirror.style.overflow = 'auto';
-        mirror.style.whiteSpace = 'pre-wrap';
-        mirror.style.wordWrap = 'break-word';
-        mirror.style.padding = style.padding;
-        mirror.style.borderWidth = style.borderWidth;
-        mirror.style.fontFamily = style.fontFamily;
-        mirror.style.fontSize = style.fontSize;
-        mirror.style.lineHeight = style.lineHeight;
-        mirror.style.width = element.clientWidth + 'px';
+        // Ensure the mention container is in the viewport
+        const rect = mentionContainer.getBoundingClientRect();
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
         
-        // Create content up to the caret position
-        const textBeforeCaret = element.value.substring(0, position);
+        // Adjust if off the bottom of the screen
+        if (rect.bottom > viewportHeight) {
+            mentionContainer.style.top = (parseInt(mentionContainer.style.top) - (rect.bottom - viewportHeight) - 20) + 'px';
+        }
         
-        // Replace spaces with nbsp to preserve whitespace
-        mirror.textContent = textBeforeCaret.replace(/ /g, '\u00a0');
+        // Adjust if off the right of the screen
+        if (rect.right > viewportWidth) {
+            mentionContainer.style.left = (parseInt(mentionContainer.style.left) - (rect.right - viewportWidth) - 20) + 'px';
+        }
         
-        // Add a span at the end to measure
-        const span = document.createElement('span');
-        span.textContent = '\u200b'; // Zero-width space
-        mirror.appendChild(span);
-        
-        document.body.appendChild(mirror);
-        
-        const coordinates = {
-            top: span.offsetTop,
-            left: span.offsetLeft
-        };
-        
-        document.body.removeChild(mirror);
-        
-        return coordinates;
+        debugLog('Mention suggestions rendered successfully');
     }
 
     function showMentionSuggestions(query) {
@@ -2516,16 +3063,17 @@
             return;
         }
         
-        // Filter members by query
+        // Filter members by query - any part of name or email
         const lowercaseQuery = query.toLowerCase();
         const filteredMembers = communityMembers.filter(member => {
             return member.name.toLowerCase().includes(lowercaseQuery) || 
-                   member.email.toLowerCase().includes(lowercaseQuery);
+                   (member.email && member.email.toLowerCase().includes(lowercaseQuery));
         });
         
         debugLog('Showing mention suggestions for:', query);
         debugLog('Filtered members:', filteredMembers);
         
+        // Always render even if no filtered members to show a "no matches" message
         renderMentionSuggestions(filteredMembers);
     }
 
@@ -2737,6 +3285,693 @@
             debugLog('Error closing poll:', error);
             alert('Error closing poll: ' + error.message);
         });
+    }
+
+    // Handle mention selection in CKEditor
+    function selectMention(mentionItem) {
+        if (!mentionActive || !mentionItem) return;
+        
+        debugLog('Selecting mention item:', mentionItem.dataset);
+        const userId = mentionItem.dataset.id;
+        const userName = mentionItem.dataset.name;
+        
+        // Insert the mention in CKEditor
+        if (isCkeditorLoaded() && CKEDITOR.instances['message-input']) {
+            try {
+                const editor = CKEDITOR.instances['message-input'];
+                
+                // First, find and remove the @ character and any text after it
+                const content = editor.getData();
+                let newContent = content;
+                
+                // Replace the last @ and any text after it with nothing
+                // This is important because we need to remove the partial mention
+                const atIndex = content.lastIndexOf('@');
+                if (atIndex >= 0) {
+                    // Find any HTML tag that might be open
+                    const openTagIndex = content.lastIndexOf('<', atIndex);
+                    const closeTagIndex = content.indexOf('>', atIndex);
+                    
+                    if (openTagIndex > 0 && closeTagIndex > 0 && closeTagIndex > openTagIndex) {
+                        // We're inside a tag, need to be careful
+                        const tag = content.substring(openTagIndex, closeTagIndex + 1);
+                        debugLog('Found tag around @:', tag);
+                        
+                        // Only proceed if it's a reasonable tag (not too long)
+                        if (tag.length < 50) {
+                            // Keep content up to the @ character
+                            newContent = content.substring(0, atIndex);
+                            
+                            // Add close tag if needed
+                            if (tag.indexOf('</') < 0 && !tag.endsWith('/>')) {
+                                const tagName = tag.match(/<([a-z0-9]+)/i);
+                                if (tagName && tagName[1]) {
+                                    newContent += `</${tagName[1]}>`;
+                                }
+                            }
+                            
+                            // Add the rest of the content after the current tag
+                            newContent += content.substring(closeTagIndex + 1);
+                        }
+                    } else {
+                        // Simple case - not inside a tag
+                        // Keep all content up to the @ character, then skip to the next whitespace or tag
+                        const endIndex = content.substring(atIndex).search(/[\s<]/);
+                        if (endIndex >= 0) {
+                            newContent = content.substring(0, atIndex) + content.substring(atIndex + endIndex);
+                        } else {
+                            // If no whitespace or tag after @, just remove everything after @
+                            newContent = content.substring(0, atIndex);
+                        }
+                    }
+                    
+                    // Apply the updated content
+                    editor.setData(newContent);
+                }
+                
+                // Create rich mention text with the appropriate classes
+                const role = mentionItem.classList.contains('role-admin') ? 'admin' : 
+                             mentionItem.classList.contains('role-organisateur') ? 'organisateur' :
+                             mentionItem.classList.contains('role-coach') ? 'coach' : 'participant';
+                
+                // Now insert the styled mention into the editor at cursor position
+                const mentionHtml = `<span class="gradient-mention ${role}">@${userName}</span>&nbsp;`;
+                editor.insertHtml(mentionHtml);
+                
+                debugLog('Mention inserted successfully with HTML:', mentionHtml);
+                
+                // Focus back on editor
+                editor.focus();
+            } catch(err) {
+                debugLog('Error inserting mention:', err);
+                
+                // Fallback to simpler insertion
+                try {
+                    const editor = CKEDITOR.instances['message-input'];
+                    editor.insertText('@' + userName + ' ');
+                    editor.focus();
+                    debugLog('Mention inserted via fallback method');
+                } catch (fallbackErr) {
+                    debugLog('Even fallback mention insertion failed:', fallbackErr);
+                }
+            }
+        } else if (messageTextarea) {
+            // For regular textareas
+            try {
+                const currentValue = messageTextarea.value || '';
+                const cursorPos = messageTextarea.selectionStart || 0;
+                const textBefore = currentValue.substring(0, cursorPos);
+                const textAfter = currentValue.substring(cursorPos);
+                
+                // Replace the last @ and any text after it with nothing
+                const lastAtPos = textBefore.lastIndexOf('@');
+                const mentionText = '@' + userName + ' ';
+                
+                if (lastAtPos >= 0) {
+                    // There's an @ character before the cursor
+                    const newTextBefore = textBefore.substring(0, lastAtPos) + mentionText;
+                    messageTextarea.value = newTextBefore + textAfter;
+                    messageTextarea.selectionStart = messageTextarea.selectionEnd = newTextBefore.length;
+                } else {
+                    // No @ found, just insert at cursor
+                    messageTextarea.value = textBefore + mentionText + textAfter;
+                    messageTextarea.selectionStart = messageTextarea.selectionEnd = textBefore.length + mentionText.length;
+                }
+                
+                messageTextarea.focus();
+            } catch (err) {
+                debugLog('Error inserting mention in textarea:', err);
+            }
+        }
+        
+        // Close the mention container
+        closeMentionContainer();
+    }
+
+    // Close the mention container
+    function closeMentionContainer() {
+        if (mentionContainer) {
+            mentionContainer.classList.remove('show');
+        }
+        mentionActive = false;
+        mentionSearchText = '';
+        mentionSelectedIndex = -1;
+    }
+
+    // Initialize CKEditor for this textarea when it's displayed
+    document.querySelector('.chat-link').addEventListener('click', function() {
+        if (isCkeditorLoaded()) {
+            setTimeout(function() {
+                if (!CKEDITOR.instances['message-input']) {
+                    CKEDITOR.replace('message-input', {
+                        toolbar: [
+                            ['Bold', 'Italic', 'Underline', '-', 'Link', '-', 'NumberedList', 'BulletedList', '-', 'Image', '-', 'TextColor']
+                        ],
+                        height: 150,
+                        width: '100%',
+                        uiColor: '#f8f9fa',
+                        disableNativeSpellChecker: false,
+                        extraPlugins: 'autogrow',
+                        autoGrow_minHeight: 150,
+                        autoGrow_maxHeight: 300,
+                        removePlugins: 'resize',
+                        enterMode: CKEDITOR.ENTER_BR,
+                        allowedContent: true // Allow all content and tags
+                    });
+                    debugLog('CKEditor for message initialized directly');
+                    
+                    // Add a listener once CKEditor is fully initialized
+                    CKEDITOR.instances['message-input'].on('instanceReady', function(evt) {
+                        debugLog('CKEditor instance is ready');
+                        
+                        // Add @ mention button to toolbar
+                        addMentionButton(evt.editor);
+                        
+                        // Add specific event for @ detection
+                        const editor = evt.editor;
+                        
+                        // Add extra focus handling for better cursor position detection
+                        editor.on('focus', function() {
+                            debugLog('CKEditor focused');
+                            // Ensure the editor has a higher z-index when focused
+                            editor.container.$.style.zIndex = '9999';
+                        });
+                        
+                        // Add special handling for pasting to preserve mentions
+                        editor.on('paste', function(evt) {
+                            debugLog('Content pasted into CKEditor');
+                            
+                            // Allow the paste to proceed normally
+                            // We'll just make sure mentions are rendered correctly
+                            setTimeout(function() {
+                                processMentionsInEditor(editor);
+                            }, 100);
+                        });
+                    });
+                }
+            }, 300);
+        } else {
+            debugLog('CKEditor not found!');
+        }
+    });
+    
+    // Function to add a custom @ mention button to the toolbar
+    function addMentionButton(editor) {
+        try {
+            // Add a small button or link near the editor
+            const mentionButton = document.createElement('button');
+            mentionButton.innerHTML = '<strong>@</strong>';
+            mentionButton.className = 'btn btn-sm btn-primary mention-trigger-btn';
+            mentionButton.style.position = 'absolute';
+            mentionButton.style.top = '10px';
+            mentionButton.style.right = '10px';
+            mentionButton.style.zIndex = '10000';  // Increased z-index
+            mentionButton.style.borderRadius = '50%';
+            mentionButton.style.width = '30px';
+            mentionButton.style.height = '30px';
+            mentionButton.style.padding = '0';
+            mentionButton.style.display = 'flex';
+            mentionButton.style.alignItems = 'center';
+            mentionButton.style.justifyContent = 'center';
+            mentionButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+            mentionButton.title = 'Mention a community member (@ symbol)';
+            
+            // Get the CKEditor container and append our button
+            const editorContainer = editor.container.$;
+            editorContainer.style.position = 'relative';
+            editorContainer.appendChild(mentionButton);
+            
+            // Add click event listener
+            mentionButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                debugLog('Mention button clicked');
+                
+                // Insert @ at cursor position
+                editor.insertText('@');
+                
+                // Set active state and show mentions
+                mentionActive = true;
+                atDetected = true;  // Set the detection flag
+                mentionSearchText = '';
+                mentionSelectedIndex = 0;
+                
+                // Make sure community members are loaded
+                if (!communityMembers || communityMembers.length === 0) {
+                    fetchCommunityMembers();
+                    setTimeout(() => showMentionSuggestions(''), 500);
+                } else {
+                    showMentionSuggestions('');
+                }
+                
+                // Position dropdown properly
+                const selection = editor.getSelection();
+                if (selection) {
+                    const range = selection.getRanges()[0];
+                    if (range) {
+                        // Get position of cursor
+                        const cursorElement = selection.getStartElement();
+                        if (cursorElement) {
+                            const cursorRect = cursorElement.$.getBoundingClientRect();
+                            
+                            // Position dropdown below cursor
+                            mentionContainer.style.position = 'absolute';
+                            mentionContainer.style.top = (cursorRect.bottom + 5) + 'px';
+                            mentionContainer.style.left = cursorRect.left + 'px';
+                        }
+                    }
+                }
+                
+                // Focus back on editor
+                editor.focus();
+            });
+            
+            debugLog('Added mention button to CKEditor');
+        } catch (err) {
+            debugLog('Error adding mention button:', err);
+        }
+    }
+
+    // Initialize CKEditor for the poll question when the modal is opened
+    document.getElementById('createPollModal').addEventListener('shown.bs.modal', function() {
+        if (isCkeditorLoaded()) {
+            setTimeout(function() {
+                if (CKEDITOR.instances['question']) {
+                    CKEDITOR.instances['question'].destroy();
+                }
+                
+                // Create a new CKEditor instance with poll_config
+                CKEDITOR.replace('question', {
+                    toolbar: [
+                        ['Bold', 'Italic', 'Underline', '-', 'Link', '-', 'NumberedList', 'BulletedList', '-', 'TextColor']
+                    ],
+                    height: 200,
+                    width: '100%',
+                    uiColor: '#f8f9fa'
+                });
+                debugLog('CKEditor for poll question initialized');
+            }, 300);
+        } else {
+            debugLog('CKEditor not available when opening poll modal');
+        }
+    });
+
+    // Adding the placeholder creation function at the top of the script
+    function createAvatarPlaceholder(initials) {
+        return '<div class="avatar-placeholder" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background-color:#6c757d; color:white; font-weight:bold; font-size:16px;">' + initials + '</div>';
+    }
+
+    // Function to process mentions in the editor content
+    function processMentionsInEditor(editor) {
+        // Get the current content
+        const content = editor.getData();
+        
+        // Check if there are unformatted mentions (@username)
+        const mentionRegex = /@([a-zA-Z0-9_\-\.]+)/g;
+        let match;
+        let modified = false;
+        let newContent = content;
+        
+        // Replace each mention with the styled version
+        while ((match = mentionRegex.exec(content)) !== null) {
+            // Check if this mention is already in a span.gradient-mention
+            const prevChar = content.charAt(match.index - 1);
+            
+            // Only process mentions that aren't already in spans and aren't part of emails
+            if (prevChar !== '>' && prevChar !== '@') {
+                const fullMatch = match[0]; // @username
+                const username = match[1]; // username without @
+                
+                // Look up the user in community members
+                const mentionedUser = communityMembers.find(member => 
+                    member.name === username || member.name.replace(' ', '') === username
+                );
+                
+                if (mentionedUser) {
+                    // Determine role
+                    const role = mentionedUser.role ? mentionedUser.role.toLowerCase() : 'participant';
+                    
+                    // Create the styled mention
+                    const styledMention = `<span class="gradient-mention ${role}">${fullMatch}</span>`;
+                    
+                    // Replace in the content - be careful to only replace the exact match
+                    // Create a regex that matches exactly this occurrence
+                    const exactMatchRegex = new RegExp(`(^|[^>])${fullMatch}($|[^<])`, 'g');
+                    newContent = newContent.replace(exactMatchRegex, function(match, before, after) {
+                        return before + styledMention + after;
+                    });
+                    
+                    modified = true;
+                }
+            }
+        }
+        
+        // If modifications were made, update the editor content
+        if (modified) {
+            debugLog('Mentions processed in editor content');
+            editor.setData(newContent);
+        }
+    }
+
+    // Add this right after the definition of fetchCommunityMembers and before any other function
+
+    // Debug function to force show mentions
+    function debugShowMentions() {
+        debugLog('DEBUG: Force showing mention dropdown');
+        
+        mentionActive = true;
+        mentionSearchText = '';
+        mentionSelectedIndex = 0;
+        
+        // Make sure we have the mentionContainer element
+        if (!mentionContainer) {
+            debugLog('Creating mention container');
+            mentionContainer = document.createElement('div');
+            mentionContainer.id = 'mention-container';
+            mentionContainer.className = 'mention-container';
+            document.body.appendChild(mentionContainer);
+        }
+        
+        // Force it to be visible and centered
+        mentionContainer.style.display = 'block';
+        mentionContainer.style.position = 'fixed';
+        mentionContainer.style.top = '50%';
+        mentionContainer.style.left = '50%';
+        mentionContainer.style.transform = 'translate(-50%, -50%)';
+        mentionContainer.style.zIndex = '999999';
+        mentionContainer.style.width = '300px';
+        mentionContainer.style.maxHeight = '400px';
+        mentionContainer.style.borderRadius = '8px';
+        mentionContainer.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)';
+        
+        // Check our community members
+        if (!communityMembers || communityMembers.length === 0) {
+            debugLog('No community members loaded, using test data');
+            useTestMembers();
+        }
+        
+        // Show members count
+        const membersCount = communityMembers ? communityMembers.length : 0;
+        debugLog('Community members count:', membersCount);
+        
+        // Display members directly
+        mentionContainer.innerHTML = '';
+        
+        // Add header
+        const titleElement = document.createElement('div');
+        titleElement.className = 'mention-title';
+        titleElement.innerHTML = `DEBUG: Community Members (${membersCount})`;
+        mentionContainer.appendChild(titleElement);
+        
+        // Add members
+        if (membersCount > 0) {
+            communityMembers.forEach((member, index) => {
+                const item = document.createElement('div');
+                item.className = 'mention-item';
+                if (index === 0) item.classList.add('active');
+                
+                const role = member.role ? member.role.toLowerCase() : 'participant';
+                const name = member.name || 'Unknown';
+                
+                item.innerHTML = `
+                    <div style="padding: 10px; border-bottom: 1px solid #eee;">
+                        <strong>${name}</strong> (${role})
+                    </div>
+                `;
+                
+                mentionContainer.appendChild(item);
+            });
+        } else {
+            const noMembers = document.createElement('div');
+            noMembers.style.padding = '20px';
+            noMembers.style.textAlign = 'center';
+            noMembers.innerHTML = 'No community members found';
+            mentionContainer.appendChild(noMembers);
+        }
+        
+        // Add close button
+        const closeBtn = document.createElement('div');
+        closeBtn.style.padding = '10px';
+        closeBtn.style.textAlign = 'center';
+        closeBtn.style.borderTop = '1px solid #eee';
+        closeBtn.innerHTML = '<button class="btn btn-sm btn-secondary">Close</button>';
+        closeBtn.onclick = function() {
+            mentionContainer.style.display = 'none';
+            mentionActive = false;
+        };
+        mentionContainer.appendChild(closeBtn);
+        
+        mentionContainer.classList.add('show');
+    }
+
+    // Modify the addMentionButton function to ensure the button is visible and works
+    function addMentionButton(editor) {
+        try {
+            // Create a more visible button
+            const mentionButton = document.createElement('button');
+            mentionButton.innerHTML = '<strong>@</strong>';
+            mentionButton.className = 'btn btn-primary mention-trigger-btn';
+            mentionButton.style.position = 'absolute';
+            mentionButton.style.top = '10px';
+            mentionButton.style.right = '10px';
+            mentionButton.style.zIndex = '100000';
+            mentionButton.style.width = '40px';
+            mentionButton.style.height = '40px';
+            mentionButton.style.borderRadius = '50%';
+            mentionButton.style.fontSize = '18px';
+            mentionButton.style.fontWeight = 'bold';
+            mentionButton.style.padding = '0';
+            mentionButton.style.display = 'flex';
+            mentionButton.style.alignItems = 'center';
+            mentionButton.style.justifyContent = 'center';
+            mentionButton.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+            mentionButton.title = 'Mention a community member';
+            
+            // Get the CKEditor container and append our button
+            const editorContainer = editor.container.$;
+            editorContainer.style.position = 'relative';
+            editorContainer.appendChild(mentionButton);
+            
+            // Add click event listener that will always work
+            mentionButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                debugLog('Mention button clicked');
+                
+                // Force show the debug mentions view
+                debugShowMentions();
+            });
+            
+            debugLog('Added new mention button to CKEditor');
+            
+            // Also add a global mention button outside the editor for testing
+            const globalButton = document.createElement('button');
+            globalButton.innerHTML = 'Test @Mentions';
+            globalButton.className = 'btn btn-warning';
+            globalButton.style.position = 'fixed';
+            globalButton.style.bottom = '10px';
+            globalButton.style.right = '10px';
+            globalButton.style.zIndex = '999999';
+            
+            globalButton.addEventListener('click', function() {
+                debugShowMentions();
+            });
+            
+            document.body.appendChild(globalButton);
+        } catch (err) {
+            debugLog('Error adding mention button:', err);
+        }
+    }
+
+    // Initialize CKEditor
+    ClassicEditor
+            .create(document.querySelector('#message-input'), {
+                toolbar: ['bold', 'italic', 'bulletedList', 'numberedList', 'link', 'blockQuote', 'uploadImage', 'insertTable', 'undo', 'redo'],
+                image: {
+                    toolbar: ['imageStyle:full', 'imageStyle:side', '|', 'imageTextAlternative']
+                }
+            })
+            .then(editor => {
+                window.editor = editor;
+                console.log('CKEditor initialized successfully');
+            })
+            .catch(error => {
+                console.error('Error initializing CKEditor:', error);
+            });
+    
+    // Setup Test Mentions Button
+    document.addEventListener('DOMContentLoaded', function() {
+        const testMentionsBtn = document.getElementById('test-mentions-btn');
+        if (testMentionsBtn) {
+            // Make sure the button is visible and styled properly
+            testMentionsBtn.style.display = 'block';
+            testMentionsBtn.style.fontWeight = 'bold';
+            testMentionsBtn.style.backgroundColor = '#ffc107';
+            testMentionsBtn.style.borderColor = '#ffc107';
+            testMentionsBtn.innerHTML = '<strong>@</strong> Test @Mentions';
+            
+            // Add click handler
+            testMentionsBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Test mentions button clicked');
+                debugShowMentions();
+            });
+        }
+    });
+    
+    // Function to force display the mentions dropdown for testing
+    function debugShowMentions() {
+        console.log('Forcing mentions dropdown to display');
+        
+        // Get the mention container
+        const mentionContainer = document.getElementById('mention-container');
+        if (!mentionContainer) {
+            console.error('Mention container not found');
+            return;
+        }
+        
+        // Show loading state
+        mentionContainer.innerHTML = '<div class="mention-title">Loading Community Members...</div><div style="padding: 20px; text-align: center;"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+        mentionContainer.style.display = 'block';
+        
+        // Position it in a visible location
+        mentionContainer.style.position = 'absolute';
+        mentionContainer.style.top = '50%';
+        mentionContainer.style.left = '50%';
+        mentionContainer.style.transform = 'translate(-50%, -50%)';
+        mentionContainer.style.width = '300px';
+        mentionContainer.style.zIndex = '10000';
+        mentionContainer.style.backgroundColor = '#fff';
+        mentionContainer.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
+        mentionContainer.style.border = '1px solid #ddd';
+        mentionContainer.style.borderRadius = '4px';
+        mentionContainer.style.padding = '10px';
+        mentionContainer.style.maxHeight = '400px';
+        mentionContainer.style.overflowY = 'auto';
+        
+        // Fetch community members
+        fetch(`/chat/community/${communauteId}/members`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to load community members');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success && data.members && data.members.length > 0) {
+                    displayDebugMembers(data.members);
+                } else {
+                    // Try alternative endpoint
+                    return fetch(`/community/${communauteId}/members`);
+                }
+            })
+            .then(response => {
+                if (!response) return; // Skip if first request was successful
+                if (!response.ok) {
+                    throw new Error('Failed with alternative URL too');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data) return; // Skip if first request was successful
+                if (data.success && data.members) {
+                    displayDebugMembers(data.members);
+                } else {
+                    throw new Error('No valid data from both endpoints');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching members:', error);
+                // Show error and use fallback test data
+                mentionContainer.innerHTML = `
+                    <div class="mention-title">Debug @Mentions</div>
+                    <div style="padding: 10px; color: red;">Error: ${error.message}</div>
+                    <div style="padding: 10px;">Using fallback test data:</div>
+                `;
+                
+                // Use fallback test data
+                const testMembers = [
+                    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'ADMIN' },
+                    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'ORGANISATEUR' },
+                    { id: 3, name: 'Alice Johnson', email: 'alice@example.com', role: 'COACH' },
+                    { id: 4, name: 'Bob Brown', email: 'bob@example.com', role: 'PARTICIPANT' },
+                    { id: 5, name: 'Charlie Davis', email: 'charlie@example.com', role: 'PARTICIPANT' }
+                ];
+                
+                displayDebugMembers(testMembers);
+            });
+    }
+    
+    // Display debug members list
+    function displayDebugMembers(members) {
+        const mentionContainer = document.getElementById('mention-container');
+        
+        let membersHTML = `
+            <div class="mention-title">Debug @Mentions</div>
+            <div style="padding: 10px; background-color: #f0f8ff; margin-bottom: 10px; border-radius: 4px;">
+                <strong>Debug Info:</strong><br>
+                - Found ${members.length} members<br>
+                - CKEditor loaded: ${typeof CKEDITOR !== 'undefined'}<br>
+                - Mentions container Z-index: ${window.getComputedStyle(mentionContainer).zIndex}
+            </div>
+        `;
+        
+        members.forEach((member, index) => {
+            const name = member.name || `${member.prenom || ''} ${member.nom || ''}`.trim();
+            const role = member.role || 'USER';
+            const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
+            
+            membersHTML += `
+                <div class="mention-item role-${role.toLowerCase()}" data-id="${member.id}" data-name="${name}">
+                    <div class="mention-avatar">${initials}</div>
+                    <div class="mention-info">
+                        <div class="mention-name">${name}</div>
+                        <div class="mention-role">${role}</div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        mentionContainer.innerHTML = membersHTML;
+        
+        // Add click handlers for mention items
+        const mentionItems = mentionContainer.querySelectorAll('.mention-item');
+        mentionItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const name = this.dataset.name;
+                insertMention(name);
+            });
+        });
+    }
+    
+    // Function to insert mention into CKEditor
+    function insertMention(name) {
+        if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances['message-input']) {
+            const mentionText = `@${name} `;
+            CKEDITOR.instances['message-input'].insertText(mentionText);
+        } else if (window.editor) {
+            const mentionText = `@${name} `;
+            window.editor.model.change(writer => {
+                window.editor.model.insertContent(writer.createText(mentionText));
+            });
+        } else {
+            const messageInput = document.getElementById('message-input');
+            if (messageInput) {
+                const mentionText = `@${name} `;
+                const curPos = messageInput.selectionStart;
+                const textBefore = messageInput.value.substring(0, curPos);
+                const textAfter = messageInput.value.substring(curPos);
+                messageInput.value = textBefore + mentionText + textAfter;
+                messageInput.focus();
+                messageInput.selectionStart = curPos + mentionText.length;
+                messageInput.selectionEnd = curPos + mentionText.length;
+            }
+        }
+        
+        // Close mention container
+        const mentionContainer = document.getElementById('mention-container');
+        if (mentionContainer) {
+            mentionContainer.style.display = 'none';
+        }
     }
 </script>
 {% endblock %}

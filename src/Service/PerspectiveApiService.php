@@ -40,10 +40,19 @@ class PerspectiveApiService
         // Use default attributes if none provided
         $attributesToAnalyze = $attributes ?? array_keys($this->attributeThresholds);
         
+        // Normalize language setting
+        // Perspective API expects ISO language codes separately, not a comma-separated list
+        $languages = ['en']; // Default to English
+        
+        // If French is explicitly requested, include both languages for better detection
+        if (strtolower($language) === 'fr' || strpos(strtolower($language), 'fr') !== false) {
+            $languages = ['fr', 'en']; // Try French first, then English as fallback
+        }
+        
         // Build request data for Perspective API
         $requestData = [
             'comment' => ['text' => $text],
-            'languages' => [$language],
+            'languages' => $languages,
             'requestedAttributes' => []
         ];
         

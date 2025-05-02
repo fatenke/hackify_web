@@ -1,0 +1,20 @@
+# Configuration de FOS CKEditor Bundle
+fos_ck_editor:
+    default_config: default
+    configs:
+        default:
+            toolbar: full
+            filebrowserBrowseRoute: admin_media_browser
+        basic:
+            toolbar:
+                - { name: "styles", items: ['Bold', 'Italic', 'Underline', 'Strike', 'Blockquote', '-', 'Link', '-', 'RemoveFormat', '-', 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'Image', 'Table', '-', 'Styles', 'Format','Font','FontSize', '-', 'TextColor', 'BGColor', 'Source'] }
+        message_config:
+            toolbar:
+                - { name: "styles", items: ['Bold', 'Italic', 'Underline', '-', 'Link', '-', 'NumberedList', 'BulletedList', '-', 'Image', '-', 'TextColor'] }
+            height: 150
+            width: '100%'
+        poll_config:
+            toolbar:
+                - { name: "styles", items: ['Bold', 'Italic', 'Underline', '-', 'Link', '-', 'NumberedList', 'BulletedList', '-', 'TextColor'] }
+            height: 200
+            width: '100%' 

@@ -68,15 +68,11 @@ class ChatController extends AbstractController
             return $this->json(['error' => 'Message content is required'], 400);
         }
 
-        // Check message for toxic content using Perspective API
-        $contentAnalysis = $perspectiveApiService->analyzeText($content);
-        
-        if ($contentAnalysis['isFlagged']) {
-            // Message is flagged as toxic
-            return $this->json([
-                'error' => 'Your message may contain inappropriate content and cannot be posted.',
-                'toxicity_scores' => $contentAnalysis['scores']
-            ], 400);
+        // We're now using our content-check endpoint for Perspective API validation
+        // But keep a basic filter here as a fallback
+        $plainTextContent = strip_tags($content);
+        if (empty(trim($plainTextContent))) {
+            return $this->json(['error' => 'Message content cannot be empty'], 400);
         }
 
         $message = new Message();
@@ -113,15 +109,11 @@ class ChatController extends AbstractController
                 return $this->json(['error' => 'Message content is required'], 400);
             }
 
-            // Check message for toxic content using Perspective API
-            $contentAnalysis = $perspectiveApiService->analyzeText($content);
-            
-            if ($contentAnalysis['isFlagged']) {
-                // Message is flagged as toxic
-                return $this->json([
-                    'error' => 'Your message may contain inappropriate content and cannot be posted.',
-                    'toxicity_scores' => $contentAnalysis['scores']
-                ], 400);
+            // We're now using our content-check endpoint for Perspective API validation
+            // But keep a basic check here as a fallback
+            $plainTextContent = strip_tags($content);
+            if (empty(trim($plainTextContent))) {
+                return $this->json(['error' => 'Message content cannot be empty'], 400);
             }
 
             // Save user message
@@ -596,6 +588,47 @@ class ChatController extends AbstractController
                 'error' => 'Failed to retrieve community members: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    #[Route('/{id}/content-check', name: 'app_chat_content_check', methods: ['POST'])]
+    public function checkContent(Request $request, Chat $chat, PerspectiveApiService $perspectiveApiService): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->json(['error' => 'You must be logged in'], 401);
+        }
+
+        $data = json_decode($request->getContent(), true);
+        if (!isset($data['content'])) {
+            return $this->json(['error' => 'Content is required'], 400);
+        }
+
+        $content = $data['content'];
+        $type = $data['type'] ?? 'message';
+        
+        // Determine language preference
+        // Default to English, but check for French content
+        $language = 'en';
+        
+        // Simple language detection - if there are French-specific words, use French
+        $frenchWords = ['je', 'tu', 'il', 'elle', 'nous', 'vous', 'ils', 'elles', 'bonjour', 'merci', 'oui', 'non'];
+        $words = preg_split('/\s+/', strtolower($content));
+        
+        foreach ($frenchWords as $frenchWord) {
+            if (in_array($frenchWord, $words)) {
+                $language = 'fr';
+                break;
+            }
+        }
+        
+        // Analyze content
+        $contentAnalysis = $perspectiveApiService->analyzeText($content, null, $language);
+        
+        return $this->json([
+            'flagged' => $contentAnalysis['isFlagged'],
+            'scores' => $contentAnalysis['scores'],
+            'contentType' => $type
+        ]);
     }
 
     private function performDatabaseSearch(string $query, Communaute $community): array
