@@ -25,7 +25,7 @@ class AdminController extends AbstractController
     public function dashboard(Request $request, UserRepository $userRepository): Response
     {
         $search = $request->query->get('search');        
-        $sort = $request->query->get('sort', 'idUser');
+        $sort = $request->query->get('sort', 'id');
         $direction = $request->query->get('direction', 'asc');
         $status = $request->query->get('status');
         
@@ -138,7 +138,7 @@ class AdminController extends AbstractController
             $qb = $userRepository->createQueryBuilder('u');
             
             // Exclude admin users from the statistics
-            $qb->select('u.statusUser as status, COUNT(u.idUser) as count')
+            $qb->select('u.statusUser as status, COUNT(u.id) as count')
                ->where('u.roleUser NOT LIKE :role')
                ->setParameter('role', '%"ROLE_ADMIN"%')
                ->groupBy('u.statusUser');

@@ -4,9 +4,8 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\Collection;
-use App\Entity\Vote;
 
 #[ORM\Entity]
 class Projets
@@ -16,22 +15,42 @@ class Projets
     #[ORM\Column(type: "integer")]
     private int $id;
 
-
-
-
     #[ORM\Column(type: "string", length: 255)]
+    #[Assert\NotBlank(message: "Le nom du projet est requis.")]
+    #[Assert\Length(
+        min: 3,
+        max: 100,
+        minMessage: "Le nom doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères."
+    )]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-ZÀ-ÿ]+(?:\\s[a-zA-ZÀ-ÿ]+)*$/u",
+        message: "Le nom du projet ne doit contenir que des lettres sans aucun caractère spécial.",
+        groups: ["create", "update"]
+    )]
     private string $nom;
 
     #[ORM\Column(type: "string", length: 255)]
+ 
     private string $statut;
 
     #[ORM\Column(type: "string", length: 255)]
+
     private string $priorite;
 
     #[ORM\Column(type: "string", length: 255)]
+    #[Assert\NotBlank(message: "La description est requise.")]
+    #[Assert\Length(
+        min: 10,
+        max: 500,
+        minMessage: "La description doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "La description ne peut pas dépasser {{ limit }} caractères."
+    )]
     private string $description;
 
     #[ORM\Column(type: "string", length: 255)]
+    #[Assert\NotBlank(message: "La ressource est requise.")]
+    #[Assert\Url(message: "L'URL de la ressource n'est pas valide.")]
     private string $ressource;
 
     public function getId()
@@ -44,7 +63,7 @@ class Projets
         $this->id = $value;
     }
 
-
+   
 
     public function getNom()
     {
@@ -96,10 +115,36 @@ class Projets
         $this->ressource = $value;
     }
 
+    #[ORM\OneToMany(mappedBy: "idProjet", targetEntity: Evaluation::class)]
+    private Collection $evaluations;
 
-
-
-
+        public function getEvaluations(): Collection
+        {
+            return $this->evaluations;
+        }
+    
+        
+    
+        public function removeEvaluation(Evaluation $evaluation): self
+        {
+            if ($this->evaluations->removeElement($evaluation)) {
+                // set the owning side to null (unless already changed)
+                if ($evaluation->getIdProjet() === $this) {
+                    $evaluation->setIdProjet(null);
+                }
+            }
+    
+            return $this;
+        }
+        public function addEvaluation(Evaluation $evaluation): self
+        {
+            if (!$this->evaluations->contains($evaluation)) {
+                $this->evaluations[] = $evaluation;
+                $evaluation->setIdProjet($this);
+            }
+    
+            return $this;
+        }
     #[ORM\OneToMany(mappedBy: "idProjet", targetEntity: Vote::class)]
     private Collection $votes;
 
@@ -109,12 +154,10 @@ class Projets
     #[ORM\ManyToMany(targetEntity: Technologies::class, inversedBy: 'projets')]
     private Collection $technologies;
 
-    #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: "projets")]
-    #[ORM\JoinColumn(name: "id_hackathon", referencedColumnName: "id")]
-    private ?Hackathon $hackathon = null;
-
-
-
+    #[ORM\ManyToOne(inversedBy: 'projets')]
+    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'id')]
+    private ?Hackathon $id_hack = null;
+    
 
     public function __construct()
     {
@@ -147,13 +190,14 @@ class Projets
 
     public function getIdHack(): ?Hackathon
     {
-        return $this->hackathon;
+        return $this->id_hack;
     }
 
     public function setIdHack(?Hackathon $id_hack): static
     {
-        $this->hackathon = $id_hack;
+        $this->id_hack = $id_hack;
 
         return $this;
     }
+    
 }

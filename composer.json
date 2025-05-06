@@ -12,6 +12,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.4",
         "doctrine/orm": "^3.3",
         "dompdf/dompdf": "^3.1",
+        "endroid/qr-code": "^6.0",
         "karser/karser-recaptcha3-bundle": "^0.2.1",
         "knplabs/knp-paginator-bundle": "^6.8",
         "knplabs/knp-snappy-bundle": "^1.10",

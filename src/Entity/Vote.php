@@ -7,7 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Evaluation;
 use App\Entity\Hackathon;
-use App\Entity\Projet;
+use App\Entity\Projets;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: VoteRepository::class)]
@@ -28,10 +28,10 @@ class Vote
     #[Assert\NotBlank(message: "Voter ID must not be blank.")]
     private ?User $idVotant = null;
 
-    #[ORM\ManyToOne(targetEntity: Projet::class)]
+    #[ORM\ManyToOne(targetEntity: Projets::class)]
     #[ORM\JoinColumn(name: "idProjet", referencedColumnName: "id")]
     #[Assert\NotBlank(message: "Project must not be blank.")]
-    private ?Projet $idProjet = null;
+    private ?Projets $idProjet = null;
 
     #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: 'votes')]
     #[ORM\JoinColumn(name: 'idHackathon', referencedColumnName: 'id')]
@@ -86,12 +86,12 @@ class Vote
         return $this;
     }
 
-    public function getIdProjet(): ?Projet
+    public function getIdProjet(): ?Projets
     {
         return $this->idProjet;
     }
 
-    public function setIdProjet(?Projet $idProjet): static
+    public function setIdProjet(?Projets $idProjet): static
     {
         $this->idProjet = $idProjet;
         return $this;
