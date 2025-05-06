@@ -1,46 +1,191 @@
+{# templates/projets/index.html.twig #}
 {% extends 'base.html.twig' %}
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
 
-{% block title %}Details du projet{% endblock %}
+{% block title %}Détails du projet{% endblock %}
 
 {% block body %}
 <section id="modifier-hackathon" class="section">
   <div class="container mt-5">
-    <h2 class="mb-4 text-center">Details du projet</h2>
+    <h2 class="mb-4 text-center">Détails du prsojet</h2>
+
     <div class="row justify-content-center">
       <div class="col-md-8">
-        {{ form_start(form) }}
-          <div class="mb-3">
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+          <div class="mb-3 position-relative">
             {{ form_label(form.nom) }}
-            {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+            {{ form_widget(form.nom, {'attr': {'class': 'form-control'~(form.nom.vars.errors|length ? ' is-invalid'), 'id': 'nomInput'}}) }}
             {{ form_errors(form.nom) }}
-          </div>
-          <div class="mb-3">
+        </div>
+        <div class="mb-3 position-relative">
             {{ form_label(form.description) }}
-            {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
+            {{ form_widget(form.description, {'attr': {'class': 'form-control'~(form.description.vars.errors|length ? ' is-invalid'), 'id': 'descriptionInput'}}) }}
             {{ form_errors(form.description) }}
-          </div>
-  
-       
-          <div class="mb-3">
+        </div>
+        <div class="mb-3 position-relative">
             {{ form_label(form.ressource) }}
-            {{ form_widget(form.ressource, {'attr': {'class': 'form-control'}}) }}
+            {{ form_widget(form.ressource, {'attr': {'class': 'form-control'~(form.ressource.vars.errors|length ? ' is-invalid'), 'id': 'ressourceInput'}}) }}
             {{ form_errors(form.ressource) }}
-          </div>
-          <div class="mb-3">
-            {{ form_label(form.technologies) }}
-            {{ form_widget(form.technologies, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.technologies) }}
-          </div>
-            <div class="mb-3">
-            {{ form_label(form.id_hack) }}
-            {{ form_widget(form.id_hack, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.id_hack) }}
-          </div>
+        </div>
 
-          <button type="submit" class="btn btn-success">Soummetre</button>
+          
+          
         {{ form_end(form) }}
+      </div>
+    </div>
+
+    <!-- Boutons de vérification et d'enregistrement -->
+    <div class="row justify-content-center mb-3">
+      <div class="col-md-8 text-center">
+        <button type="button" id="verifyBtn" class="btn btn-secondary me-2">Vérifier Personne</button>
+        <button type="submit" id="saveBtn" class="btn btn-primary" disabled>Enregistrer</button>
+      </div>
+    </div>
+
+    <!-- 🚀 Webcam preview -->
+    <div class="row justify-content-center">
+      <div class="col-md-6 text-center">
+        <video id="video" width="100%" height="300" autoplay muted style="border: 1px solid #ddd; border-radius: 10px;"></video>
+        <canvas id="canvas" style="display:none;"></canvas>
       </div>
     </div>
   </div>
 </section>
+
+{# 📜 Script de gestion de la webcam et de la détection #}
+<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<script>
+document.addEventListener('DOMContentLoaded', async function() {
+    const video = document.getElementById('video');
+    const saveBtn = document.getElementById('saveBtn');
+    const verifyBtn = document.getElementById('verifyBtn');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+
+    // Cacher la vidéo et le canvas
+    video.style.display = 'none';
+    canvas.style.display = 'none';
+
+    // Charger les modèles de reconnaissance faciale
+    async function loadFaceDetectionModel() {
+        try {
+            const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+            await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+            await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+            console.log('Modèles de détection faciale chargés');
+        } catch (error) {
+            console.error('Erreur lors du chargement des modèles', error);
+            alert('Impossible de charger les modèles de reconnaissance faciale.');
+        }
+    }
+
+    // Démarrage de la caméra
+    async function startCamera() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            video.style.display = 'block';
+            
+            return new Promise((resolve) => {
+                video.onloadedmetadata = () => {
+                    video.play();
+                    resolve();
+                };
+            });
+        } catch (error) {
+            console.error('Erreur accès caméra:', error);
+            alert('Impossible d\'accéder à la caméra. Vérifiez les permissions.');
+            throw error;
+        }
+    }
+
+    // Vérification de la personne
+    async function verifyPerson() {
+        try {
+            // Capture de l'écran
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            canvas.style.display = 'block';
+
+            // Détecter les visages
+            const detections = await faceapi.detectAllFaces(canvas, new faceapi.TinyFaceDetectorOptions())
+                .withFaceLandmarks();
+
+            console.log('Détections de visage:', detections);
+
+            // Vérifier la présence et la qualité du visage
+            if (detections.length === 1) {
+                const landmarks = detections[0].landmarks;
+                const confidence = landmarks.positions.length;
+
+                // Critères de vérification
+                if (confidence > 60) {
+                    console.log('Personne réelle détectée');
+                    return true;
+                }
+            }
+
+            console.log('Aucune personne valide détectée');
+            return false;
+        } catch (error) {
+            console.error('Erreur lors de la vérification', error);
+            throw error;
+        }
+    }
+
+    // Initialiser les modèles
+    await loadFaceDetectionModel();
+
+    // Bouton Vérifier
+    verifyBtn.addEventListener('click', async function(event) {
+        event.preventDefault();
+        console.log('Bouton Vérifier cliqué');
+        
+        try {
+            // Démarrer la caméra
+            await startCamera();
+
+            // Attendre un moment pour stabiliser la vidéo
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            // Vérifier la personne
+            const personVerified = await verifyPerson();
+
+            if (personVerified) {
+                saveBtn.disabled = false;
+                saveBtn.classList.remove('btn-primary');
+                saveBtn.classList.add('btn-success');
+                alert('Personne vérifiée avec succès. Vous pouvez maintenant vous enregistrer.');
+            } else {
+                saveBtn.disabled = true;
+                saveBtn.classList.remove('btn-success');
+                saveBtn.classList.add('btn-primary');
+                alert('Vérification échouée. Assurez-vous d\'avoir un visage bien visible.');
+            }
+        } catch (error) {
+            console.error('Erreur lors de la vérification', error);
+            alert('Une erreur est survenue lors de la vérification.');
+        }
+    });
+
+    // Soumettre le formulaire lorsque le bouton Enregistrer est cliqué
+    saveBtn.addEventListener('click', function(event) {
+        event.preventDefault();
+        const form = document.querySelector('form');
+        if (!saveBtn.disabled) {
+            form.submit();
+        }
+    });
+});
+</script>
+
+</script>
+</script>
+
+
+
+
 {% endblock %}
