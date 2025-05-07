@@ -21,9 +21,9 @@ class Communaute
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: "communautes")]
-    #[ORM\JoinColumn(name: 'id_hackathon', referencedColumnName: 'id_hackathon', onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'id_hackathon', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private Hackathon $id_hackathon;
-
+    
     #[ORM\Column(type: 'string', nullable: false)]
     #[Assert\NotBlank(message: 'Le nom de la communauté est requis.')]
     #[Assert\Length(

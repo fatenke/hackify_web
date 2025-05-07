@@ -20,21 +20,39 @@ class Hackathon
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private ?int $id_hackathon = null;
-    public function getId_hackathon(): ?int
+    private ?int $id = null;
+
+    
+    #[ORM\OneToMany(mappedBy: 'idHackathon', targetEntity: Evaluation::class)]
+    private Collection $evaluations;
+
+    #[ORM\OneToMany(mappedBy: 'idHackathon', targetEntity: Vote::class)]
+    private Collection $votes;
+
+    public function getId(): ?int
     {
-        return $this->id_hackathon;
+        return $this->id;
     }
 
-    public function setId_hackathon(int $id_hackathon): self
+    public function setId(int $id_hackathon): self
     {
-        $this->id_hackathon = $id_hackathon;
+        $this->id = $id_hackathon;
+        return $this;
+    }
+    public function getid_hackathon(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setid_hackathon(int $id_hackathon): self
+    {
+        $this->id = $id_hackathon;
         return $this;
     }
 
-    
+
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "hackathons")]
-    #[ORM\JoinColumn(name: 'id_organisateur', referencedColumnName: 'id_user', onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'id_organisateur', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private User $id_organisateur;
     public function getId_organisateur(): ?User
     {
@@ -73,7 +91,7 @@ class Hackathon
     #[Assert\Length(
         min: 10,
         minMessage: 'La description doit contenir au moins {{ limit }} caractères.'
-)]
+    )]
     private ?string $description = null;
 
     public function getDescription(): ?string
@@ -89,6 +107,7 @@ class Hackathon
 
     #[ORM\Column(type: 'datetime', nullable: false)]
     #[Assert\NotBlank(message: 'La date de début est requise.')]
+    #[Assert\NotNull(message: 'La date de début est requise.')]
     #[Assert\Type(\DateTimeInterface::class, message: 'Format de date invalide.')]
     #[Assert\GreaterThanOrEqual(
         'today',
@@ -191,11 +210,11 @@ class Hackathon
     }
 
 
-    
+
 
     public function getIdHackathon(): ?int
     {
-        return $this->id_hackathon;
+        return $this->id;
     }
 
     public function getNomHackathon(): ?string
@@ -246,15 +265,32 @@ class Hackathon
         return $this;
     }
 
-    
-    
+
+
 
 
 
     #[ORM\OneToMany(mappedBy: "id_hackathon", targetEntity: Communaute::class)]
     private Collection $communautes;
 
+    public function getCommunautes(): Collection
+    {
+        return $this->communautes;
+    }
+
+    public function addCommunautes(Communaute $communautes): static
+    {
+        if (!$this->communautes->contains($communautes)) {
+            $this->communautes->add($communautes);
+            $communautes->setId_hackathon($this);
+        }
+
+        return $this;
+    }
+
     
+
+
     #[ORM\OneToMany(targetEntity: Participation::class, mappedBy: 'hackathon')]
     private Collection $participations;
 
@@ -291,44 +327,38 @@ class Hackathon
 
 
 
-    #[ORM\OneToMany(mappedBy: "idHackathon", targetEntity: Evaluation::class)]
-    private Collection $evaluations;
 
-        public function getEvaluations(): Collection
-        {
-            return $this->evaluations;
+
+    public function getEvaluations(): Collection
+    {
+        return $this->evaluations;
+    }
+
+    public function addEvaluation(Evaluation $evaluation): self
+    {
+        if (!$this->evaluations->contains($evaluation)) {
+            $this->evaluations[] = $evaluation;
+            $evaluation->setIdHackathon($this);
         }
-    
-        public function addEvaluation(Evaluation $evaluation): self
-        {
-            if (!$this->evaluations->contains($evaluation)) {
-                $this->evaluations[] = $evaluation;
-                $evaluation->setIdHackathon($this);
+
+        return $this;
+    }
+
+    public function removeEvaluation(Evaluation $evaluation): self
+    {
+        if ($this->evaluations->removeElement($evaluation)) {
+            // set the owning side to null (unless already changed)
+            if ($evaluation->getIdHackathon() === $this) {
+                $evaluation->setIdHackathon(null);
             }
-    
-            return $this;
-        }
-    
-        public function removeEvaluation(Evaluation $evaluation): self
-        {
-            if ($this->evaluations->removeElement($evaluation)) {
-                // set the owning side to null (unless already changed)
-                if ($evaluation->getIdHackathon() === $this) {
-                    $evaluation->setIdHackathon(null);
-                }
-            }
-    
-            return $this;
         }
 
-    #[ORM\OneToMany(mappedBy: "idHackathon", targetEntity: Vote::class)]
-    private Collection $votes;
+        return $this;
+    }
 
-    /**
-     * @var Collection<int, Projets>
-     */
-    #[ORM\OneToMany(targetEntity: Projets::class, mappedBy: 'id_hack')]
+    #[ORM\OneToMany(mappedBy: "hackathon", targetEntity: Projets::class)]
     private Collection $projets;
+
 
     /**
      * @return Collection<int, Projets>
@@ -358,5 +388,9 @@ class Hackathon
         }
 
         return $this;
+    }
+    public function __toString(): string
+    {
+        return (string) $this->getId(); // Replace getName() with any property you want to show
     }
 }
