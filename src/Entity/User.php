@@ -59,6 +59,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: "user", targetEntity: PollVote::class)]
     private Collection $pollVotes;
+     
+    public function getPollVotes(): Collection
+    {
+        return $this->pollVotes;
+    }
+    
+
+
 
     #[ORM\OneToMany(mappedBy: "idVotant", targetEntity: Vote::class)]
     private Collection $votes;

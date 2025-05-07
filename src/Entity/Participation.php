@@ -45,7 +45,7 @@ class Participation
     }
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "participations")]
-    #[ORM\JoinColumn(name: 'id_participant', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'id_participant', referencedColumnName: 'id' , onDelete: 'CASCADE')]
     private ?User $participant = null;
 
     public function getParticipant(): ?User

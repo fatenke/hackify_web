@@ -14,12 +14,12 @@ class Reaction
     #[ORM\Column(type: "integer")]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Message::class)]
+    #[ORM\ManyToOne(targetEntity: Message::class , inversedBy: 'reactions')]
     #[ORM\JoinColumn(name: 'message_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private Message $message;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id_user', onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private User $user;
 
     #[ORM\Column(type: "string", length: 20)]

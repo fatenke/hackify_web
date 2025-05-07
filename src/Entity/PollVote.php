@@ -18,7 +18,7 @@ class PollVote
     private ?PollOption $option_id = null;
     
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'poll_votes')]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id_user', onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'user', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private ?User $user_id = null;
     
     public function getId(): ?int

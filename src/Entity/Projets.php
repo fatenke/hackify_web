@@ -154,7 +154,7 @@ class Projets
     #[ORM\ManyToMany(targetEntity: Technologies::class, inversedBy: 'projets')]
     private Collection $technologies;
 
-    #[ORM\ManyToOne(inversedBy: 'projets')]
+    #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: 'projets')]
     #[ORM\JoinColumn(name: 'id', referencedColumnName: 'id')]
     private ?Hackathon $id_hack = null;
     

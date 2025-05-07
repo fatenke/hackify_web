@@ -23,7 +23,7 @@ class Message
     private Chat $chat_id;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "messages")]
-    #[ORM\JoinColumn(name: 'posted_by', referencedColumnName: 'id_user', onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'posted_by', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private User $posted_by;
 
     #[ORM\Column(type: "text")]
@@ -35,7 +35,7 @@ class Message
     #[ORM\Column(type: "datetime")]
     private \DateTimeInterface $post_time;
 
-    #[ORM\OneToMany(mappedBy: 'message', targetEntity: Reaction::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'message', targetEntity: Reaction::class, cascade: ['persist', 'remove'])]
     private Collection $reactions;
 
     public function __construct()

@@ -26,12 +26,12 @@ class Evaluation
     private ?Jury $idJury = null;
 
     #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: 'evaluations')]
-    #[ORM\JoinColumn(name: 'idHackathon', referencedColumnName: 'id_hackathon', onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'idHackathon', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[Assert\NotBlank(message: "Hackathon must not be blank.")]
     private ?Hackathon $idHackathon = null;
 
-    #[ORM\ManyToOne(targetEntity: Projets::class)]
-    #[ORM\JoinColumn(name: "idProjet", referencedColumnName: "id")]
+    #[ORM\ManyToOne(targetEntity: Projets::class ,inversedBy: 'evaluations')]
+    #[ORM\JoinColumn(name: "idProjet", referencedColumnName: "id" , onDelete: 'CASCADE')]
     #[Assert\NotBlank(message: "Project must not be blank.")]
     private ?Projets $idProjet = null;
 
