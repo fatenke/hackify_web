@@ -6,7 +6,6 @@ namespace App\Controller;
 use App\Entity\Hackathon;
 use App\Entity\Communaute;
 use App\Entity\Chat;
-use App\Enum\ChatType;
 use App\Form\HackathonType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,13 +15,14 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\HackathonRepository;
 use App\Repository\ParticipationRepository;
 use App\Entity\Participation;
-
+use App\Service\GeoapifyService;
+use Knp\Component\Pager\PaginatorInterface;
 
 
 
 final class HackathonController extends AbstractController
 {
-    
+
     #[Route('hackathon/ajouter', name: 'ajouter_hackathon')]
     public function ajouter(Request $request, EntityManagerInterface $em): Response
     {
@@ -36,39 +36,40 @@ final class HackathonController extends AbstractController
             // Persist the hackathon
             $em->persist($hackathon);
             $em->flush();
-            
+
             // Create a matching community
             $communaute = new Communaute();
             $communaute->setId_hackathon($hackathon);
             $communaute->setNom($hackathon->getNom_hackathon());
             $communaute->setDescription($hackathon->getDescription());
-            
+
             $em->persist($communaute);
             $em->flush();
-            
-            // Create default chats for the community using the ChatType enum
-            $chatTypes = [
-                ChatType::ANNOUNCEMENT,
-                ChatType::QUESTION,
-                ChatType::FEEDBACK,
-                ChatType::COACH,
-                ChatType::BOT_SUPPORT
+
+            // Create default chats for the community
+            $chatTypes = ['ANNOUNCEMENT', 'QUESTION', 'FEEDBACK', 'COACH', 'BOT_SUPPORT'];
+            $chatNames = [
+                'Annonces',
+                'Questions',
+                'Retour',
+                'Coaching',
+                'Support'
             ];
 
-            foreach ($chatTypes as $type) {
+            foreach ($chatTypes as $index => $type) {
                 $chat = new Chat();
                 $chat->setCommunaute_id($communaute);
-                $chat->setNom($type->getLabel());
-                $chat->setType($type->value);
+                $chat->setNom($chatNames[$index]);
+                $chat->setType($type);
                 $chat->setDate_creation(new \DateTime());
                 $chat->setIs_active(true);
-                
+
                 $em->persist($chat);
             }
-            
+
             $em->flush();
 
-            return $this->redirectToRoute('liste_hackathon'); 
+            return $this->redirectToRoute('liste_hackathon');
         }
 
         return $this->render('hackathon/ajouter.html.twig', [
@@ -76,7 +77,8 @@ final class HackathonController extends AbstractController
         ]);
     }
     #[Route('hackathon', name: 'liste_hackathon')]
-    public function liste(EntityManagerInterface $entityManager): Response {
+    public function liste(EntityManagerInterface $entityManager): Response
+    {
         $currentUser = $this->getUser();
         $hackathons = $entityManager->getRepository(Hackathon::class)->findAll();
         $participations = $currentUser ? $entityManager->getRepository(Participation::class)->findBy(['participant' => $currentUser]) : [];
@@ -115,12 +117,12 @@ final class HackathonController extends AbstractController
             'communautesParticipant' => $communautesParticipant,
         ]);
     }
-
-    #[Route('hackathon/{id}', name:'hackathon_details')]
-    public function details($id, HackathonRepository $hackathonRepository, ParticipationRepository $participationRepository): Response
+    #[Route('hackathon/{id}', name: 'hackathon_details')]
+    public function details($id, HackathonRepository $hackathonRepository, ParticipationRepository $participationRepository, GeoapifyService $geoapify): Response
     {
         // Trouver le hackathon par son ID
         $hackathon = $hackathonRepository->find($id);
+        $coords = $geoapify->getCoordinates($hackathon->getLieu());
 
         // Si le hackathon n'est pas trouvé, rediriger vers la liste des hackathons
         if (!$hackathon) {
@@ -133,23 +135,25 @@ final class HackathonController extends AbstractController
         return $this->render('hackathon/details.html.twig', [
             'hackathon' => $hackathon,
             'participations' => $participations,
+            'coords' => $coords,
+            'geoapify_key' => $_ENV['GEOAPIFY_API_KEY'] ?? '2cc017ef18dd4832ae2841268fdd8560',
         ]);
     }
-    
-    
+
+
     #[Route('hackathon/modifier/{id}', name: 'modifier_hackathon')]
     public function modifier(Request $request, Hackathon $hackathon, EntityManagerInterface $em): Response
     {
         $form = $this->createForm(HackathonType::class, $hackathon);
-    
+
         $form->handleRequest($request);
-    
+
         if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
-    
+
             return $this->redirectToRoute('liste_hackathon');
         }
-    
+
         return $this->render('hackathon/modifier.html.twig', [
             'form' => $form->createView(),
             'hackathon' => $hackathon,
@@ -158,16 +162,11 @@ final class HackathonController extends AbstractController
     #[Route('/hackathon/supprimer/{id}', name: 'supprimer_hackathon', methods: ['POST'])]
     public function supprimer(Request $request, Hackathon $hackathon, EntityManagerInterface $em): Response
     {
-        if ($this->isCsrfTokenValid('supprimer'.$hackathon->getId_hackathon(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('supprimer' . $hackathon->getId(), $request->request->get('_token'))) {
             $em->remove($hackathon);
             $em->flush();
         }
-    
+
         return $this->redirectToRoute('liste_hackathon');
     }
-
-    
-
-    
-
 }
