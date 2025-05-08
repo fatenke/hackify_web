@@ -39,7 +39,7 @@ security:
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
-        - { path: ^/admin, roles: ROLE_ORGANISATEUR }
+        - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/profile, roles: ROLE_USER }
         # Allow access to the home page
         - { path: ^/$, roles: PUBLIC_ACCESS }
