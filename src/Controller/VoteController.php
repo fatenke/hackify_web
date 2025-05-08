@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Vote;
 use App\Form\VoteType;
 use App\Repository\VoteRepository;
-use App\Repository\ProjetRepository;
+use App\Repository\ProjetsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class VoteController extends AbstractController
 {
   #[Route('/vote/add/{idProjet}', name: 'vote_add')]
-  public function addVote(Request $request, VoteRepository $voteRepo, ProjetRepository $projectRepo, int $idProjet): Response
+  public function addVote(Request $request, VoteRepository $voteRepo, ProjetsRepository $projectRepo, int $idProjet): Response
   {
     $vote = new Vote();
 
