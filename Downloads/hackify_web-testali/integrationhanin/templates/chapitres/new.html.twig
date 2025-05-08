@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau chapitre{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="mb-4">➕ Ajouter un chapitre</h1>
+
+    {{ include('chapitres/_form.html.twig') }}
+
+    <div class="mt-4 d-flex gap-2">
+        <a href="{{ path('app_home') }}" class="btn btn-outline-secondary">
+            ← Retour à l’accueil
+        </a>
+        <a href="{{ path('app_ressources_new') }}" class="btn btn-outline-light">
+            📘 Ressources
+        </a>
+  
+
+
+
+    </div>
+</div>
+{% endblock %}

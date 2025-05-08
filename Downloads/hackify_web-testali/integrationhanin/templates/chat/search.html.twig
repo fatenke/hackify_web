@@ -1,0 +1,118 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Search Messages - {{ community.nom }}{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .search-container {
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .search-form {
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .search-results {
+        margin-top: 2rem;
+    }
+    
+    .message-card {
+        background-color: white;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: transform 0.2s;
+    }
+    
+    .message-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .message-meta {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .message-content {
+        font-size: 1.1rem;
+    }
+    
+    .message-author {
+        font-weight: bold;
+    }
+    
+    .highlight {
+        background-color: #fff3cd;
+        padding: 0.2rem;
+        border-radius: 0.2rem;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Search Messages in {{ community.nom }}</h1>
+        <a href="{{ path('app_communaute_show', {'id': community.id}) }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Community
+        </a>
+    </div>
+    
+    <div class="search-container">
+        <h4>Search Messages</h4>
+        {{ form_start(form) }}
+        <div class="row">
+            <div class="col-md-9">
+                {{ form_widget(form.query) }}
+            </div>
+            <div class="col-md-3">
+                {{ form_widget(form.search) }}
+            </div>
+        </div>
+        {{ form_end(form) }}
+        
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }} mt-3">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    
+    <div class="search-results">
+        <h3>Results ({{ results|length }})</h3>
+        
+        {% if results|length > 0 %}
+            {% for message in results %}
+                <div class="message-card">
+                    <div class="message-meta d-flex justify-content-between">
+                        <span class="message-author">{{ message.posted_by.nomUser }} {{ message.posted_by.prenomUser }}</span>
+                        <span>{{ message.post_time|date('Y-m-d H:i') }}</span>
+                    </div>
+                    <div class="message-content">
+                        {{ message.contenu }}
+                    </div>
+                    <div class="mt-2">
+                        <a href="{{ path('app_chat_show', {'id': message.chat_id.id}) }}" class="btn btn-sm btn-primary">
+                            View in Chat
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info">
+                No messages found matching your search criteria.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

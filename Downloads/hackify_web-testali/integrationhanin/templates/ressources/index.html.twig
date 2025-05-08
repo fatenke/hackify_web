@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des ressources{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>📚 Liste des ressources</h1>
+
+    <a href="{{ path('app_ressources_new') }}" class="btn btn-primary mb-3">➕ Ajouter une ressource</a>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Titre</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Valide</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for ressource in pagination %}
+            <tr>
+                <td>{{ ressource.id }}</td>
+                <td>{{ ressource.titre }}</td>
+                <td>{{ ressource.type }}</td>
+                <td>{{ ressource.dateAjout ? ressource.dateAjout|date('d/m/Y') : '' }}</td>
+                <td>{{ ressource.valide ? '✅' : '❌' }}</td>
+                <td>
+                    <a href="{{ path('app_ressources_show', {'id': ressource.id}) }}" class="btn btn-sm btn-outline-info">Voir</a>
+                    <a href="{{ path('app_ressources_edit', {'id': ressource.id}) }}" class="btn btn-sm btn-outline-warning">Modifier</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="6">Aucune ressource trouvée.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        {{ knp_pagination_render(pagination) }}
+    </div>
+</div>
+{% endblock %}
