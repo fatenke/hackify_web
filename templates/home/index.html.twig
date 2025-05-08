@@ -13,11 +13,16 @@
           Un espace unique pour découvrir, organiser et vivre des expériences innovantes autour de la technologie et de la créativité.
         </p>
         <div class="d-flex" data-aos="fade-up" data-aos-delay="200">
-          <a href="{{ path('liste_hackathon') }}" class="btn-get-started">Découvrir les hackathons</a>
+        {% if app.user %}
+    <a href="{{ path('liste_hackathon') }}" class="btn-get-started">Découvrir les hackathons</a>
+  {% else %}
+    <a href="{{ path('app_register', {'msg': 'login_required'}) }}" class="btn-get-started">Découvrir les hackathons</a>
+  {% endif %}
+          
         </div>
       </div>
       <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
-        <img src="{{ asset('FrontOffice/assets/img/image1.png') }}" class="img-fluid animated" alt="">
+        <img src="{{ asset('FrontOffice/assets/img/image1.png') }}" class="img-fluid animated" alt="une image">
       </div>
     </div>
   </div>
@@ -35,7 +40,7 @@
   <div class="container">
     <div class="row gy-4">
       <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
-        <img src="FrontOffice/assets/img/about.png" class="img-fluid mb-4" alt="">
+        <img src="{{ asset('FrontOffice/assets/img/about1.png') }}" class="img-fluid mb-4" alt="">
         <div class="book-a-table">
           <h3>Contact</h3>
           <p>contact@hackify.tn</p>
@@ -56,8 +61,8 @@
           </p>
 
           <div class="position-relative mt-4">
-            <img src="assets/img/about-2.jpg" class="img-fluid" alt="">
-            <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox pulsating-play-btn"></a>
+            <img src="{{ asset('FrontOffice/assets/img/about2.png') }}" class="img-fluid" alt="une image">
+            <a href="https://www.youtube.com/watch?v=RkE8c7gXehM" class="glightbox pulsating-play-btn"></a>
           </div>
         </div>
       </div>
@@ -66,145 +71,117 @@
 
 </section>
 
-<!-- Team Section -->
-<section id="chefs" class="chefs section">
+<!--faq -->
+<section id="faq" class="faq section">
+  <div class="container" data-aos="fade-up">
 
-  <!-- Section Title -->
-  <div class="container section-title" data-aos="fade-up">
-    <h2>Notre Équipe</h2>
-    <p><span>Rencontrez</span> <span class="description-title">Notre Équipe </span></p>
-  </div><!-- End Section Title -->
+    <div class="section-title">
+      <h2>FAQ</h2>
+      <h4><span>Questions</span> <span class="description-title">Fréquemment Posées</span></h4>
+    </div>
 
-  <div class="container">
+    <div class="faq-list">
+      <ul>
 
-    <div class="row gy-4">
+        <li data-aos="fade-up" data-aos-delay="100">
+          <i class="bi bi-question-circle icon-help"></i> 
+          <a data-bs-toggle="collapse" class="collapsed" data-bs-target="#faq1">
+            Comment puis-je m'inscrire à un hackathon ?
+            <i class="bi bi-chevron-down icon-show"></i>
+          </a>
+          <div id="faq1" class="collapse" data-bs-parent=".faq-list">
+            <p>
+              Il suffit de créer un compte sur notre plateforme, puis de choisir le hackathon auquel vous souhaitez participer et cliquer sur "Participer".
+            </p>
+          </div>
+        </li>
 
-      <!-- Team Member 1 -->
-      <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
-        <div class="team-member">
-          <div class="member-img">
-            <img src="FrontOffice/assets/img/members/faten.png" class="img-fluid" alt="">
-            <div class="social">
-              <a href=""><i class="bi bi-twitter-x"></i></a>
-              <a href=""><i class="bi bi-facebook"></i></a>
-              <a href=""><i class="bi bi-instagram"></i></a>
-              <a href=""><i class="bi bi-linkedin"></i></a>
-            </div>
+        <li data-aos="fade-up" data-aos-delay="200">
+          <i class="bi bi-question-circle icon-help"></i> 
+          <a data-bs-toggle="collapse" class="collapsed" data-bs-target="#faq2">
+            Est-ce que la participation est gratuite ?
+            <i class="bi bi-chevron-down icon-show"></i>
+          </a>
+          <div id="faq2" class="collapse" data-bs-parent=".faq-list">
+            <p>
+              Oui, la majorité de nos hackathons sont totalement gratuits grâce à nos partenaires et sponsors.
+            </p>
           </div>
-          <div class="member-info">
-            <h4>Faten Kerrou</h4>
-            <span>Chef de Projet</span>
-            <p>Description du membre 1. Il est expert dans son domaine et apporte une expérience précieuse à l'équipe.</p>
-          </div>
-        </div>
-      </div><!-- End Team Member 1 -->
+        </li>
 
-      <!-- Team Member 2 -->
-      <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
-        <div class="team-member">
-          <div class="member-img">
-            <img src="FrontOffice/assets/img/members/image.png" class="img-fluid" alt="">
-            <div class="social">
-              <a href=""><i class="bi bi-twitter-x"></i></a>
-              <a href=""><i class="bi bi-facebook"></i></a>
-              <a href=""><i class="bi bi-instagram"></i></a>
-              <a href=""><i class="bi bi-linkedin"></i></a>
-            </div>
+        <li data-aos="fade-up" data-aos-delay="400">
+          <i class="bi bi-question-circle icon-help"></i> 
+          <a data-bs-toggle="collapse" class="collapsed" data-bs-target="#faq4">
+            Faut-il avoir de l’expérience pour participer ?
+            <i class="bi bi-chevron-down icon-show"></i>
+          </a>
+          <div id="faq4" class="collapse" data-bs-parent=".faq-list">
+            <p>
+              Pas du tout ! Nos hackathons sont ouverts aux débutants comme aux experts. Le plus important est votre motivation.
+            </p>
           </div>
-          <div class="member-info">
-            <h4>Amira Youssef</h4>
-            <span>Titre du Poste</span>
-            <p>Description du membre 2. Son expertise dans [domaine spécifique] fait d'elle un atout majeur pour notre équipe.</p>
-          </div>
-        </div>
-      </div><!-- End Team Member 2 -->
+        </li>
 
-      <!-- Team Member 3 -->
-      <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="300">
-        <div class="team-member">
-          <div class="member-img">
-            <img src="/FrontOffice/assets/img/members/farah.png" class="img-fluid" alt="">
-            <div class="social">
-              <a href=""><i class="bi bi-twitter-x"></i></a>
-              <a href=""><i class="bi bi-facebook"></i></a>
-              <a href=""><i class="bi bi-instagram"></i></a>
-              <a href=""><i class="bi bi-linkedin"></i></a>
-            </div>
-          </div>
-          <div class="member-info">
-            <h4>Farah Maiti</h4>
-            <span>Titre du Poste</span>
-            <p>Description du membre 3. Grâce à ses compétences en [domaine], il est indispensable pour la réussite de nos projets.</p>
-          </div>
-        </div>
-      </div><!-- End Team Member 3 -->
+        <li data-aos="fade-up" data-aos-delay="500">
+  <i class="bi bi-question-circle icon-help"></i> 
+  <a data-bs-toggle="collapse" class="collapsed" data-bs-target="#faq5">
+    Comment puis-je suivre l’état de ma participation ?
+    <i class="bi bi-chevron-down icon-show"></i>
+  </a>
+  <div id="faq5" class="collapse" data-bs-parent=".faq-list">
+    <p>
+      Une fois inscrit, vous pouvez suivre le statut de votre participation dans votre espace personnel sous l’onglet “Mes hackathons”.
+    </p>
+  </div>
+</li>
 
-      <!-- Team Member 4 -->
-      <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="400">
-        <div class="team-member">
-          <div class="member-img">
-            <img src="/FrontOffice/assets/img/members/image.png" class="img-fluid" alt="">
-            <div class="social">
-              <a href=""><i class="bi bi-twitter-x"></i></a>
-              <a href=""><i class="bi bi-facebook"></i></a>
-              <a href=""><i class="bi bi-instagram"></i></a>
-              <a href=""><i class="bi bi-linkedin"></i></a>
-            </div>
-          </div>
-          <div class="member-info">
-            <h4>Ali Belkadhi</h4>
-            <span>Titre du Poste</span>
-            <p>Description du membre 4. Son expérience dans [domaine] nous permet de rester à la pointe de l'innovation.</p>
-          </div>
-        </div>
-      </div><!-- End Team Member 4 -->
+<li data-aos="fade-up" data-aos-delay="600">
+  <i class="bi bi-question-circle icon-help"></i> 
+  <a data-bs-toggle="collapse" class="collapsed" data-bs-target="#faq6">
+    Est-ce que je peux annuler ma participation ?
+    <i class="bi bi-chevron-down icon-show"></i>
+  </a>
+  <div id="faq6" class="collapse" data-bs-parent=".faq-list">
+    <p>
+      Oui, tant que les inscriptions sont ouvertes, vous pouvez annuler votre participation depuis votre tableau de bord.
+    </p>
+  </div>
+</li>
 
-      <!-- Team Member 5 -->
-      <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="500">
-        <div class="team-member">
-          <div class="member-img">
-            <img src="/FrontOffice/assets/img/members/image.png" class="img-fluid" alt="">
-            <div class="social">
-              <a href=""><i class="bi bi-twitter-x"></i></a>
-              <a href=""><i class="bi bi-facebook"></i></a>
-              <a href=""><i class="bi bi-instagram"></i></a>
-              <a href=""><i class="bi bi-linkedin"></i></a>
-            </div>
-          </div>
-          <div class="member-info">
-            <h4>Mohamed Bennour</h4>
-            <span>Titre du Poste</span>
-            <p>Description du membre 5. Il apporte des solutions novatrices et son esprit d'équipe est essentiel pour la collaboration.</p>
-          </div>
-        </div>
-      </div><!-- End Team Member 5 -->
+<li data-aos="fade-up" data-aos-delay="700">
+  <i class="bi bi-question-circle icon-help"></i> 
+  <a data-bs-toggle="collapse" class="collapsed" data-bs-target="#faq7">
+    Est-ce que les hackathons sont en ligne ou en présentiel ?
+    <i class="bi bi-chevron-down icon-show"></i>
+  </a>
+  <div id="faq7" class="collapse" data-bs-parent=".faq-list">
+    <p>
+      Les deux formats existent ! Chaque hackathon indique clairement s’il se déroule en ligne, en présentiel ou en mode hybride.
+    </p>
+  </div>
+</li>
 
-      <!-- Team Member 6 -->
-      <div class="col-lg-4 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="600">
-        <div class="team-member">
-          <div class="member-img">
-            <img src="/FrontOffice/assets/img/members/image.png" class="img-fluid" alt="">
-            <div class="social">
-              <a href=""><i class="bi bi-twitter-x"></i></a>
-              <a href=""><i class="bi bi-facebook"></i></a>
-              <a href=""><i class="bi bi-instagram"></i></a>
-              <a href=""><i class="bi bi-linkedin"></i></a>
-            </div>
-          </div>
-          <div class="member-info">
-            <h4>Hanin Saidi</h4>
-            <span>Titre du Poste</span>
-            <p>Description du membre 6. Avec son expertise en [domaine], il assure que chaque projet soit mené à bien.</p>
-          </div>
-        </div>
-      </div><!-- End Team Member 6 -->
+<li data-aos="fade-up" data-aos-delay="800">
+  <i class="bi bi-question-circle icon-help"></i> 
+  <a data-bs-toggle="collapse" class="collapsed" data-bs-target="#faq8">
+    Comment puis-je organiser un hackathon ?
+    <i class="bi bi-chevron-down icon-show"></i>
+  </a>
+  <div id="faq8" class="collapse" data-bs-parent=".faq-list">
+    <p>
+      Si vous souhaitez organiser un hackathon, il vous suffit de créer un compte sur notre plateforme avec le rôle d'organisateur.
+    </p>
+  </div>
+</li>
 
+
+      </ul>
     </div>
 
   </div>
-
 </section>
-<!-- /Team Section -->
+
+</section><!-- /Team Section -->
 
 
 <section id="hackathons">
@@ -226,84 +203,87 @@
   {% endfor %}
 
   <div class="text-center mt-4">
+    {% if app.user %}
     <a href="{{ path('liste_hackathon') }}" class="btn-get-started">Voir tous les hackathons</a>
+  {% else %}
+    <a href="{{ path('app_register', {'msg': 'login_required'}) }}" class="btn-get-started">Voir tous les hackathons</a>
+  {% endif %}
   </div>
 </section>
 
-<!-- Events Section -->
-    <section id="events" class="events section">
+<!-- Past Hackathons Gallery -->
+<section id="gallery" class="events section">
 
-      <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
+  <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
 
-        <div class="swiper init-swiper">
-          <script type="application/json" class="swiper-config">
-            {
-              "loop": true,
-              "speed": 600,
-              "autoplay": {
-                "delay": 5000
-              },
-              "slidesPerView": "auto",
-              "pagination": {
-                "el": ".swiper-pagination",
-                "type": "bullets",
-                "clickable": true
-              },
-              "breakpoints": {
-                "320": {
-                  "slidesPerView": 1,
-                  "spaceBetween": 40
-                },
-                "1200": {
-                  "slidesPerView": 3,
-                  "spaceBetween": 1
-                }
-              }
+    <div class="swiper init-swiper">
+      <script type="application/json" class="swiper-config">
+        {
+          "loop": true,
+          "speed": 600,
+          "autoplay": {
+            "delay": 5000
+          },
+          "slidesPerView": "auto",
+          "pagination": {
+            "el": ".swiper-pagination",
+            "type": "bullets",
+            "clickable": true
+          },
+          "breakpoints": {
+            "320": {
+              "slidesPerView": 1,
+              "spaceBetween": 40
+            },
+            "1200": {
+              "slidesPerView": 3,
+              "spaceBetween": 1
             }
-          </script>
-          <div class="swiper-wrapper">
+          }
+        }
+      </script>
+      <div class="swiper-wrapper">
 
-            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/1.png)">
-              <h3>Custom Parties</h3>
-              <div class="price align-self-start">$99</div>
-              <p class="description">
-                Quo corporis voluptas ea ad. Consectetur inventore sapiente ipsum voluptas eos omnis facere. Enim facilis veritatis id est rem repudiandae nulla expedita quas.
-              </p>
-            </div>
-            <!-- End Event item -->
+        <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url({{ asset('FrontOffice/assets/img/hackathons/1.png') }})">
+          <h3>Hackathon 2023: Smart Cities</h3>
+          <div class="price align-self-start">Mars 2023</div>
+          <p class="description">
+            Des idées brillantes autour de la ville intelligente. Une édition riche en projets innovants et collaborations exceptionnelles.
+          </p>
+        </div>
 
-            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/2.png)">
-              <h3>Private Parties</h3>
-              <div class="price align-self-start">$289</div>
-              <p class="description">
-                In delectus sint qui et enim. Et ab repudiandae inventore quaerat doloribus. Facere nemo vero est ut dolores ea assumenda et. Delectus saepe accusamus aspernatur.
-              </p>
-            </div><!-- End Event item -->
+        <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url({{ asset('FrontOffice/assets/img/hackathons/2.png') }})">
+          <h3>Hack4Women 2022</h3>
+          <div class="price align-self-start">Novembre 2022</div>
+          <p class="description">
+            Une édition dédiée à l’autonomisation des femmes dans la tech. Merci à toutes les participantes pour leur énergie !
+          </p>
+        </div>
 
-            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/3.png)">
-              <h3>Birthday Parties</h3>
-              <div class="price align-self-start">$499</div>
-              <p class="description">
-                Laborum aperiam atque omnis minus omnis est qui assumenda quos. Quis id sit quibusdam. Esse quisquam ducimus officia ipsum ut quibusdam maxime. Non enim perspiciatis.
-              </p>
-            </div><!-- End Event item -->
+        <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url({{ asset('FrontOffice/assets/img/hackathons/3.png') }})">
+          <h3>Green Hack 2022</h3>
+          <div class="price align-self-start">Août 2022</div>
+          <p class="description">
+            Retour sur un week-end de challenges éco-responsables, axé sur l’innovation verte et le développement durable.
+          </p>
+        </div>
 
-            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url(FrontOffice/assets/img/hackathons/4.png)">
-              <h3>Wedding Parties</h3>
-              <div class="price align-self-start">$899</div>
-              <p class="description">
-                Laborum aperiam atque omnis minus omnis est qui assumenda quos. Quis id sit quibusdam. Esse quisquam ducimus officia ipsum ut quibusdam maxime. Non enim perspiciatis.
-              </p>
-            </div><!-- End Event item -->
-
-          </div>
-          <div class="swiper-pagination"></div>
+        <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url({{ asset('FrontOffice/assets/img/hackathons/4.png') }})">
+          <h3>AI Challenge 2021</h3>
+          <div class="price align-self-start">Décembre 2021</div>
+          <p class="description">
+            Une immersion dans le monde de l’intelligence artificielle, avec des projets bluffants et une ambiance de folie !
+          </p>
         </div>
 
       </div>
+      <div class="swiper-pagination"></div>
+    </div>
 
-    </section>
-    <!-- /Events Section -->
+  </div>
+
+</section>
+<!-- /Past Hackathons Gallery -->
 
 
 
@@ -395,8 +375,115 @@
 
       </div>
 
-    </section><!-- /Contact Section -->
+    </section>
+    <!-- /Contact Section -->
 
 
+
+<style>
+/* Style général de la section FAQ */
+.faq {
+  
+  padding: 60px 0;
+  font-family: "Poppins", sans-serif;
+}
+
+.faq .section-title h2 {
+  font-size: 32px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 10px;
+  color: #1d3557;
+}
+
+.faq .section-title p {
+  text-align: center;
+  font-size: 20px;
+  color: #457b9d;
+}
+
+.faq .section-title p .description-title {
+  font-weight: 600;
+  color:rgb(230, 57, 123);
+}
+
+/* Liste FAQ */
+.faq-list {
+  
+  padding: 0;
+  list-style: none;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.faq-list li {
+  margin-bottom: 20px;
+  border: 1px solid #dce3e8;
+  border-radius: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  transition: 0.3s;
+}
+
+.faq-list li:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+}
+
+.faq-list a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1d3557;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.faq-list a.collapsed {
+  color: #457b9d;
+}
+
+.faq-list i {
+  font-size: 18px;
+  margin-right: 10px;
+  color: #e63946;
+}
+
+.faq-list .icon-show,
+.faq-list .icon-close {
+  transition: transform 0.3s ease;
+}
+
+.faq-list .icon-show {
+  transform: rotate(0deg);
+}
+
+.faq-list a.collapsed .icon-show {
+  transform: rotate(180deg);
+}
+
+.faq-list .collapse {
+  padding: 0 20px 20px 20px;
+  color: #343a40;
+  font-size: 16px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Animation fadeIn */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+</style>
 
 {% endblock %}

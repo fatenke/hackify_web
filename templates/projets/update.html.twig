@@ -1,81 +1,23 @@
-{# templates/projets/update.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier le projet{% endblock %}
-
-{# Use Bootstrap 5 form theme for styling #}
-{% form_theme form 'bootstrap_5_layout.html.twig' %}
+{% block title %}QR Code du projet{% endblock %}
 
 {% block body %}
-<section id="modifier-projet" class="section">
-  <div class="container mt-5">
-    <h2 class="mb-4 text-center">Modifier le projet</h2>
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-
-          <div class="mb-3">
-            {{ form_label(form.nom, 'Nom du projet') }}
-            {{ form_widget(form.nom, {
-              'attr': {
-                'class': 'form-control' ~ (form.nom.vars.errors|length ? ' is-invalid' : '')
-              }
-            }) }}
-            {{ form_errors(form.nom) }}
-          </div>
-
-          <div class="mb-3">
-            {{ form_label(form.description, 'Description') }}
-            {{ form_widget(form.description, {
-              'attr': {
-                'class': 'form-control' ~ (form.description.vars.errors|length ? ' is-invalid' : '')
-              }
-            }) }}
-            {{ form_errors(form.description) }}
-          </div>
-
-          <div class="mb-3">
-            {{ form_label(form.ressource, 'Ressource') }}
-            {{ form_widget(form.ressource, {
-              'attr': {
-                'class': 'form-control' ~ (form.ressource.vars.errors|length ? ' is-invalid' : '')
-              }
-            }) }}
-            {{ form_errors(form.ressource) }}
-          </div>
-
-          <div class="form-group mb-3">
-            {{ form_label(form.technologies, 'Technologies associées') }}
-            <div class="d-flex flex-column p-2 {% if form.technologies.vars.errors|length %} border border-danger rounded {% endif %}">
-              {% for tech in form.technologies %}
-                <div class="form-check mb-1">
-                  {{ form_widget(tech, {
-                    'attr': {
-                      'class': 'form-check-input' ~ (tech.vars.errors|length ? ' is-invalid' : '')
-                    }
-                  }) }}
-                  {{ form_label(tech, null, {'label_attr': {'class': 'form-check-label'}}) }}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <h1 class="mb-4">Voici le QR Code du projet "{{ projet.nom }}"</h1>
+                <p class="lead mb-4">Scannez ce QR code pour confirmer l'ajout du projet !</p>
+                
+                <!-- Affichage du QR Code -->
+                <div class="qr-code-container mb-4">
+                    <img src="data:image/png;base64,{{ qrImage }}" alt="QR Code" class="img-fluid mx-auto d-block shadow-lg rounded">
                 </div>
-              {% endfor %}
+                
+                <a href="{{ path('voir_projets', {'id': hackathonId}) }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-arrow-left me-2"></i>Retour à la liste des projets
+                </a>
             </div>
-            {{ form_errors(form.technologies) }}
-          </div>
-
-          <div class="mb-3">
-            {{ form_label(form.id_hack, 'Hackathon') }}
-            {{ form_widget(form.id_hack, {
-              'attr': {
-                'class': 'form-control' ~ (form.id_hack.vars.errors|length ? ' is-invalid' : '')
-              }
-            }) }}
-            {{ form_errors(form.id_hack) }}
-          </div>
-
-          <button type="submit" class="btn btn-success">Enregistrer les modifications</button>
-
-        {{ form_end(form) }}
-      </div>
+        </div>
     </div>
-  </div>
-</section>
 {% endblock %}
