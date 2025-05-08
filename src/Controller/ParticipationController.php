@@ -110,23 +110,4 @@ public function refuser(Participation $participation, EntityManagerInterface $en
 
 
 
-
-public function sendConfirmation(MailerInterface $mailer): Response
-{
-    $email = (new Email())
-        ->from('ttttfarah@gmail.com') // L'adresse d'envoi
-        ->to('kerroufaten729@gmail.com') // L'adresse du participant
-        ->subject('Confirmation de votre inscription')
-        ->html('<p>Votre participation au hackathon a bien été enregistrée.</p>');
-
-    $mailer->send($email);
-
-    return new Response('Email envoyé !');
-}
-
-#[Route('/test-email', name: 'test_email')]
-public function testEmail(MailerInterface $mailer): Response
-{
-    return $this->sendConfirmation($mailer);
-}
 }
