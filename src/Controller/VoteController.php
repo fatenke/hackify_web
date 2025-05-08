@@ -117,4 +117,13 @@ class VoteController extends AbstractController
 
     return $this->redirectToRoute('vote_list');
   }
+  #[Route('/projects', name: 'project_list')]
+  public function listProjects(ProjetsRepository $projectRepository): Response
+  {
+    $projects = $projectRepository->findAll();
+
+    return $this->render('evaluation/projets.html.twig', [
+      'projects' => $projects,
+    ]);
+  }
 }

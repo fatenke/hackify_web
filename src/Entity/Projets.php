@@ -31,7 +31,7 @@ class Projets
     private string $nom;
 
     #[ORM\Column(type: "string", length: 255)]
- 
+
     private string $statut;
 
     #[ORM\Column(type: "string", length: 255)]
@@ -63,7 +63,7 @@ class Projets
         $this->id = $value;
     }
 
-   
+
 
     public function getNom()
     {
@@ -118,33 +118,33 @@ class Projets
     #[ORM\OneToMany(mappedBy: "idProjet", targetEntity: Evaluation::class)]
     private Collection $evaluations;
 
-        public function getEvaluations(): Collection
-        {
-            return $this->evaluations;
-        }
-    
-        
-    
-        public function removeEvaluation(Evaluation $evaluation): self
-        {
-            if ($this->evaluations->removeElement($evaluation)) {
-                // set the owning side to null (unless already changed)
-                if ($evaluation->getIdProjet() === $this) {
-                    $evaluation->setIdProjet(null);
-                }
+    public function getEvaluations(): Collection
+    {
+        return $this->evaluations;
+    }
+
+
+
+    public function removeEvaluation(Evaluation $evaluation): self
+    {
+        if ($this->evaluations->removeElement($evaluation)) {
+            // set the owning side to null (unless already changed)
+            if ($evaluation->getIdProjet() === $this) {
+                $evaluation->setIdProjet(null);
             }
-    
-            return $this;
         }
-        public function addEvaluation(Evaluation $evaluation): self
-        {
-            if (!$this->evaluations->contains($evaluation)) {
-                $this->evaluations[] = $evaluation;
-                $evaluation->setIdProjet($this);
-            }
-    
-            return $this;
+
+        return $this;
+    }
+    public function addEvaluation(Evaluation $evaluation): self
+    {
+        if (!$this->evaluations->contains($evaluation)) {
+            $this->evaluations[] = $evaluation;
+            $evaluation->setIdProjet($this);
         }
+
+        return $this;
+    }
     #[ORM\OneToMany(mappedBy: "idProjet", targetEntity: Vote::class)]
     private Collection $votes;
 
@@ -157,7 +157,7 @@ class Projets
     #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: 'projets')]
     #[ORM\JoinColumn(name: 'id', referencedColumnName: 'id')]
     private ?Hackathon $id_hack = null;
-    
+
 
     public function __construct()
     {
@@ -199,5 +199,8 @@ class Projets
 
         return $this;
     }
-    
+    public function __toString(): string
+    {
+        return 'Projet #' . $this->id ?? 'N/A';
+    }
 }

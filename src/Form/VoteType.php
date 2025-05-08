@@ -8,7 +8,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use App\Entity\Hackathon;
-use App\Entity\Projet;
+use App\Entity\Projets;
 use App\Entity\Evaluation;
 
 class VoteType extends AbstractType
@@ -31,8 +31,8 @@ class VoteType extends AbstractType
                 'placeholder' => 'Select a hackathon',
             ])
             ->add('idProjet', EntityType::class, [
-                'class' => Projet::class,
-                'choice_label' => function (Projet $projet) {
+                'class' => Projets::class,
+                'choice_label' => function (Projets $projet) {
                     return $projet->getId(); // or $projet->getTitle() if exists
                 },
                 'placeholder' => 'Select a project',

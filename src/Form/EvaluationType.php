@@ -9,7 +9,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use App\Entity\Jury;
 use App\Entity\Hackathon;
-use App\Entity\Projet;
+use App\Entity\Projets;
 
 class EvaluationType extends AbstractType
 {
@@ -29,7 +29,7 @@ class EvaluationType extends AbstractType
                 'attr' => ['class' => 'form-control'],
             ])
             ->add('idProjet', EntityType::class, [
-                'class' => Projet::class,
+                'class' => Projets::class,
                 'choice_label' => 'id', // Or 'nom'/'titre' if available
                 'placeholder' => 'Choose a project',
                 'attr' => ['class' => 'form-control'],
