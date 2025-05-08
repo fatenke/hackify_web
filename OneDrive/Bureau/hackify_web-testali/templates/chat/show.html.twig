@@ -1,0 +1,1069 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ chat.nom }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Debug CSS - this will help us confirm style loading */
+        .debug-box {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 9999;
+            display: none;
+        }
+        
+        /* CSS Reset for message containers - this ensures no conflicts */
+        .message-container {
+            all: initial;
+            box-sizing: border-box;
+            font-family: inherit;
+            display: block;
+        }
+        
+        /* Clearly defined message container styles with high specificity */
+        .messages-container .message-container {
+            background-color: #f8f9fa !important;
+            border-radius: 12px !important;
+            padding: 1rem 1.25rem !important;
+            margin-bottom: 1.25rem !important;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08) !important;
+            position: relative !important;
+            border: 1px solid #e9ecef !important;
+            transition: all 0.2s ease !important;
+            max-width: none !important;
+            width: auto !important;
+        }
+
+        .messages-container .message-container:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+        }
+
+        .messages-container .message-container.own-message {
+            background-color: #e3f2fd !important;
+            margin-left: 2rem !important;
+            border-color: #b3d7ff !important;
+        }
+
+        .messages-container .message-container.other-message {
+            background-color: #f8f9fa !important;
+            margin-right: 2rem !important;
+        }
+
+        /* Header and footer for messages */
+        .messages-container .message-header {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            margin-bottom: 0.5rem !important;
+        }
+
+        .messages-container .message-author {
+            font-weight: 500 !important;
+            color: #2c3e50 !important;
+        }
+
+        .messages-container .message-timestamp {
+            font-size: 0.75rem !important;
+            color: #6c757d !important;
+        }
+
+        .messages-container .message-footer {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            margin-top: 0.5rem !important;
+        }
+
+        .messages-container .message-type-badge {
+            font-size: 0.75rem !important;
+            padding: 0.2rem 0.5rem !important;
+            border-radius: 12px !important;
+            background-color: rgba(0,0,0,0.05) !important;
+            color: #6c757d !important;
+        }
+
+        .messages-container .message-actions {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+        }
+
+        /* Emoji button styling */
+        .messages-container .emoji-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 32px !important;
+            height: 32px !important;
+            border-radius: 50% !important;
+            background-color: #ffffff !important;
+            border: 1px solid #e9ecef !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            color: #6c757d !important;
+        }
+
+        .messages-container .emoji-btn:hover {
+            background-color: #e9ecef !important;
+            color: #495057 !important;
+        }
+        
+        /* Rest of your existing styles */
+        .poll-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .progress {
+            background-color: #e9ecef;
+            border-radius: 0.25rem;
+        }
+        .progress-bar {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            font-size: 0.875rem;
+            line-height: 20px;
+            white-space: nowrap;
+        }
+        .badge-active {
+            background-color: #28a745;
+            color: white;
+        }
+        .badge-closed {
+            background-color: #6c757d;
+            color: white;
+        }
+        /* Add styles for the header */
+        .header {
+            background-color: #1b3347;
+            padding: 1rem 0;
+        }
+        .sitename {
+            color: white;
+            margin: 0 0 0 10px;
+        }
+        .navmenu ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .navmenu ul li {
+            display: inline-block;
+            margin: 0 10px;
+        }
+        .navmenu ul li a {
+            color: white;
+            text-decoration: none;
+        }
+        .btn-getstarted {
+            color: white;
+            text-decoration: none;
+            padding: 8px 20px;
+            border: 2px solid white;
+            border-radius: 50px;
+        }
+        /* Restricted chat styling */
+        .chat-restricted {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .chat-restricted::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(0, 0, 0, 0.03),
+                rgba(0, 0, 0, 0.03) 10px,
+                rgba(0, 0, 0, 0.06) 10px,
+                rgba(0, 0, 0, 0.06) 20px
+            );
+            pointer-events: none;
+        }
+        .chat-restricted-message {
+            background-color: #e9ecef;
+            border-left: 4px solid #6c757d;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+        .chat-icon {
+            font-size: 2rem;
+            color: #6c757d;
+            margin-right: 0.5rem;
+        }
+        /* For role-specific styling */
+        .role-organisateur {
+            border-left: 4px solid #dc3545; /* Red for organisateur */
+        }
+        .role-participant {
+            border-left: 4px solid #28a745; /* Green for participant */
+        }
+        .role-coach {
+            border-left: 4px solid #fd7e14; /* Orange for coach */
+        }
+        .role-open {
+            border-left: 4px solid #007bff; /* Blue for all users */
+        }
+        /* Additional styling for active message form */
+        .message-form-active {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            background-color: #fff;
+            transition: all 0.2s ease;
+        }
+        .message-form-active:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .message-form-active textarea:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        .send-button {
+            min-width: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .send-button i {
+            margin-right: 0.5rem;
+        }
+        /* Markdown and reaction styling */
+        .message-content {
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+        .message-content a {
+            color: #007bff;
+        }
+        .message-content pre {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+        .message-content code {
+            background-color: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+        }
+        .message-content img {
+            max-width: 100%;
+            height: auto;
+        }
+        .message-content blockquote {
+            border-left: 4px solid #e9ecef;
+            padding-left: 1rem;
+            color: #6c757d;
+        }
+        .user-mention {
+            color: #007bff;
+            font-weight: 500;
+            background-color: rgba(0, 123, 255, 0.1);
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            text-decoration: none;
+        }
+        .user-mention:hover {
+            background-color: rgba(0, 123, 255, 0.2);
+            text-decoration: none;
+        }
+        .message-reactions {
+            margin-top: 0.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .reaction-badge {
+            display: inline-flex !important;
+            align-items: center !important;
+            background-color: #f8f9fa !important;
+            border: 1px solid #e9ecef !important;
+            border-radius: 1rem !important;
+            padding: 0.2rem 0.5rem !important;
+            font-size: 0.875rem !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            margin: 2px !important;
+        }
+        .reaction-badge:hover {
+            background-color: #e9ecef !important;
+            transform: scale(1.05) !important;
+        }
+        .reaction-badge.user-reacted {
+            background-color: #e8f4ff !important;
+            border-color: #b3d7ff !important;
+        }
+        .reaction-count {
+            margin-left: 0.25rem !important;
+            font-weight: 500 !important;
+        }
+        .reaction-picker {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.2rem 0.5rem;
+            background-color: transparent;
+            border: 1px dashed #e9ecef;
+            border-radius: 1rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        .reaction-picker:hover {
+            background-color: #f8f9fa;
+        }
+        .emoji-picker {
+            position: absolute !important;
+            z-index: 1000 !important;
+            background-color: white !important;
+            border: 1px solid #e9ecef !important;
+            border-radius: 8px !important;
+            padding: 0.5rem !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+            margin-top: 5px !important;
+        }
+        .emoji-grid {
+            display: grid !important;
+            grid-template-columns: repeat(5, 1fr) !important;
+            gap: 0.5rem !important;
+        }
+        .emoji-item {
+            text-align: center !important;
+            cursor: pointer !important;
+            padding: 0.5rem !important;
+            border-radius: 4px !important;
+            transition: background-color 0.2s !important;
+            font-size: 1.2rem !important;
+        }
+        .emoji-item:hover {
+            background-color: #f8f9fa !important;
+        }
+        /* Debug highlight to see if styling is applied */
+        .debug-highlight {
+            position: relative !important;
+        }
+        .debug-highlight::after {
+            content: "STYLED" !important;
+            position: absolute !important;
+            top: -10px !important;
+            right: -10px !important;
+            background: red !important;
+            color: white !important;
+            padding: 2px 5px !important;
+            border-radius: 3px !important;
+            font-size: 10px !important;
+            z-index: 1000 !important;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <!-- Debug element to show CSS and element loading -->
+    <div id="debug-box" class="debug-box"></div>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h1>{{ chat.nom }}</h1>
+                    <div>
+                        <a href="{{ path('app_chat_index') }}" class="btn btn-outline-secondary mb-2">
+                            <i class="fas fa-arrow-left"></i> Back to Chats
+                        </a>
+                        <a href="{{ path('app_communaute_show', {'id': chat.communaute_id.id}) }}" class="btn btn-outline-primary">
+                            <i class="fas fa-users"></i> Back to Community
+                        </a>
+                    </div>
+                </div>
+                <p class="text-muted">
+                    Type: {{ chat.type }} | Community: {{ chat.communaute_id.nom }}
+                </p>
+
+                <!-- Messages Section -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Messages</h5>
+                        
+                        <!-- Messages container with clear class name -->
+                        <div class="messages-container" style="max-height: 400px; overflow-y: auto;">
+                            {% for message in chat.messages %}
+                                {% set isOwnMessage = app.user and message.posted_by.id == app.user.id %}
+                                
+                                <!-- Message container with high-specificity class selectors -->
+                                <div id="message-{{ message.id }}" 
+                                     class="message-container {% if isOwnMessage %}own-message{% else %}other-message{% endif %}"
+                                     data-message-id="{{ message.id }}">
+                                    
+                                    <div class="message-header">
+                                        <span class="message-author">{{ message.posted_by.nom }} {{ message.posted_by.prenom }}</span>
+                                        <span class="message-timestamp">{{ message.post_time|date('Y-m-d H:i') }}</span>
+                                    </div>
+                                    
+                                    <div class="message-content mb-1">
+                                        {{ message.contenu|parse_markdown }}
+                                    </div>
+                                    
+                                    <div class="message-footer">
+                                        <span class="message-type-badge">{{ message.type }}</span>
+                                        {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                                            <div class="message-actions">
+                                                <div class="message-reactions" id="reactions-{{ message.id }}">
+                                                    <small class="text-muted loading-reactions">Loading reactions...</small>
+                                                </div>
+                                                <button type="button" class="emoji-btn" onclick="showEmojiPicker({{ message.id }})" title="Add a reaction">
+                                                    <i class="far fa-smile"></i>
+                                                </button>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <p class="text-center py-3">No messages yet.</p>
+                            {% endfor %}
+                        </div>
+
+                        <!-- New Message Form - Check permissions -->
+                        {% if is_granted('post_message', chat) %}
+                            <div id="message-error-display" class="alert alert-danger mt-3" style="display: none;">
+                                <p class="toxicity-warning"></p>
+                                <div class="toxicity-details">
+                                    <ul class="toxicity-scores-list"></ul>
+                                </div>
+                            </div>
+                            <form method="post" action="{{ path('app_chat_message_new', {'id': chat.id}) }}" class="mt-3 message-form-active">
+                                <div class="form-group mb-3">
+                                    <label for="message-content" class="form-label">Your message</label>
+                                    <textarea id="message-content" class="form-control" name="contenu" rows="2" placeholder="Type your message... Supports Markdown and @mentions" required></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8 mb-3">
+                                        <select class="form-select" name="type">
+                                            <option value="QUESTION">Question</option>
+                                            <option value="REPONSE">Response</option>
+                                            <option value="SUGGESTION">Suggestion</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <button type="submit" class="btn btn-primary w-100 send-button">
+                                            <i class="fas fa-paper-plane"></i> Send
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const messageForm = document.querySelector('.message-form-active');
+                                    const errorDisplay = document.getElementById('message-error-display');
+                                    
+                                    messageForm.addEventListener('submit', function(e) {
+                                        e.preventDefault();
+                                        
+                                        // Clear any previous errors
+                                        errorDisplay.style.display = 'none';
+                                        
+                                        // Disable the submit button
+                                        const submitButton = this.querySelector('.send-button');
+                                        const originalButtonText = submitButton.innerHTML;
+                                        submitButton.disabled = true;
+                                        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+                                        
+                                        const formData = new FormData(this);
+                                        
+                                        fetch('{{ path('app_chat_message_new', {'id': chat.id}) }}', {
+                                            method: 'POST',
+                                            body: formData
+                                        })
+                                        .then(response => {
+                                            if (!response.ok) {
+                                                return response.json().then(data => Promise.reject(data));
+                                            }
+                                            return response.json();
+                                        })
+                                        .then(data => {
+                                            // Message sent successfully, reload the page
+                                            window.location.reload();
+                                        })
+                                        .catch(error => {
+                                            // Show error message
+                                            const warningElement = errorDisplay.querySelector('.toxicity-warning');
+                                            const scoresList = errorDisplay.querySelector('.toxicity-scores-list');
+                                            
+                                            warningElement.textContent = error.error || 'Error sending message';
+                                            
+                                            // Clear previous scores
+                                            scoresList.innerHTML = '';
+                                            
+                                            // If toxicity scores are available, display them
+                                            if (error.toxicity_scores) {
+                                                Object.entries(error.toxicity_scores).forEach(([type, score]) => {
+                                                    const li = document.createElement('li');
+                                                    li.className = `toxicity-${type}`;
+                                                    
+                                                    // Create toxicity score container with label and value
+                                                    const scoreContainer = document.createElement('div');
+                                                    scoreContainer.className = 'w-100';
+                                                    
+                                                    // Create label with score
+                                                    const scoreText = document.createElement('div');
+                                                    scoreText.className = 'd-flex justify-content-between';
+                                                    scoreText.innerHTML = `
+                                                        <span>${type.replace(/_/g, ' ').toLowerCase()}</span>
+                                                        <span>${(score * 100).toFixed(1)}%</span>
+                                                    `;
+                                                    
+                                                    // Create progress bar
+                                                    const progressBar = document.createElement('div');
+                                                    progressBar.className = 'toxicity-bar';
+                                                    
+                                                    const progressFill = document.createElement('div');
+                                                    progressFill.className = 'toxicity-bar-fill';
+                                                    progressFill.style.width = `${score * 100}%`;
+                                                    
+                                                    // Add progress bar to container
+                                                    progressBar.appendChild(progressFill);
+                                                    
+                                                    // Add elements to score container
+                                                    scoreContainer.appendChild(scoreText);
+                                                    scoreContainer.appendChild(progressBar);
+                                                    
+                                                    // Add to list item
+                                                    li.appendChild(scoreContainer);
+                                                    scoresList.appendChild(li);
+                                                });
+                                                errorDisplay.querySelector('.toxicity-details').style.display = 'block';
+                                            } else {
+                                                errorDisplay.querySelector('.toxicity-details').style.display = 'none';
+                                            }
+                                            
+                                            errorDisplay.style.display = 'block';
+                                        })
+                                        .finally(() => {
+                                            // Re-enable the button
+                                            submitButton.disabled = false;
+                                            submitButton.innerHTML = originalButtonText;
+                                        });
+                                    });
+                                });
+                            </script>
+                        {% else %}
+                            <div class="chat-restricted mt-3">
+                                <div class="chat-restricted-message
+                                    {% if chat.type == 'ANNOUNCEMENT' %}role-organisateur
+                                    {% elseif chat.type == 'FEEDBACK' %}role-participant
+                                    {% elseif chat.type == 'COACH' %}role-coach
+                                    {% else %}role-open{% endif %}">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-lock chat-icon"></i>
+                                        <div>
+                                            <h5 class="mb-1">Restricted Chat Access</h5>
+                                            {% if chat.type == 'ANNOUNCEMENT' %}
+                                                <p class="mb-0">Only organizers can post in the announcements channel.</p>
+                                            {% elseif chat.type == 'FEEDBACK' %}
+                                                <p class="mb-0">Only participants can post in the feedback channel.</p>
+                                            {% elseif chat.type == 'COACH' %}
+                                                <p class="mb-0">Only coaches can post in the coach channel.</p>
+                                            {% else %}
+                                                <p class="mb-0">You don't have permission to post in this channel.</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <form class="mt-3 opacity-50">
+                                    <div class="form-group">
+                                        <textarea class="form-control" rows="2" placeholder="You don't have permission to post in this chat" disabled></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <select class="form-control" disabled>
+                                            <option>Message Type</option>
+                                        </select>
+                                    </div>
+                                    <button type="button" class="btn btn-secondary" disabled>Send Message</button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <!-- Polls Section -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">Polls</h5>
+                            {% if is_granted('ROLE_ORGANISATEUR') or is_granted('ROLE_ADMIN') %}
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createPollModal">
+                                    <i class="fas fa-plus"></i> New Poll
+                                </button>
+                            {% else %}
+                                <button type="button" class="btn btn-secondary" disabled>
+                                    <i class="fas fa-plus"></i> New Poll
+                                </button>
+                            {% endif %}
+                        </div>
+                        
+                        {% for poll in chat.polls %}
+                            <div class="poll-card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">{{ poll.question }}</h6>
+                                    {% if not poll.is_closed %}
+                                        <span class="badge badge-active">Active</span>
+                                    {% else %}
+                                        <span class="badge badge-closed">Closed</span>
+                                    {% endif %}
+                                </div>
+                                <div class="card-body">
+                                    <form method="post" action="{{ path('app_poll_vote', {'id': poll.id}) }}" class="poll-form" onsubmit="return validateVoteForm(this);">
+                                        <div class="poll-options">
+                                            {% for option in poll.poll_option %}
+                                                <div class="poll-option mb-3">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" 
+                                                                   name="option_id" 
+                                                                   value="{{ option.id }}" 
+                                                                   id="option{{ option.id }}"
+                                                                   required
+                                                                   {% if poll.is_closed %}disabled{% endif %}>
+                                                            <label class="form-check-label" for="option{{ option.id }}">
+                                                                {{ option.text }}
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="progress" style="height: 20px;">
+                                                        {% set total_votes = 0 %}
+                                                        {% for opt in poll.poll_option %}
+                                                            {% set total_votes = total_votes + opt.votes|length %}
+                                                        {% endfor %}
+                                                        {% set percentage = total_votes > 0 ? (option.votes|length / total_votes * 100)|round : 0 %}
+                                                        <div class="progress-bar" role="progressbar" 
+                                                             style="width: {{ percentage }}%;" 
+                                                             aria-valuenow="{{ percentage }}" 
+                                                             aria-valuemin="0" 
+                                                             aria-valuemax="100">
+                                                            {{ option.votes|length }} votes ({{ percentage }}%)
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                        
+                                        {% if not poll.is_closed %}
+                                            <div class="d-flex justify-content-between mt-3">
+                                                <button type="submit" class="btn btn-primary">Vote</button>
+                                                {% if is_granted('ROLE_USER') %}
+                                                    <form method="post" action="{{ path('app_poll_close', {'id': poll.id}) }}" class="d-inline">
+                                                        <button type="submit" class="btn btn-secondary">Close Poll</button>
+                                                    </form>
+                                                {% endif %}
+                                            </div>
+                                        {% else %}
+                                            <p class="text-muted mt-2">This poll is closed</p>
+                                        {% endif %}
+                                    </form>
+                                </div>
+                            </div>
+                        {% else %}
+                            <p class="text-center">No polls available</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Poll Modal -->
+    <div class="modal fade" id="createPollModal" tabindex="-1" aria-labelledby="createPollModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createPollModalLabel">Create New Poll</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="{{ path('app_chat_poll_new', {'id': chat.id}) }}">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="question" class="form-label">Poll Question</label>
+                            <input type="text" class="form-control" id="question" name="question" required>
+                        </div>
+                        <div id="pollOptions" class="mb-3">
+                            <div class="mb-2">
+                                <label class="form-label">Option 1</label>
+                                <input type="text" class="form-control" name="options[]" required>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Option 2</label>
+                                <input type="text" class="form-control" name="options[]" required>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="addOption()">
+                            <i class="fas fa-plus"></i> Add Option
+                        </button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create Poll</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function validateVoteForm(form) {
+            const selectedOption = form.querySelector('input[name="option_id"]:checked');
+            if (!selectedOption) {
+                alert('Please select an option before voting.');
+                return false;
+            }
+            return true;
+        }
+
+        function addOption() {
+            const container = document.getElementById('pollOptions');
+            const optionCount = container.children.length + 1;
+            
+            const div = document.createElement('div');
+            div.className = 'mb-2';
+            div.innerHTML = `
+                <label class="form-label">Option ${optionCount}</label>
+                <input type="text" class="form-control" name="options[]" required>
+            `;
+            
+            container.appendChild(div);
+        }
+
+        /**
+         * Enhanced reaction functionality with debugging
+         */
+         
+        // Global variables
+        let currentEmojiPicker = null;
+        const commonEmojis = ['👍', '👎', '😊', '🎉', '❤️', '🚀', '👏', '🔥', '😂', '🤔', '👀', '🙌', '💯', '💪'];
+
+        function addReaction(messageId, emoji) {
+            debugLog(`Adding/toggling reaction ${emoji} for message ${messageId}`);
+            
+            // Close the emoji picker
+            if (currentEmojiPicker) {
+                currentEmojiPicker.remove();
+                currentEmojiPicker = null;
+            }
+            
+            // Send reaction to server
+            fetch(`/reaction/add/${messageId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: `emoji=${encodeURIComponent(emoji)}`
+            })
+            .then(response => {
+                debugLog(`Reaction toggle API response status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                debugLog('Reaction toggle response', data);
+                
+                if (data.success) {
+                    // Update reaction display
+                    updateReactionDisplay(messageId);
+                    
+                    // Visual feedback
+                    const messageContainer = document.getElementById(`message-${messageId}`);
+                    if (messageContainer) {
+                        const flashEffect = document.createElement('div');
+                        flashEffect.className = 'reaction-flash';
+                        flashEffect.style.cssText = `
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background-color: rgba(0,123,255,0.1);
+                            border-radius: 12px;
+                            pointer-events: none;
+                            animation: flash-animation 0.5s ease-out;
+                            z-index: 5;
+                        `;
+                        
+                        messageContainer.style.position = 'relative';
+                        messageContainer.appendChild(flashEffect);
+                        
+                        // Remove the flash effect after animation
+                        setTimeout(() => {
+                            if (flashEffect.parentNode) {
+                                flashEffect.parentNode.removeChild(flashEffect);
+                            }
+                        }, 500);
+                        
+                        // Add animation to style block
+                        const styleBlock = document.createElement('style');
+                        styleBlock.textContent = `
+                            @keyframes flash-animation {
+                                0% { opacity: 1; }
+                                100% { opacity: 0; }
+                            }
+                        `;
+                        document.head.appendChild(styleBlock);
+                    }
+                }
+            })
+            .catch(error => {
+                debugLog('Error adding reaction', error);
+                alert('Failed to add reaction. Please try again.');
+            });
+        }
+
+        function closeEmojiPicker(e) {
+            if (currentEmojiPicker && !currentEmojiPicker.contains(e.target) && 
+                !e.target.classList.contains('emoji-btn')) {
+                debugLog('Closing emoji picker');
+                currentEmojiPicker.remove();
+                currentEmojiPicker = null;
+                document.removeEventListener('click', closeEmojiPicker);
+            }
+        }
+
+        function showEmojiPicker(messageId) {
+            // Close current picker if it exists
+            if (currentEmojiPicker) {
+                currentEmojiPicker.remove();
+            }
+
+            // Create emoji picker
+            const picker = document.createElement('div');
+            picker.className = 'emoji-picker';
+            picker.id = `emoji-picker-${messageId}`;
+            
+            const grid = document.createElement('div');
+            grid.className = 'emoji-grid';
+            
+            commonEmojis.forEach(emoji => {
+                const item = document.createElement('div');
+                item.className = 'emoji-item';
+                item.textContent = emoji;
+                item.onclick = () => addReaction(messageId, emoji);
+                grid.appendChild(item);
+            });
+            
+            picker.appendChild(grid);
+            
+            // Position picker
+            const messageElement = document.getElementById(`message-${messageId}`);
+            const reactionElement = document.getElementById(`reactions-${messageId}`);
+            
+            if (!reactionElement) {
+                console.error(`Error: reaction element not found for message ${messageId}`);
+                return;
+            }
+            
+            reactionElement.appendChild(picker);
+            
+            currentEmojiPicker = picker;
+
+            // Close picker when clicking outside
+            document.addEventListener('click', closeEmojiPicker);
+        }
+
+        function updateReactionDisplay(messageId) {
+            fetch(`/reaction/get/${messageId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const reactionsContainer = document.getElementById(`reactions-${messageId}`);
+                        
+                        // Clear existing reactions
+                        reactionsContainer.innerHTML = '';
+                        
+                        // Add reaction badges or show empty state
+                        if (Object.keys(data.counts).length > 0) {
+                            Object.entries(data.counts).forEach(([emoji, count]) => {
+                                const badge = document.createElement('div');
+                                badge.className = 'reaction-badge';
+                                if (data.userReactions.includes(emoji)) {
+                                    badge.classList.add('user-reacted');
+                                }
+                                
+                                badge.innerHTML = `${emoji} <span class="reaction-count">${count}</span>`;
+                                badge.onclick = () => addReaction(messageId, emoji);
+                                
+                                reactionsContainer.appendChild(badge);
+                            });
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error getting reactions:', error);
+                    const reactionsContainer = document.getElementById(`reactions-${messageId}`);
+                    reactionsContainer.innerHTML = '<small class="text-danger">Failed to load reactions</small>';
+                });
+        }
+
+        // Load reactions for all messages when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load reactions for all messages
+            document.querySelectorAll('.message-container').forEach(message => {
+                const messageId = message.id.replace('message-', '');
+                updateReactionDisplay(messageId);
+            });
+
+            // Initialize Bootstrap tooltips and popovers if needed
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+
+        // Debugging functions
+        const DEBUG_MODE = true;
+        
+        function debugLog(message, data = null) {
+            if (!DEBUG_MODE) return;
+            
+            if (data) {
+                console.log(`[DEBUG] ${message}:`, data);
+            } else {
+                console.log(`[DEBUG] ${message}`);
+            }
+            
+            // Update debug box if it exists
+            const debugBox = document.getElementById('debug-box');
+            if (debugBox) {
+                debugBox.style.display = 'block';
+                const timestamp = new Date().toLocaleTimeString();
+                const debugMessage = data ? `${message}: ${JSON.stringify(data).substring(0, 50)}...` : message;
+                debugBox.innerHTML += `<div>${timestamp} - ${debugMessage}</div>`;
+                
+                // Keep only last 5 messages
+                const messages = debugBox.getElementsByTagName('div');
+                if (messages.length > 5) {
+                    debugBox.removeChild(messages[0]);
+                }
+            }
+        }
+        
+        // Validate CSS is being applied
+        document.addEventListener('DOMContentLoaded', function() {
+            debugLog('DOM loaded');
+            
+            // Check if our styles are applied to message containers
+            const messageContainers = document.querySelectorAll('.message-container');
+            debugLog(`Found ${messageContainers.length} message containers`);
+            
+            if (messageContainers.length > 0) {
+                const firstContainer = messageContainers[0];
+                const computedStyle = window.getComputedStyle(firstContainer);
+                
+                debugLog('First message container style', {
+                    backgroundColor: computedStyle.backgroundColor,
+                    borderRadius: computedStyle.borderRadius,
+                    padding: computedStyle.padding,
+                    boxShadow: computedStyle.boxShadow
+                });
+                
+                // Add debug classes to make styling issues visible
+                messageContainers.forEach((container, index) => {
+                    if (index === 0) {
+                        container.classList.add('debug-highlight');
+                        container.setAttribute('style', 'border: 3px dashed red !important');
+                    }
+                });
+            }
+            
+            // Initialize reactions
+            updateAllReactions();
+        });
+        
+        function updateAllReactions() {
+            debugLog('Updating all reactions');
+            
+            // Use the correct class for message containers
+            document.querySelectorAll('.message-container').forEach(message => {
+                const messageId = message.getAttribute('data-message-id');
+                if (messageId) {
+                    debugLog(`Updating reactions for message ${messageId}`);
+                    updateReactionDisplay(messageId);
+                } else {
+                    debugLog('Message element missing data-message-id attribute', message);
+                }
+            });
+        }
+    </script>
+
+    <!-- Add this at the end of your document body, just before the closing {% endblock %} -->
+    <script>
+        // This script runs immediately to test CSS application
+        (function() {
+            // Create a test element to verify CSS is working
+            const testElement = document.createElement('div');
+            testElement.className = 'css-test-element';
+            testElement.style.cssText = `
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                background: green;
+                color: white;
+                padding: 5px 10px;
+                border-radius: 5px;
+                z-index: 9999;
+                font-size: 12px;
+            `;
+            testElement.textContent = 'CSS OK';
+            document.body.appendChild(testElement);
+            
+            // Check if our message container styles are applied
+            setTimeout(() => {
+                const messageContainers = document.querySelectorAll('.message-container');
+                if (messageContainers.length > 0) {
+                    const container = messageContainers[0];
+                    const style = window.getComputedStyle(container);
+                    
+                    // Check critical CSS properties
+                    const borderRadius = style.getPropertyValue('border-radius');
+                    const backgroundColor = style.getPropertyValue('background-color');
+                    
+                    if (borderRadius !== '12px' && borderRadius !== '12px 12px 12px 12px') {
+                        testElement.style.background = 'red';
+                        testElement.textContent = 'CSS NOT APPLIED!';
+                        
+                        // Force style the first message to show how it should look
+                        container.style.cssText = `
+                            background-color: #f8f9fa !important;
+                            border-radius: 12px !important;
+                            padding: 1rem !important;
+                            margin-bottom: 1rem !important;
+                            box-shadow: 0 2px 5px rgba(0,0,0,0.08) !important;
+                            border: 3px solid red !important;
+                        `;
+                        
+                        console.error('CSS not applied properly to message containers');
+                        console.log('Current style:', {
+                            borderRadius,
+                            backgroundColor
+                        });
+                    }
+                }
+            }, 500);
+        })();
+    </script>
+{% endblock %} 

@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails du projet{% endblock %}
+
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+{% block body %}
+<section id="modifier-hackathon" class="section">
+  <div class="container mt-5">
+    <h2 class="mb-4 text-center">Détails du projet</h2>
+
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+          <div class="mb-3">
+            {{ form_label(form.nom) }}
+            {{ form_widget(form.nom, {'attr': {'class': 'form-control' ~ (form.nom.vars.errors|length ? ' is-invalid')}}) }}
+            {{ form_errors(form.nom) }}
+          </div>
+          <div class="mb-3">
+            {{ form_label(form.description) }}
+            {{ form_widget(form.description, {'attr': {'class': 'form-control' ~ (form.description.vars.errors|length ? ' is-invalid')}}) }}
+            {{ form_errors(form.description) }}
+          </div>
+          <div class="mb-3">
+            {{ form_label(form.ressource) }}
+            {{ form_widget(form.ressource, {'attr': {'class': 'form-control' ~ (form.ressource.vars.errors|length ? ' is-invalid')}}) }}
+            {{ form_errors(form.ressource) }}
+          </div>
+
+          <div class="text-center">
+            <button id="verifyButton" type="button" class="btn btn-primary mb-3">Vérifier visage</button>
+            <br>
+            <button id="submitButton" type="submit" class="btn btn-success" disabled>Enregistrer</button>
+          </div>
+        {{ form_end(form) }}
+      </div>
+    </div>
+  </div>
+
+  <!-- 👀 Camera Stream -->
+  <div class="text-center mt-4">
+    <video id="video" width="320" height="240" autoplay muted style="border-radius:10px; border:2px solid #007bff;"></video>
+  </div>
+</section>
+
+<!-- 🎯 Script Face Recognition -->
+<script src="https://unpkg.com/face-api.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async function() {
+    const video = document.getElementById('video');
+    const verifyButton = document.getElementById('verifyButton');
+    const submitButton = document.getElementById('submitButton');
+
+    // Charger les modèles nécessaires de reconnaissance faciale
+    await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+    await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+    await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+    await faceapi.nets.faceExpressionNet.loadFromUri('/models');
+
+    // Démarrer la caméra
+    navigator.mediaDevices.getUserMedia({ video: {} })
+        .then(stream => {
+            video.srcObject = stream;
+        })
+        .catch(err => {
+            console.error("Erreur caméra :", err);
+            alert("Impossible d'accéder à la caméra.");
+        });
+
+    // Lorsque l'utilisateur clique sur Vérifier
+    verifyButton.addEventListener('click', async () => {
+        const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions());
+
+        if (detection) {
+            alert("Visage détecté ✅ ! Vous pouvez enregistrer.");
+            submitButton.disabled = false;
+        } else {
+            alert("Aucun visage détecté ❌ ! Veuillez réessayer.");
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,83 @@
+{# templates/backoffice/technologies/pdf.html.twig #}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des technologies</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+            margin: 20px auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .footer {
+            text-align: center;
+            font-size: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Liste des Technologies</h1>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Type</th>
+                    <th>Complexité</th>
+                    <th>Documentaire</th>
+                    <th>Compatibilité</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for technologie in technologies %}
+                    <tr>
+                        <td>{{ technologie.NomTech }}</td>
+                        <td>{{ technologie.typeTech }}</td>
+                        <td>{{ technologie.complexite }}</td>
+                        <td>{{ technologie.documentaire }}</td>
+                        <td>{{ technologie.compatibilite }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align:center;">Aucune technologie trouvée</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <p>Generated on {{ "now"|date("d/m/Y H:i:s") }}</p>
+        </div>
+    </div>
+</body>
+</html>

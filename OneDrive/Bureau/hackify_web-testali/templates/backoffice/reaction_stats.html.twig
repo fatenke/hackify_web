@@ -1,0 +1,150 @@
+{% extends 'adminBase.html.twig' %}
+
+{% block title %}Reaction Analytics{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Reaction Analytics</h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>Total Reactions:</strong> {{ totalReactions }}
+                    </div>
+                    
+                    <h3 class="mt-4">Most Used Emojis</h3>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Emoji</th>
+                                    <th>Count</th>
+                                    <th>Percentage</th>
+                                    <th>Visualization</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for emoji in mostUsedEmojis %}
+                                    <tr>
+                                        <td style="font-size: 24px;">{{ emoji.emoji }}</td>
+                                        <td>{{ emoji.count }}</td>
+                                        <td>{{ ((emoji.count / totalReactions) * 100)|round(1) }}%</td>
+                                        <td>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar" role="progressbar" 
+                                                    style="width: {{ (emoji.count / totalReactions) * 100 }}%;" 
+                                                    aria-valuenow="{{ (emoji.count / totalReactions) * 100 }}" 
+                                                    aria-valuemin="0" 
+                                                    aria-valuemax="100">
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No reaction data available</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">Emoji Distribution</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="emojiChart" width="400" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h3 class="mb-0">Usage Trends</h3>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">To enable reaction trends over time, you'll need to add a date-based query to track usage patterns over time.</p>
+                    <a href="{{ path('app_reaction_stats') }}" class="btn btn-primary">Refresh Data</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Prepare data for chart
+        const emojis = [
+            {% for emoji in mostUsedEmojis %}
+                '{{ emoji.emoji }}',
+            {% endfor %}
+        ];
+        
+        const counts = [
+            {% for emoji in mostUsedEmojis %}
+                {{ emoji.count }},
+            {% endfor %}
+        ];
+        
+        const backgroundColors = [
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(255, 206, 86, 0.6)',
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(153, 102, 255, 0.6)',
+            'rgba(255, 159, 64, 0.6)',
+            'rgba(199, 199, 199, 0.6)',
+            'rgba(83, 102, 255, 0.6)',
+            'rgba(40, 159, 64, 0.6)',
+            'rgba(210, 199, 199, 0.6)',
+        ];
+        
+        // Create pie chart
+        const ctx = document.getElementById('emojiChart').getContext('2d');
+        const emojiChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: emojis,
+                datasets: [{
+                    data: counts,
+                    backgroundColor: backgroundColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const percentage = ((value / {{ totalReactions }}) * 100).toFixed(1);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{% endblock %} 

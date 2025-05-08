@@ -1,0 +1,55 @@
+{% extends 'backoffice/baseback.html.twig' %}
+
+{% block title %}Statistiques des Technologies{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Statistiques des Technologies</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <p>Nombre total de projets : {{ totalProjects }}</p>
+                    </div>
+                    
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nom de la Technologie</th>
+                                <th>Type</th>
+                                <th>Nombre de Projets</th>
+                                <th>Pourcentage d'Utilisation</th>
+                                <th>Projets</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tech in techStats %}
+                                <tr>
+                                    <td>{{ tech.nom }}</td>
+                                    <td>{{ tech.type }}</td>
+                                    <td>{{ tech.usageCount }}</td>
+                                    <td>{{ tech.percentage }}%</td>
+                                    <td>
+                                        {% if tech.projects is not empty %}
+                                            <ul>
+                                                {% for project in tech.projects %}
+                                                    <li>{{ project }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            Aucun projet
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
