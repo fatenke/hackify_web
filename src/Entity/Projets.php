@@ -58,10 +58,6 @@ class Projets
         return $this->id;
     }
 
-    public function setId($value)
-    {
-        $this->id = $value;
-    }
 
 
 
@@ -155,7 +151,7 @@ class Projets
     private Collection $technologies;
 
     #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: 'projets')]
-    #[ORM\JoinColumn(name: 'id', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'hackathon_id', referencedColumnName: 'id')]
     private ?Hackathon $id_hack = null;
 
 
