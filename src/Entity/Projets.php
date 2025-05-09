@@ -150,10 +150,11 @@ class Projets
     #[ORM\ManyToMany(targetEntity: Technologies::class, inversedBy: 'projets')]
     private Collection $technologies;
 
-    #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: 'projets')]
-    #[ORM\JoinColumn(name: 'hackathon_id', referencedColumnName: 'id')]
-    private ?Hackathon $id_hack = null;
 
+
+    #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: 'projets')]
+    #[ORM\JoinColumn(name: "id", referencedColumnName: "id", onDelete: "CASCADE")]
+    private ?Hackathon $hackathon = null;
 
     public function __construct()
     {
@@ -184,15 +185,15 @@ class Projets
         return $this;
     }
 
-    public function getIdHack(): ?Hackathon
+
+    public function getHackathon(): ?Hackathon
     {
-        return $this->id_hack;
+        return $this->hackathon;
     }
 
-    public function setIdHack(?Hackathon $id_hack): static
+    public function setHackathon(?Hackathon $hackathon): self
     {
-        $this->id_hack = $id_hack;
-
+        $this->hackathon = $hackathon;
         return $this;
     }
     public function __toString(): string

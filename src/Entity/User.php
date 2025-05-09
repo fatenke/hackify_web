@@ -95,7 +95,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    #[ORM\OneToMany(mappedBy: "id_participant", targetEntity: Participation::class)]
+    #[ORM\OneToMany(mappedBy: "participant", targetEntity: Participation::class)]
     private Collection $participations;
 
     #[ORM\Column(length: 255)]

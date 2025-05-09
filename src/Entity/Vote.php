@@ -28,7 +28,7 @@ class Vote
     #[Assert\NotBlank(message: "Voter ID must not be blank.")]
     private ?User $idVotant = null;
 
-    #[ORM\ManyToOne(targetEntity: Projets::class)]
+    #[ORM\ManyToOne(targetEntity: Projets::class, inversedBy: 'votes')]
     #[ORM\JoinColumn(name: "idProjet", referencedColumnName: "id")]
     #[Assert\NotBlank(message: "Project must not be blank.")]
     private ?Projets $idProjet = null;

@@ -22,7 +22,7 @@ class Hackathon
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    
+
     #[ORM\OneToMany(mappedBy: 'idHackathon', targetEntity: Evaluation::class)]
     private Collection $evaluations;
 
@@ -288,7 +288,7 @@ class Hackathon
         return $this;
     }
 
-    
+
 
 
     #[ORM\OneToMany(targetEntity: Participation::class, mappedBy: 'hackathon')]
@@ -372,7 +372,7 @@ class Hackathon
     {
         if (!$this->projets->contains($projet)) {
             $this->projets->add($projet);
-            $projet->setIdHack($this);
+            $projet->setHackathon($this);
         }
 
         return $this;
@@ -382,8 +382,8 @@ class Hackathon
     {
         if ($this->projets->removeElement($projet)) {
             // set the owning side to null (unless already changed)
-            if ($projet->getIdHack() === $this) {
-                $projet->setIdHack(null);
+            if ($projet->getHackathon() === $this) {
+                $projet->setHackathon(null);
             }
         }
 
