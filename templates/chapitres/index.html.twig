@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des chapitres{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="mb-4">📄 Liste des chapitres</h1>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Titre</th>
+                <th>Format</th>
+                <th>URL</th>
+                <th>Ressource liée</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for chapitre in pagination.items %}
+            <tr>
+                <td>{{ chapitre.id }}</td>
+                <td>{{ chapitre.titre }}</td>
+                <td>{{ chapitre.formatFichier }}</td>
+                <td><a href="{{ chapitre.urlFichier }}" target="_blank">Lien</a></td>
+                <td>{{ chapitre.idRessources.titre }}</td>
+                <td>
+                    <a href="{{ path('app_chapitres_show', {'id': chapitre.id}) }}" class="btn btn-sm btn-primary">👁️ Voir</a>
+                    <a href="{{ path('app_chapitres_edit', {'id': chapitre.id}) }}" class="btn btn-sm btn-warning">✏️ Éditer</a>
+                    {% set favoris = app.session.get('chapitres_favoris', []) %}
+                    <a href="{{ path('chapitre_toggle_favori', {id: chapitre.id}) }}" class="btn btn-sm">
+                        {% if chapitre.id in app.session.get('chapitre_favori', []) %}
+                            🤍 Retirer des favoris
+                        {% else %}
+                            ❤️ Ajouter aux favoris
+                        {% endif %}
+                    </a>
+
+                    <a href="{{ path('chapitre_favoris_liste') }}" class="btn btn-sm">❤️ Voir mes favoris</a>
+
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6" class="text-center">Aucun chapitre trouvé.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_chapitres_new') }}" class="btn btn-success">➕ Nouveau chapitre</a>
+
+</div>
+{% endblock %}

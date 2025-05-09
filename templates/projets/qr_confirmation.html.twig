@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}QR Code du projet{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <h1 class="mb-4">Voici le QR Code du projet "{{ projet.nom }}"</h1>
+                <p class="lead mb-4">Scannez ce QR code pour confirmer l'ajout du projet !</p>
+                
+                <!-- Affichage du QR Code -->
+                <div class="qr-code-container mb-4">
+                    <img src="data:image/png;base64,{{ qrImage }}" alt="QR Code" class="img-fluid mx-auto d-block shadow-lg rounded">
+                </div>
+                
+                <a href="{{ path('voir_projets', {'id': hackathonId}) }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-arrow-left me-2"></i>Retour à la liste des projets
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

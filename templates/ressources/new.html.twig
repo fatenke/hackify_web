@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle ressource{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="mb-4">➕ Ajouter une ressource</h1>
+
+    {{ include('ressources/_form.html.twig') }}
+
+    <div class="mt-4 d-flex gap-2">
+        <a href="{{ path('app_home') }}" class="btn btn-outline-secondary">
+            ← Retour
+        </a>
+        <a href="{{ path('app_chapitres_new') }}" class="btn btn-outline-light">
+            📄 Chapitres
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,3977 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Community: {{ communaute.nom }}{% endblock %}
+
+{% block head %}
+    <!-- Load CKEditor 5 from CDN directly in head to ensure it's loaded before any scripts that need it -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/translations/fr.js"></script>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <!-- Add the mentions debug script -->
+    <script src="{{ asset('js/mentions-debug.js') }}"></script>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Existing styles unchanged */
+        .community-banner {
+            background-color: #13071d;
+            color: #ffffff;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .welcome-title {
+            color: #e9c7ff;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+        }
+        .hackathon-title {
+            color: #a388c5;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+        .countdown-title {
+            color: #a388c5;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        .countdown-status {
+            display: inline-block;
+            font-size: 0.9rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        .status-active {
+            background-color: rgba(16, 142, 233, 0.2);
+            color: #40a9ff;
+        }
+        .status-ending {
+            background-color: rgba(250, 173, 20, 0.2);
+            color: #faad14;
+        }
+        .status-ended {
+            background-color: rgba(245, 34, 45, 0.2);
+            color: #ff4d4f;
+        }
+        .date-info {
+            margin-bottom: 1.5rem;
+        }
+        .date-label {
+            color: #a388c5;
+            font-size: 0.85rem;
+            display: block;
+        }
+        .date-value {
+            color: #e9c7ff;
+            font-size: 1rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .countdown-grid {
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: max-content;
+            gap: 1rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .countdown-box {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem 1.5rem;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            min-width: 90px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .countdown-value {
+            font-family: monospace;
+            font-size: 2.8rem;
+            line-height: 1;
+            font-weight: 700;
+            color: #40a9ff;
+            min-width: 3ch;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .time-critical .countdown-value {
+            color: #ff4d4f;
+        }
+        .countdown-label {
+            font-size: 0.85rem;
+            color: #a388c5;
+            margin-top: 0.5rem;
+        }
+        .countdown-progress {
+            height: 4px;
+            border-radius: 2px;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin-top: 1rem;
+        }
+        .countdown-progress-bar {
+            height: 100%;
+            background-color: #40a9ff;
+            transition: width 0.6s ease;
+        }
+        .time-critical .countdown-progress-bar {
+            background-color: #ff4d4f;
+        }
+        .submission-alert {
+            background-color: rgba(245, 34, 45, 0.15);
+            color: #ff4d4f;
+            border: 1px solid rgba(245, 34, 45, 0.3);
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .submission-alert i {
+            font-size: 1.5rem;
+        }
+        .submission-alert-content {
+            flex: 1;
+        }
+        .submission-alert-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 1.1rem;
+        }
+        .submission-alert .btn-danger {
+            background-color: #ff4d4f;
+            border-color: #ff4d4f;
+        }
+        .submission-alert .btn-danger:hover {
+            background-color: #ff7875;
+            border-color: #ff7875;
+        }
+        .message-content {
+            max-width: 75%;
+            display: inline-block;
+        }
+        .messages {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .chat-container {
+            height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+        .poll-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            background-color: #f8f9fa;
+        }
+        .progress {
+            background-color: #e9ecef;
+            border-radius: 0.25rem;
+            height: 20px;
+        }
+        .progress-bar {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            font-size: 0.875rem;
+            line-height: 20px;
+            white-space: nowrap;
+            min-width: 2em; /* To ensure that small percentages are still visible */
+        }
+        .poll-option {
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .poll-option:hover {
+            background-color: #f0f0f0;
+        }
+        .vote-btn {
+            font-size: 0.8rem;
+            padding: 0.2rem 0.5rem;
+        }
+        #chat-polls-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        /* Make border between message area and polls */
+        @media (min-width: 768px) {
+            .chat-divider {
+                border-right: 1px solid #dee2e6;
+            }
+        }
+        .badge-active {
+            background-color: #28a745;
+            color: white;
+        }
+        .badge-closed {
+            background-color: #6c757d;
+            color: white;
+        }
+        .polls-sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            height: 100vh;
+            width: 300px;
+            background: white;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        .polls-sidebar.show {
+            transform: translateX(0);
+        }
+        .toggle-polls {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 1001;
+        }
+        .message {
+            margin-bottom: 15px;
+            max-width: 75%;
+        }
+        .message-own {
+            margin-left: auto;
+            margin-right: 0;
+            background-color: #f1f1f1;
+            color: black;
+            border-radius: 15px 15px 15px 0;
+            padding: 10px 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-right: 3px solid #d9d9d9;
+        }
+        .message-own .text-muted {
+            color: rgba(0, 0, 0, 0.6) !important;
+        }
+        .message-other {
+            margin-right: auto;
+            margin-left: 0;
+            background-color: #007bff;
+            color: white;
+            border-radius: 15px 15px 0 15px;
+            padding: 10px 15px;
+        }
+        .message-other .text-muted {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+        .message-bot {
+            margin-right: auto;
+            margin-left: 0;
+            background-color: #0a5c36;
+            color: white;
+            border-radius: 15px 15px 0 15px;
+            padding: 15px 20px;
+            max-width: 85%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid #28a745;
+        }
+        .message-bot .text-muted {
+            color: rgba(255, 255, 255, 0.7) !important;
+            font-size: 0.8rem;
+            margin-top: 8px;
+            display: block;
+            text-align: right;
+        }
+        .bot-response-content {
+            line-height: 1.5;
+            font-size: 1rem;
+        }
+        .bot-response-content strong {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+            color: #e9ff9e;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 3px;
+        }
+        .bot-response-content em {
+            color: #ffeb99;
+            font-style: italic;
+        }
+        .bot-response-content code {
+            background-color: rgba(0,0,0,0.2);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+            color: #f8f9fa;
+        }
+        .option-input-group {
+            display: flex;
+            align-items: center;
+        }
+        .remove-option-btn {
+            margin-left: 10px;
+            color: #dc3545;
+            cursor: pointer;
+        }
+        .search-container {
+            background-color: #f8f9fa;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .search-form {
+            display: flex;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .search-form:focus-within {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .search-form .input-group {
+            width: 100%;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .search-form:focus-within .input-group {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .search-form .form-control {
+            border-radius: 30px 0 0 30px;
+            padding-left: 20px;
+            border: none;
+            height: 45px;
+            transition: all 0.3s ease;
+        }
+        .search-form .form-control:focus {
+            border-color: transparent;
+            box-shadow: none;
+        }
+        .search-form .btn {
+            border-radius: 0 30px 30px 0;
+            padding: 0.5rem 1.25rem;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #0062cc 0%, #007bff 100%);
+            border: none;
+        }
+        .search-form .btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #007bff 0%, #0062cc 100%);
+            box-shadow: 0 2px 10px rgba(0,123,255,0.3);
+        }
+        .search-form .btn i {
+            margin-right: 5px;
+            transition: all 0.3s ease;
+        }
+        .search-form .btn:hover i {
+            animation: bounce 0.5s ease infinite;
+        }
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-3px);
+            }
+        }
+        .search-results {
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 0.5rem;
+            margin-top: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            animation: slideDown 0.3s ease;
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .search-results.show {
+            display: block;
+        }
+        .message-card {
+            background-color: white;
+            border-left: 4px solid #007bff;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .message-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .message-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,123,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+        }
+        .message-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 0.5rem;
+        }
+        .message-author {
+            font-weight: bold;
+            color: #333;
+            font-size: 0.95rem;
+        }
+        .message-date {
+            color: #6c757d;
+            font-size: 0.75rem;
+        }
+        .message-chat {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 0.35rem 0.7rem;
+            font-size: 0.75rem;
+            margin-bottom: 0.75rem;
+            display: inline-block;
+        }
+        .message-content {
+            line-height: 1.5;
+            margin-bottom: 0.75rem;
+        }
+        .highlight {
+            background-color: #ffffa3;
+            padding: 0.15rem 0.3rem;
+            border-radius: 0.2rem;
+            font-weight: 500;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .view-message-btn {
+            border-radius: 20px;
+            font-size: 0.85rem;
+            padding: 0.25rem 0.85rem;
+            transition: all 0.3s ease;
+        }
+        .view-message-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .search-loading {
+            animation: fadeIn 0.5s ease;
+        }
+        .spinner {
+            margin: 0 auto;
+            width: 70px;
+            text-align: center;
+        }
+        .spinner > div {
+            width: 18px;
+            height: 18px;
+            background-color: #007bff;
+            border-radius: 100%;
+            display: inline-block;
+            animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+            margin: 0 3px;
+        }
+        .spinner .bounce1 {
+            animation-delay: -0.32s;
+            background-color: #0062cc;
+        }
+        .spinner .bounce2 {
+            animation-delay: -0.16s;
+            background-color: #007bff;
+        }
+        .spinner .bounce3 {
+            background-color: #3498db;
+        }
+        @keyframes sk-bouncedelay {
+            0%, 80%, 100% {strategies { 
+                transform: scale(0);
+            } 
+            40% { 
+                transform: scale(1.0);
+            }
+        }
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .countdown-item {
+            background-color: #343a40;
+            color: #dee2e6;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            min-width: 80px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .countdown-number {
+            font-family: monospace;
+            font-size: 2.5rem;
+            display: block;
+            transition: opacity 0.3s ease;
+            font-weight: bold;
+            color: #fff;
+        }
+        .countdown-label {
+            font-size: 0.875rem;
+            color: #adb5bd;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+        }
+        .countdown-finished .countdown-item {
+            background-color: #dc3545;
+        }
+        .countdown-title {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #495057;
+        }
+        .countdown-end-date {
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        #hackathon-countdown {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        #hackathon-countdown .countdown-box {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin: 0.5rem;
+        }
+        #hackathon-countdown .h2 {
+            color: #fff;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1;
+        }
+        #hackathon-countdown small {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.875rem;
+        }
+        #hackathon-countdown.warning {
+            background: rgba(220
+
+, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+        #hackathon-countdown.warning .countdown-box {
+            background: rgba(220, 53, 69, 0.3);
+        }
+        #hackathon-countdown.warning .h2 {
+            color: #ff6b6b;
+        }
+        .submission-reminder {
+            display: none;
+            background: #dc3545;
+            color: white;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+        .submission-reminder.show {
+            display: block;
+        }
+        .submission-reminder a {
+            color: white;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+        .submission-reminder a:hover {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        /* Remove all these conflicting message styles */
+        .message-content {
+            line-height: 1.5;
+            margin-bottom: 0.75rem;
+        }
+        .messages {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .chat-container {
+            height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+        /* Remove all old message styles */
+        
+        /* BEGIN CLEAN CHAT STYLING - COMPLETELY REIMPLEMENTED */
+        /* Main messages container */
+        #messages-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+            background-color: #f5f7fb;
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+        }
+        
+        /* Base message style */
+        #messages-container .message {
+            display: flex;
+            max-width: 80%;
+            gap: 12px;
+            position: relative;
+            margin-bottom: 0;
+        }
+        
+        /* User's own messages */
+        #messages-container .message-own {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+            margin-left: auto;
+        }
+        
+        /* Other user's messages and bot messages */
+        #messages-container .message-other,
+        #messages-container .message-bot {
+            align-self: flex-start;
+            margin-right: auto;
+        }
+        
+        /* Avatar styling */
+        #messages-container .avatar-container {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            align-self: flex-end;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            border: 3px solid #fff;
+        }
+        
+        #messages-container .message-own .avatar-container {
+            border-color: #0d6efd;
+        }
+        
+        #messages-container .message-bot .avatar-container {
+            border-color: #0a5c36;
+        }
+        
+        #messages-container .avatar-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        #messages-container .avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #6c757d;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        #messages-container .message-own .avatar-placeholder {
+            background-color: #0d6efd;
+        }
+        
+        #messages-container .bot-avatar {
+            background: linear-gradient(135deg, #0a5c36 0%, #28a745 100%);
+        }
+        
+        /* Message content wrapper */
+        #messages-container .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            max-width: calc(100% - 60px);
+        }
+        
+        /* Message content styling */
+        #messages-container .message-content {
+            padding: 12px 16px;
+            border-radius: 18px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: relative;
+            word-break: break-word;
+            line-height: 1.5;
+        }
+        
+        #messages-container .message-own .message-content {
+            background-color: #0d6efd;
+            color: white;
+            border-top-right-radius: 4px;
+            margin-right: 8px;
+        }
+        
+        #messages-container .message-other .message-content {
+            background-color: white;
+            color: #212529;
+            border-top-left-radius: 4px;
+            margin-left: 8px;
+        }
+        
+        #messages-container .message-bot .message-content {
+            background-color: #0a5c36;
+            color: white;
+            border-top-left-radius: 4px;
+            margin-left: 8px;
+        }
+        
+        /* Message metadata */
+        #messages-container .message-meta {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 5px;
+        }
+        
+        #messages-container .message-own .message-meta {
+            align-items: flex-end;
+        }
+        
+        #messages-container .message-sender {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+        
+        #messages-container .message-own .message-sender {
+            display: none;
+        }
+        
+        #messages-container .message-time {
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.5);
+            margin-top: 4px;
+        }
+        
+        #messages-container .message-own .message-time {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        #messages-container .message-bot .message-time {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* Bot message specific styling */
+        #messages-container .bot-response-content {
+            line-height: 1.5;
+            font-size: 1rem;
+        }
+        
+        #messages-container .bot-response-content strong {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+            color: #e9ff9e;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 3px;
+        }
+        
+        #messages-container .bot-response-content em {
+            color: #ffeb99;
+            font-style: italic;
+        }
+        
+        #messages-container .bot-response-content code {
+            background-color: rgba(0,0,0,0.2);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+            color: #f8f9fa;
+        }
+        
+        #messages-container .bot-response-content br {
+            display: block;
+            content: "";
+            margin-top: 5px;
+        }
+        /* END CLEAN CHAT STYLING */
+
+        /* Additional Mention Styles */
+        .cke_focus {
+            z-index: 9999 !important;
+        }
+        
+        .mention-container {
+            position: absolute;
+            background: #ffffff;
+            border: 3px solid #ff5722 !important; /* Very noticeable border color */
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            width: 300px;
+            z-index: 100000 !important; /* Higher than CKEditor */
+            display: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5) !important;
+            animation: fadeInUp 0.3s ease;
+        }
+        
+        /* Make test button super visible */
+        #test-mentions-btn {
+            background-color: #ff5722 !important;
+            border-color: #ff5722 !important;
+            color: white !important;
+            font-weight: bold !important;
+            padding: 10px 15px !important;
+            border-radius: 20px !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+            animation: pulse 2s infinite !important;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 4px 15px rgba(255,87,34,0.5);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            }
+        }
+        
+        .mention-container.show {
+            display: block !important;
+        }
+        
+        .mention-title {
+            padding: 12px 15px;
+            background-color: #f0f5ff;
+            border-bottom: 1px solid #d0e0ff;
+            font-weight: 600;
+            color: #0d6efd;
+            font-size: 14px;
+            border-radius: 8px 8px 0 0;
+            position: sticky;
+            top: 0;
+            z-index: 100001;
+        }
+        
+        .mention-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .mention-item:last-child {
+            border-bottom: none;
+        }
+        
+        .mention-item:hover, .mention-item.active {
+            background-color: #f0f5ff;
+        }
+        
+        .mention-item.active {
+            background-color: #e0edff;
+            border-left: 3px solid #0d6efd;
+        }
+        
+        .mention-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 15px;
+            color: white;
+        }
+        
+        .role-admin .mention-avatar {
+            background-color: #e63946;
+        }
+        
+        .role-organisateur .mention-avatar {
+            background-color: #2a9d8f;
+        }
+        
+        .role-coach .mention-avatar {
+            background-color: #e76f51;
+        }
+        
+        .role-participant .mention-avatar {
+            background-color: #457b9d;
+        }
+        
+        .role-user .mention-avatar {
+            background-color: #6c757d;
+        }
+        
+        .mention-info {
+            flex: 1;
+        }
+        
+        .mention-name {
+            font-weight: 600;
+            color: #212529;
+            font-size: 14px;
+            line-height: 1.2;
+            margin-bottom: 4px;
+        }
+        
+        .mention-role {
+            font-size: 12px;
+            color: #495057;
+            text-transform: capitalize;
+            background-color: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
+        .role-admin .mention-role {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+        
+        .role-organisateur .mention-role {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+        
+        .role-coach .mention-role {
+            background-color: #fff3cd;
+            color: #664d03;
+        }
+        
+        .role-participant .mention-role {
+            background-color: #cfe2ff;
+            color: #084298;
+        }
+        
+        .mention-text {
+            color: #0d6efd;
+            font-weight: 500;
+        }
+        
+        .mention-highlight {
+            background-color: rgba(13, 110, 253, 0.15);
+            border-radius: 3px;
+            padding: 1px 5px;
+            margin: 0 1px;
+        }
+
+        /* Reaction styling */
+        .message-reactions {
+            margin-top: 5px;
+        }
+        
+        .reaction-buttons {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .reaction-button {
+            background: none;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            padding: 2px 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .reaction-button:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .reaction-button.active {
+            background-color: #e0f0ff;
+            border-color: #a0c0f0;
+        }
+        
+        .reaction-counter {
+            font-size: 12px;
+            margin-left: 3px;
+            font-weight: 500;
+            min-width: 10px;
+        }
+        
+        /* Styling for mentioned users in messages */
+        .gradient-mention {
+            background: linear-gradient(90deg, #4a6fa5, #6b8fd4);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            font-weight: 600;
+            padding: 2px 5px;
+            border-radius: 4px;
+            position: relative;
+            z-index: 1;
+            display: inline-block;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+        
+        .gradient-mention::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(107, 143, 212, 0.15);
+            border-radius: 4px;
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+        
+        .gradient-mention:hover {
+            background: linear-gradient(90deg, #6b8fd4, #4a6fa5);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            transform: translateY(-1px);
+        }
+        
+        .gradient-mention:hover::before {
+            background: rgba(107, 143, 212, 0.25);
+            box-shadow: 0 2px 5px rgba(107, 143, 212, 0.3);
+        }
+        
+        /* Animate gradient background */
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        
+        .gradient-mention.animate {
+            background: linear-gradient(90deg, #4a6fa5, #6b8fd4, #4a6fa5);
+            background-size: 200% 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            animation: gradientShift 3s ease infinite;
+        }
+        
+        /* Specific gradient colors for different roles */
+        .gradient-mention.admin {
+            background: linear-gradient(90deg, #dc3545, #f56565);
+            background-clip: text;
+            -webkit-background-clip: text;
+        }
+        
+        .gradient-mention.admin::before {
+            background: rgba(220, 53, 69, 0.15);
+        }
+        
+        .gradient-mention.admin:hover::before {
+            background: rgba(220, 53, 69, 0.25);
+            box-shadow: 0 2px 5px rgba(220, 53, 69, 0.3);
+        }
+        
+        .gradient-mention.admin.animate {
+            background: linear-gradient(90deg, #dc3545, #f56565, #dc3545);
+            background-size: 200% 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            animation: gradientShift 3s ease infinite;
+        }
+        
+        .gradient-mention.organisateur {
+            background: linear-gradient(90deg, #2a9d8f, #40c9b8);
+            background-clip: text;
+            -webkit-background-clip: text;
+        }
+        
+        .gradient-mention.organisateur::before {
+            background: rgba(42, 157, 143, 0.15);
+        }
+        
+        .gradient-mention.organisateur:hover::before {
+            background: rgba(42, 157, 143, 0.25);
+            box-shadow: 0 2px 5px rgba(42, 157, 143, 0.3);
+        }
+        
+        .gradient-mention.organisateur.animate {
+            background: linear-gradient(90deg, #2a9d8f, #40c9b8, #2a9d8f);
+            background-size: 200% 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            animation: gradientShift 3s ease infinite;
+        }
+        
+        .gradient-mention.coach {
+            background: linear-gradient(90deg, #e76f51, #f4a261);
+            background-clip: text;
+            -webkit-background-clip: text;
+        }
+        
+        .gradient-mention.coach::before {
+            background: rgba(231, 111, 81, 0.15);
+        }
+        
+        .gradient-mention.coach:hover::before {
+            background: rgba(231, 111, 81, 0.25);
+            box-shadow: 0 2px 5px rgba(231, 111, 81, 0.3);
+        }
+        
+        .gradient-mention.coach.animate {
+            background: linear-gradient(90deg, #e76f51, #f4a261, #e76f51);
+            background-size: 200% 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            animation: gradientShift 3s ease infinite;
+        }
+        
+        .gradient-mention.participant {
+            background: linear-gradient(90deg, #457b9d, #68a3c3);
+            background-clip: text;
+            -webkit-background-clip: text;
+        }
+        
+        .gradient-mention.participant::before {
+            background: rgba(69, 123, 157, 0.15);
+        }
+        
+        .gradient-mention.participant:hover::before {
+            background: rgba(69, 123, 157, 0.25);
+            box-shadow: 0 2px 5px rgba(69, 123, 157, 0.3);
+        }
+        
+        .gradient-mention.participant.animate {
+            background: linear-gradient(90deg, #457b9d, #68a3c3, #457b9d);
+            background-size: 200% 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            animation: gradientShift 3s ease infinite;
+        }
+        
+        /* CKEditor Styles */
+        .cke_chrome {
+            border: 1px solid #ddd !important;
+            border-radius: 4px !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+        }
+        
+        .cke_top {
+            background: #f8f9fa !important;
+            border-bottom: 1px solid #ddd !important;
+            padding: 6px 8px !important;
+        }
+        
+        .cke_button {
+            padding: 4px 6px !important;
+        }
+        
+        .cke_button:hover {
+            background-color: #e9ecef !important;
+            border-radius: 3px !important;
+        }
+        
+        .cke_button_on {
+            background-color: #e9ecef !important;
+            border-radius: 3px !important;
+        }
+        
+        .cke_contents {
+            min-height: 150px !important;
+        }
+        
+        /* Make sure CKEditor is visible above other elements */
+        .cke_dialog_container {
+            z-index: 100000 !important;
+        }
+        
+        .cke_dialog_background_cover {
+            z-index: 99999 !important;
+        }
+        
+        /* Add styles for the mentions trigger button */
+        .mention-trigger-btn {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            z-index: 1000;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 2px 8px;
+            border-radius: 50%;
+            background: #f0f5ff;
+            border: 1px solid #d0e0ff;
+            color: #0d6efd;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .mention-trigger-btn:hover {
+            background: #d0e0ff;
+            transform: scale(1.1);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Left Sidebar -->
+            <div class="col-md-3">
+                <!-- Hackathon Countdown -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="h4 mb-0">{{ communaute.nom }}</h3>
+                    </div>
+                    <div class="card-body bg-dark text-white">
+                        <!-- Simplified Countdown -->
+                        <div id="hackathon-countdown">
+                            <h5 class="text-center mb-3">Time Until Hackathon Ends</h5>
+                            <div class="d-flex justify-content-center gap-3">
+                                <div class="countdown-box">
+                                    <div id="days" class="h2 mb-0">00</div>
+                                    <small>Days</small>
+                                </div>
+                                <div class="countdown-box">
+                                    <div id="hours" class="h2 mb-0">00</div>
+                                    <small>Hours</small>
+                                </div>
+                                <div class="countdown-box">
+                                    <div id="minutes" class="h2 mb-0">00</div>
+                                    <small>Minutes</small>
+                                </div>
+                                <div class="countdown-box">
+                                    <div id="seconds" class="h2 mb-0">00</div>
+                                    <small>Seconds</small>
+                                </div>
+                            </div>
+                            <div class="text-center mt-2">
+                                <small class="text-muted">Ends: {{ communaute.id_hackathon.date_fin|date('M d, Y H:i') }}</small>
+                            </div>
+                            <div id="submission-reminder" class="submission-reminder">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Less than 24 hours remaining!<br>
+                                <a href="#" class="mt-2 d-inline-block">Submit Your Project Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Box -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="h5 mb-0"><i class="fas fa-search"></i> Search Messages</h4>
+                    </div>
+                    <div class="card-body search-container">
+                        <form id="message-search-form" class="search-form">
+                            <div class="input-group">
+                                <input type="text" id="search-query" class="form-control" placeholder="Search messages...">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                            </div>
+                        </form>
+                        <div id="search-results" class="search-results mt-3">
+                            <!-- Search results will appear here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Available Chats -->
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="h5 mb-0">Available Chats</h4>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        {% for chat in communaute.chats %}
+                            <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center chat-link" 
+                               data-chat-id="{{ chat.id }}"
+                               data-chat-name="{{ chat.nom }}"
+                               data-chat-type="{{ chat.type }}">
+                                {{ chat.nom }}
+                                <span class="badge bg-primary rounded-pill">{{ chat.type }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <a href="{{ path('app_communaute_index') }}" class="btn btn-secondary w-100">Back to Communities</a>
+                </div>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="col-md-9">
+                <div id="chat-container" class="card">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0" id="current-chat-name">Select a chat to start</h4>
+                        <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#createPollModal" id="create-poll-btn" style="display: none;">
+                            <i class="fas fa-poll"></i> Create Poll
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8 chat-divider">
+                        <div id="messages-container" style="max-height: 600px; overflow-y: auto;">
+                            <p class="text-center text-muted">Select a chat from the list to view messages</p>
+                        </div>
+
+                                <form id="message-form" class="mt-3 d-none">
+                        <input type="hidden" name="_token" value="{{ csrf_token('message_token') }}">
+                                    <div class="form-group position-relative">
+                                        <textarea class="form-control ckeditor" name="contenu" id="message-input" rows="5" placeholder="Type your message... Use @ to mention someone. Format with toolbar above." style="width:100%; min-height:150px; border:1px solid #ddd;"></textarea>
+                                        <div id="mention-container" class="mention-container"></div>
+                        </div>
+                        <div class="form-group mt-2">
+                            <select class="form-control" name="type">
+                                <option value="QUESTION">Question</option>
+                                <option value="REPONSE">Response</option>
+                                <option value="SUGGESTION">Suggestion</option>
+                            </select>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <button type="submit" class="btn btn-primary">Send Message</button>
+                            <button type="button" id="test-mentions-btn" class="btn btn-warning"><strong>@</strong> Test @Mentions</button>
+                        </div>
+</form>
+                    </div>
+                            <div class="col-md-4" id="chat-polls-container" style="display: none;">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0">Polls</h5>
+                                    </div>
+                                    <div class="card-body" id="polls-container">
+                                        <!-- Polls will be loaded here dynamically -->
+                                        <p class="text-center text-muted">No polls available</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Polls Sidebar -->
+    <div class="polls-sidebar" id="polls-sidebar" style="display: none;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="card-title mb-0">Polls</h5>
+            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#createPollModal">
+                <i class="fas fa-plus"></i> New Poll
+            </button>
+        </div>
+        <div id="sidebar-polls-container">
+            <!-- Polls will be loaded here dynamically -->
+        </div>
+    </div>
+
+    <!-- Toggle Polls Button -->
+    <button class="btn btn-primary toggle-polls" id="toggle-polls" style="display: none;">
+        <i class="fas fa-poll"></i>
+    </button>
+
+    <!-- Create Poll Modal -->
+    <div class="modal fade" id="createPollModal" tabindex="-1" aria-labelledby="createPollModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createPollModalLabel">Create New Poll</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="create-poll-form">
+                    <input type="hidden" name="_token" value="{{ csrf_token('poll_token') }}">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="question" class="form-label">Poll Question</label>
+                            <textarea class="form-control ckeditor" id="question" name="question" rows="5" placeholder="Enter your poll question..." required style="width:100%; min-height:200px; border:1px solid #ddd;"></textarea>
+                        </div>
+                        <div id="pollOptions" class="mb-3">
+                            <div class="mb-2 option-input-group">
+                                <div class="flex-grow-1">
+                                    <label class="form-label">Option 1</label>
+                                    <input type="text" class="form-control" name="options[]" required>
+                                </div>
+                            </div>
+                            <div class="mb-2 option-input-group">
+                                <div class="flex-grow-1">
+                                    <label class="form-label">Option 2</label>
+                                    <input type="text" class="form-control" name="options[]" required>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="addOption()">
+                            <i class="fas fa-plus"></i> Add Option
+                        </button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create Poll</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+   <!-- Only showing the updated JavaScript section -->
+<script>
+    // Function to create avatar placeholder
+    function createAvatarPlaceholder(initials) {
+        return '<div class="avatar-placeholder" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background-color:#6c757d; color:white; font-weight:bold; font-size:16px;">' + initials + '</div>';
+    }
+
+    // Enhanced debug log function
+    function debugLog(message, data = null) {
+        try {
+            if (data !== null) {
+            console.log(message, data);
+        } else {
+            console.log(message);
+            }
+        } catch (e) {
+            // Handle console errors in older browsers
+            console.error("Debug logging error:", e);
+        }
+    }
+    
+    // Function to check if CKEditor is loaded
+    function isCkeditorLoaded() {
+        return typeof CKEDITOR !== 'undefined';
+    }
+    
+    // Global error handler for better debugging
+    window.addEventListener('error', function(event) {
+        debugLog('JavaScript error:', {
+            message: event.message,
+            source: event.filename,
+            lineNo: event.lineno,
+            colNo: event.colno,
+            error: event.error
+        });
+    });
+    
+    // Initialize key variables
+    let currentChatId = null;
+    let currentUserId = {{ app.user ? app.user.id : 'null' }};
+    let communauteId = {{ communaute.id }};
+    let communityMembers = [];
+    
+    // Store user role globally
+    let userRole = '{{ app.user ? app.user.roles[0] : "ROLE_USER" }}';
+    
+    // Initialize variables for mentions
+    let mentionContainer = null;
+    let messageTextarea = null;
+    let mentionActive = false;
+    let mentionStartIndex = -1;
+    let mentionSearchText = '';
+    let mentionSelectedIndex = -1;
+    
+    // Function to fetch community members
+    function fetchCommunityMembers() {
+        const apiUrl = `/chat/community/${communauteId}/members`;
+        debugLog('Fetching community members from:', apiUrl);
+        
+        // Show loading indicator if we're fetching for the mention dropdown
+        if (mentionActive && mentionContainer) {
+            mentionContainer.innerHTML = `
+                <div class="mention-title">Loading Members...</div>
+                <div style="padding: 20px; text-align: center;">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2 mb-0 text-muted">Fetching community members...</p>
+                </div>
+            `;
+            mentionContainer.style.display = 'block';
+        }
+        
+        // Use a timeout to handle slow API responses
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error("Request timeout")), 5000);
+        });
+        
+        // Create the fetch request
+        const fetchPromise = fetch(apiUrl);
+        
+        // Race between the fetch and the timeout
+        Promise.race([fetchPromise, timeoutPromise])
+            .then(response => {
+                debugLog('API response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`Failed to load community members: ${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                debugLog('Community members loaded:', data);
+                if (data.success && data.members) {
+                    communityMembers = data.members;
+                    debugLog('Successfully stored community members:', communityMembers.length);
+                    
+                    // If mentions are active, show the members
+                    if (mentionActive) {
+                        showMentionSuggestions(mentionSearchText || '');
+                    }
+                    
+                    return true;
+                } else {
+                    debugLog('API returned success=false or no members array');
+                    throw new Error('Invalid API response format');
+                }
+            })
+            .catch(error => {
+                debugLog('Error loading community members:', error);
+                
+                // Try alternative URL without /chat prefix as a backup
+                const alternativeUrl = `/community/${communauteId}/members`;
+                debugLog('Trying alternative URL:', alternativeUrl);
+                
+                fetch(alternativeUrl)
+                    .then(response => {
+                        debugLog('Alternative API response status:', response.status);
+                        if (!response.ok) {
+                            throw new Error('Failed with alternative URL too');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        debugLog('Community members loaded from alternative URL:', data);
+                        if (data.success && data.members) {
+                            communityMembers = data.members;
+                            debugLog('Successfully stored community members from alternative URL:', communityMembers.length);
+                            
+                            // If mentions are active, show the members
+                            if (mentionActive) {
+                                showMentionSuggestions(mentionSearchText || '');
+                            }
+                            
+                            return true;
+                        } else {
+                            throw new Error('Alternative URL returned success=false or no members array');
+                        }
+                    })
+                    .catch(altError => {
+                        debugLog('Both URLs failed, using fallback test data');
+                        useTestMembers();
+                        
+                        // If mentions are active, show the test members
+                        if (mentionActive) {
+                            showMentionSuggestions(mentionSearchText || '');
+                        }
+                    });
+            });
+    }
+    
+    // Helper function to set test members data
+    function useTestMembers() {
+        debugLog('Using fallback test data for members');
+        communityMembers = [
+            {
+                id: 1, 
+                name: 'John Doe',
+                email: 'john@example.com',
+                role: 'ADMIN'
+            },
+            {
+                id: 2,
+                name: 'Jane Smith',
+                email: 'jane@example.com',
+                role: 'ORGANISATEUR'
+            },
+            {
+                id: 3,
+                name: 'Alice Johnson',
+                email: 'alice@example.com',
+                role: 'COACH'
+            },
+            {
+                id: 4,
+                name: 'Bob Brown',
+                email: 'bob@example.com',
+                role: 'PARTICIPANT'
+            },
+            {
+                id: 5,
+                name: 'Charlie Davis',
+                email: 'charlie@example.com',
+                role: 'PARTICIPANT'
+            }
+        ];
+    }
+    
+    // Function to initialize/reinitialize the message form
+    function initializeMessageForm() {
+        // Get the message textarea
+        messageTextarea = document.getElementById('message-input');
+        
+        if (!messageTextarea) {
+            debugLog('ERROR: Message textarea not found');
+            return;
+        }
+        
+        // Make sure we have the mention container
+        mentionContainer = document.getElementById('mention-container');
+        if (!mentionContainer) {
+            debugLog('Creating mention container');
+            mentionContainer = document.createElement('div');
+            mentionContainer.id = 'mention-container';
+            mentionContainer.className = 'mention-container';
+            document.body.appendChild(mentionContainer);
+        }
+        
+        // CKEditor-specific handling for mentions
+        if (isCkeditorLoaded() && CKEDITOR.instances['message-input']) {
+            debugLog('Setting up CKEditor mention handling');
+            
+            // Create a flag to track if @ is being entered
+            let atDetected = false;
+            
+            // Listen for key events in the CKEditor instance
+            CKEDITOR.instances['message-input'].on('key', function(e) {
+                const editor = e.editor;
+                const event = e.data.domEvent;
+                const keyCode = event.data ? event.data.keyCode : event.keyCode;
+                
+                // Log detailed key info to help with debugging
+                debugLog('CKEditor key pressed:', { 
+                    keyCode: keyCode, 
+                    shiftKey: event.shiftKey,
+                    ctrlKey: event.ctrlKey,
+                    key: event.key || "unknown" 
+                });
+                
+                // If @ is pressed - detect multiple ways to capture it
+                // 1. Shift+2 (key code 50 with shift) - traditional @ on QWERTY
+                // 2. Alt+0 followed by 6 and 4 - Alt code for @
+                // 3. Direct @ character detection
+                if ((keyCode === 50 && event.shiftKey) || // Shift+2
+                    (event.key === '@') ||               // Direct @ character
+                    (atDetected)) {                      // @ already being entered
+                    
+                    debugLog('@ character detected in CKEditor');
+                    
+                    // Set the flag to track @ is being entered
+                    atDetected = true;
+                    
+                    // Get selection position to show the dropdown near the cursor
+                    const selection = editor.getSelection();
+                    const ranges = selection.getRanges();
+                    
+                    if (ranges.length > 0) {
+                        const range = ranges[0];
+                        mentionActive = true;
+                        mentionSearchText = '';
+                        mentionSelectedIndex = 0;
+                        
+                        // Position the dropdown
+                        const cursorElement = range.startContainer.$;
+                        if (cursorElement) {
+                            const cursorPosition = range.startOffset;
+                            const editorRect = editor.container.$.getBoundingClientRect();
+                            
+                            // For proper positioning, we need to know where the cursor is
+                            // Get position of cursor element relative to editor
+                            const cursorRect = editor.getSelection().getStartElement().$.getBoundingClientRect();
+                            
+                            // Position dropdown below cursor
+                            mentionContainer.style.position = 'absolute';
+                            mentionContainer.style.top = (cursorRect.bottom + 5) + 'px';
+                            mentionContainer.style.left = cursorRect.left + 'px';
+                        }
+                        
+                        // Make sure we have community members before showing the dropdown
+                        if (!communityMembers || communityMembers.length === 0) {
+                            debugLog('No community members loaded yet, fetching...');
+                            fetchCommunityMembers();
+                            // Wait for fetch to complete before showing mentions
+                            setTimeout(() => {
+                                showMentionSuggestions('');
+                            }, 500);
+                        } else {
+                            // Show mention suggestions immediately if we have members
+                            showMentionSuggestions('');
+                        }
+                    }
+                } else {
+                    // If a key other than @ is pressed and we're not actively showing mentions,
+                    // reset the @ detection flag
+                    if (!mentionActive) {
+                        atDetected = false;
+                    }
+                }
+                
+                // If mentions are active and we press Escape, close the mentions
+                if (mentionActive && keyCode === 27) { // Escape key
+                    closeMentionContainer();
+                }
+                
+                // If mentions are active and we press Enter, select the current suggestion
+                if (mentionActive && keyCode === 13) { // Enter key
+                    const mentionItems = mentionContainer.querySelectorAll('.mention-item');
+                    if (mentionItems.length > 0 && mentionSelectedIndex >= 0 && mentionSelectedIndex < mentionItems.length) {
+                        e.cancel(); // Prevent default Enter behavior (new line)
+                        selectMention(mentionItems[mentionSelectedIndex]);
+                    }
+                }
+                
+                // If mentions are active and arrow keys are pressed, navigate the suggestions
+                if (mentionActive) {
+                    if (keyCode === 40) { // Down arrow
+                        e.cancel(); // Prevent default
+                        handleMentionArrowKey('down');
+                    } else if (keyCode === 38) { // Up arrow
+                        e.cancel(); // Prevent default
+                        handleMentionArrowKey('up');
+                    }
+                }
+            });
+            
+            // Add special handling for input events to capture @ and typed text after it
+            CKEDITOR.instances['message-input'].on('change', function(e) {
+                if (mentionActive) {
+                    // Get current editor content
+                    const content = e.editor.getData();
+                    
+                    // Extract the search text after @ using regex
+                    const matches = content.match(/@([^<\s]*)$/);
+                    if (matches && matches[1]) {
+                        mentionSearchText = matches[1];
+                        debugLog('Detected search text:', mentionSearchText);
+                        showMentionSuggestions(mentionSearchText);
+                    }
+                }
+            });
+        }
+    }
+    
+    // Function to handle arrow key navigation in mention dropdown
+    function handleMentionArrowKey(direction) {
+        const mentionItems = mentionContainer.querySelectorAll('.mention-item');
+        if (mentionItems.length === 0) return;
+        
+        // Remove active class from current item
+        if (mentionSelectedIndex >= 0 && mentionSelectedIndex < mentionItems.length) {
+            mentionItems[mentionSelectedIndex].classList.remove('active');
+        }
+        
+        // Update the selected index
+        if (direction === 'down') {
+            mentionSelectedIndex = (mentionSelectedIndex + 1) % mentionItems.length;
+        } else {
+            mentionSelectedIndex = (mentionSelectedIndex - 1 + mentionItems.length) % mentionItems.length;
+        }
+        
+        // Add active class to new selected item
+        mentionItems[mentionSelectedIndex].classList.add('active');
+        
+        // Scroll to ensure the selected item is visible
+        const selectedItem = mentionItems[mentionSelectedIndex];
+        if (selectedItem.offsetTop < mentionContainer.scrollTop) {
+            mentionContainer.scrollTop = selectedItem.offsetTop;
+        } else if (selectedItem.offsetTop + selectedItem.offsetHeight > mentionContainer.scrollTop + mentionContainer.offsetHeight) {
+            mentionContainer.scrollTop = selectedItem.offsetTop + selectedItem.offsetHeight - mentionContainer.offsetHeight;
+        }
+    }
+    
+    // Call this when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        debugLog('Setting up mentions and reactions functionality for community ID:', communauteId);
+        
+        // Fetch community members right away
+        fetchCommunityMembers();
+        
+        // Set up reaction handling
+        setupReactions();
+        
+        // Initialize message form if available
+        initializeMessageForm();
+
+        // Add a global click handler to close the mention container when clicking outside
+        document.addEventListener('click', function(e) {
+            if (mentionActive && mentionContainer && !mentionContainer.contains(e.target)) {
+                // Check if it's a click on the editor
+                let clickedInEditor = false;
+                
+                if (isCkeditorLoaded() && CKEDITOR.instances['message-input']) {
+                    const editor = CKEDITOR.instances['message-input'];
+                    if (editor.container && editor.container.$.contains(e.target)) {
+                        clickedInEditor = true;
+                    }
+                }
+                
+                // Don't close if clicked in editor or on the mention button
+                if (!clickedInEditor && !e.target.classList.contains('mention-trigger-btn')) {
+                    closeMentionContainer();
+                }
+            }
+        });
+
+        // Countdown initialization
+        const elements = {
+            days: document.getElementById('days'),
+            hours: document.getElementById('hours'),
+            minutes: document.getElementById('minutes'),
+            seconds: document.getElementById('seconds')
+        };
+
+        const countdownContainer = document.getElementById('hackathon-countdown');
+        const submissionReminder = document.getElementById('submission-reminder');
+        const endDate = new Date('{{ communaute.id_hackathon.date_fin|date('c') }}').getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = endDate - now;
+
+            if (distance < 0) {
+                Object.values(elements).forEach(el => {
+                    if (el) el.textContent = '00';
+                });
+                if (countdownContainer) countdownContainer.classList.add('warning');
+                if (submissionReminder) submissionReminder.classList.add('show');
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            if (elements.days) elements.days.textContent = String(days).padStart(2, '0');
+            if (elements.hours) elements.hours.textContent = String(hours).padStart(2, '0');
+            if (elements.minutes) elements.minutes.textContent = String(minutes).padStart(2, '0');
+            if (elements.seconds) elements.seconds.textContent = String(seconds).padStart(2, '0');
+
+            if (days === 0) {
+                if (countdownContainer) countdownContainer.classList.add('warning');
+                if (submissionReminder) submissionReminder.classList.add('show');
+            } else {
+                if (countdownContainer) countdownContainer.classList.remove('warning');
+                if (submissionReminder) submissionReminder.classList.remove('show');
+            }
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        // Initialize all CKEditor instances on the page that have ckeditor class
+        if (isCkeditorLoaded()) {
+            debugLog('Initializing CKEditor instances on page load');
+            var textareas = document.querySelectorAll('textarea.ckeditor');
+            for (var i = 0; i < textareas.length; i++) {
+                var textarea = textareas[i];
+                if (textarea.id && !CKEDITOR.instances[textarea.id]) {
+                    CKEDITOR.replace(textarea.id, {
+                        toolbar: [
+                            ['Bold', 'Italic', 'Underline', '-', 'Link', '-', 'NumberedList', 'BulletedList', '-', 'Image', '-', 'TextColor']
+                        ],
+                        height: textarea.getAttribute('rows') * 20,
+                        width: '100%',
+                        removePlugins: 'elementspath',
+                        resize_enabled: true
+                    });
+                    debugLog('CKEditor initialized for:', textarea.id);
+                }
+            }
+        } else {
+            debugLog('CKEditor not available on page load');
+        }
+    });
+
+    // Setup reaction functionality
+    function setupReactions() {
+        debugLog('Setting up reactions functionality');
+        
+        // Listen for reaction button clicks on dynamically added messages
+        document.getElementById('messages-container').addEventListener('click', function(e) {
+            // Check if the clicked element or its parent is a reaction button
+            const reactionButton = e.target.closest('.reaction-button');
+            if (reactionButton) {
+                const messageId = reactionButton.dataset.messageId;
+                const emoji = reactionButton.dataset.emoji;
+                debugLog('Reaction clicked:', { messageId, emoji });
+                addReaction(messageId, emoji);
+            }
+        });
+    }
+    
+    // Function to add a reaction to a message
+    function addReaction(messageId, emoji) {
+        const formData = new FormData();
+        formData.append('emoji', emoji);
+        
+        fetch(`/reaction/add/${messageId}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to add reaction');
+            }
+            return response.json();
+        })
+        .then(data => {
+            debugLog('Reaction response:', data);
+            if (data.success) {
+                // Update the UI to reflect the new reaction counts
+                updateReactionCounts(messageId, data.counts);
+                
+                // Toggle active class on the button
+                const button = document.querySelector(`.reaction-button[data-message-id="${messageId}"][data-emoji="${emoji}"]`);
+                if (button) {
+                    if (data.action === 'added') {
+                        button.classList.add('active');
+                    } else if (data.action === 'removed') {
+                        button.classList.remove('active');
+                    }
+                }
+            }
+        })
+        .catch(error => {
+            debugLog('Error adding reaction:', error);
+        });
+    }
+    
+    // Function to update reaction counts in the UI
+    function updateReactionCounts(messageId, counts) {
+        Object.keys(counts).forEach(emoji => {
+            const counter = document.querySelector(`.reaction-counter[data-message-id="${messageId}"][data-emoji="${emoji}"]`);
+            if (counter) {
+                const count = counts[emoji] || 0;
+                counter.textContent = count > 0 ? count : '';
+            }
+        });
+    }
+    
+    // Function to fetch existing reactions for a message
+    function loadReactions(messageId) {
+        fetch(`/reaction/get/${messageId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to load reactions');
+                }
+                return response.json();
+            })
+            .then(data => {
+                debugLog('Loaded reactions for message:', messageId, data);
+                if (data.success) {
+                    updateReactionCounts(messageId, data.counts);
+                    
+                    // Mark user's reactions as active
+                    data.userReactions.forEach(emoji => {
+                        const button = document.querySelector(`.reaction-button[data-message-id="${messageId}"][data-emoji="${emoji}"]`);
+                        if (button) {
+                            button.classList.add('active');
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                debugLog('Error loading reactions:', error);
+            });
+    }
+
+    // Listen for clicks outside the mention container to close it
+    document.addEventListener('click', function(e) {
+        if (mentionActive && !mentionContainer.contains(e.target) && e.target !== messageTextarea) {
+            debugLog('Click outside mention container detected');
+            closeMentionContainer();
+        }
+    });
+
+    document.getElementById('toggle-polls').addEventListener('click', function() {
+        document.getElementById('polls-sidebar').classList.toggle('show');
+    });
+
+    document.querySelectorAll('.chat-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const chatId = this.dataset.chatId;
+            const chatName = this.dataset.chatName;
+            const chatType = this.dataset.chatType;
+            debugLog('Chat selected:', { chatId, chatName, chatType });
+
+            // Update UI for selected chat
+            document.querySelectorAll('.chat-link').forEach(el => el.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Update chat header
+            document.getElementById('current-chat-name').textContent = chatName;
+            
+            // Store current chat ID for later use
+            currentChatId = chatId;
+            
+            // Check if the user has permission to post in this chat
+            debugLog('Current user role for posting:', userRole);
+            
+            const isParticipant = userRole.includes('PARTICIPANT');
+            const isRestrictedChat = chatType === 'ANNONCES' || chatType === 'COACH';
+            
+            // Participants can't post in ANNONCES or COACH chats
+            const canPost = !(isParticipant && isRestrictedChat);
+            
+            // Show the poll button for all users, but disable it for non-admin/organizer users
+            const createPollBtn = document.getElementById('create-poll-btn');
+            createPollBtn.style.display = 'inline-block';
+            
+            // Debug the user role
+            debugLog('Current user role for poll creation:', userRole);
+            
+            // Only enable poll creation for ADMIN and ORGANISATEUR roles
+            const isAdmin = userRole.includes('ADMIN');
+            const isOrganisateur = userRole.includes('ORGANISATEUR');
+            
+            debugLog('Is admin:', isAdmin);
+            debugLog('Is organisateur:', isOrganisateur);
+            
+            if (isAdmin || isOrganisateur) {
+                createPollBtn.disabled = false;
+                createPollBtn.classList.remove('btn-secondary');
+                createPollBtn.classList.add('btn-light');
+                createPollBtn.title = 'Create a new poll';
+            } else {
+                createPollBtn.disabled = true;
+                createPollBtn.classList.remove('btn-light');
+                createPollBtn.classList.add('btn-secondary');
+                createPollBtn.title = 'Only administrators and organizers can create polls';
+            }
+            
+            // Show polls container
+            document.getElementById('chat-polls-container').style.display = 'block';
+            
+            // Show or hide input form based on permissions
+            const messageForm = document.getElementById('message-form');
+            if (messageForm) {
+                if (canPost) {
+                    messageForm.classList.remove('d-none');
+                    messageForm.style.display = 'block';
+                    
+                    // Also clear any previous permission alerts
+                    const permissionAlert = document.getElementById('permission-alert');
+                    if (permissionAlert) {
+                        permissionAlert.remove();
+                    }
+                    
+                    // Initialize CKEditor for the message input with a small delay to ensure DOM is ready
+                    setTimeout(function() {
+                        if (isCkeditorLoaded()) {
+                            // Destroy any existing instance first
+                            if (CKEDITOR.instances['message-input']) {
+                                CKEDITOR.instances['message-input'].destroy();
+                            }
+                            
+                            // Create a new CKEditor instance with message_config
+                            CKEDITOR.replace('message-input', {
+                                toolbar: [
+                                    ['Bold', 'Italic', 'Underline', '-', 'Link', '-', 'NumberedList', 'BulletedList', '-', 'Image', '-', 'TextColor']
+                                ],
+                                height: 150,
+                                width: '100%',
+                                uiColor: '#f8f9fa'
+                            });
+                            debugLog('Message editor initialized in chat link click handler');
+                        } else {
+                            debugLog('CKEditor not available in chat link click handler');
+                        }
+                    }, 300);
+                } else {
+                    messageForm.style.display = 'none';
+                    // Show permission alert
+                    showPermissionDeniedAlert(chatName, chatType);
+                }
+            }
+            
+            // Make sure we have community members for mentions
+            fetchCommunityMembers();
+            
+            // Initialize/reinitialize the message form if the user can post
+            if (canPost) {
+                initializeMessageForm();
+            }
+            
+            // Load chat content
+            loadChatContent(chatId);
+        });
+    });
+
+    function loadChatContent(chatId) {
+        debugLog('Loading content for chat:', chatId);
+
+        const messagesContainer = document.getElementById('messages-container');
+        messagesContainer.innerHTML = '<p class="text-center text-muted">Loading messages...</p>';
+
+        fetch(`/chat/${chatId}/messages`)
+            .then(response => {
+                debugLog('Messages fetch response status:', response.status);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                debugLog('Messages data:', data);
+                messagesContainer.innerHTML = '';
+                if (data.messages && data.messages.length > 0) {
+                    data.messages.forEach(message => {
+                        const isOwnMessage = message.posted_by && message.posted_by.id_user === currentUserId;
+                        const isBotMessage = message.posted_by && message.posted_by.email_user === 'bot@hackify.com';
+                        const messageClass = isBotMessage ? 'message-bot' : (isOwnMessage ? 'message-own' : 'message-other');
+                        
+                        // Get sender name and initials for avatar
+                        let senderName = 'Unknown';
+                        let initials = 'U';
+                        let photoUrl = null;
+                        
+                        if (message.posted_by) {
+                            if (isBotMessage) {
+                                senderName = 'Bot';
+                                initials = 'B';
+                            } else {
+                                senderName = `${message.posted_by.prenom} ${message.posted_by.nom}`;
+                                initials = (message.posted_by.prenom.charAt(0) + message.posted_by.nom.charAt(0)).toUpperCase();
+                                // Get photo URL if available
+                                if (message.posted_by.photoUser) {
+                                    photoUrl = `/uploads/profile_pictures/${message.posted_by.photoUser}`;
+                                }
+                            }
+                        }
+
+                        const messageElement = document.createElement('div');
+                        messageElement.className = `message ${messageClass}`;
+                        messageElement.dataset.messageId = message.id;
+                        
+                        // Generate avatar HTML
+                        let avatarHTML = '';
+                        if (photoUrl) {
+                            // Use actual profile photo with proper error handling using a function
+                            avatarHTML = `
+                                <div class="avatar-container" style="width:40px; height:40px; border-radius:50%; overflow:hidden;">
+                                    <img src="${photoUrl}" alt="${senderName}" 
+                                        style="width:100%; height:100%; object-fit:cover;" 
+                                        onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML=createAvatarPlaceholder('${initials}');" />
+                                </div>
+                            `;
+                        } else {
+                            // Use initials placeholder
+                            avatarHTML = `
+                                <div class="avatar-container" style="width:40px; height:40px; border-radius:50%; overflow:hidden;">
+                                    <div class="avatar-placeholder ${isBotMessage ? 'bot-avatar' : ''}" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background-color:${isBotMessage ? '#0a5c36' : '#6c757d'}; color:white; font-weight:bold; font-size:16px;">
+                                        ${initials}
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
+                        // Process message content for mentions
+                        let messageContent = message.contenu;
+                        
+                        // Replace @mentions with styled spans
+                        messageContent = processMentionsInContent(messageContent);
+                        
+                        // Generate message content
+                        let contentHTML = '';
+                        if (isBotMessage) {
+                            // Format bot content with proper styling
+                            const formattedResponse = formatBotResponse(messageContent);
+                            contentHTML = `
+                                <div class="message-wrapper">
+                                    <div class="message-meta">
+                                        <div class="message-sender">${senderName}</div>
+                                    </div>
+                                    <div class="message-content">
+                                        <div class="bot-response-content">${formattedResponse}</div>
+                                        <div class="message-time">${message.post_time}</div>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            contentHTML = `
+                                <div class="message-wrapper">
+                                    <div class="message-meta">
+                                        <div class="message-sender">${senderName}</div>
+                                    </div>
+                                    <div class="message-content">
+                                        <div>${messageContent}</div>
+                                        <div class="message-time">${message.post_time}</div>
+                                        <div class="message-reactions">
+                                            <div class="reaction-buttons">
+                                                <button class="reaction-button" data-message-id="${message.id}" data-emoji="👍">👍 <span class="reaction-counter" data-message-id="${message.id}" data-emoji="👍"></span></button>
+                                                <button class="reaction-button" data-message-id="${message.id}" data-emoji="❤️">❤️ <span class="reaction-counter" data-message-id="${message.id}" data-emoji="❤️"></span></button>
+                                                <button class="reaction-button" data-message-id="${message.id}" data-emoji="😂">😂 <span class="reaction-counter" data-message-id="${message.id}" data-emoji="😂"></span></button>
+                                                <button class="reaction-button" data-message-id="${message.id}" data-emoji="😮">😮 <span class="reaction-counter" data-message-id="${message.id}" data-emoji="😮"></span></button>
+                                                <button class="reaction-button" data-message-id="${message.id}" data-emoji="👏">👏 <span class="reaction-counter" data-message-id="${message.id}" data-emoji="👏"></span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
+                        // Set HTML content with appropriate order based on message type
+                        messageElement.innerHTML = isOwnMessage 
+                            ? `${contentHTML}${avatarHTML}` 
+                            : `${avatarHTML}${contentHTML}`;
+                            
+                        messagesContainer.appendChild(messageElement);
+                        
+                        // Load reactions for this message
+                        loadReactions(message.id);
+                    });
+                } else {
+                    messagesContainer.innerHTML = '<p class="text-center text-muted">No messages yet.</p>';
+                }
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            })
+            .catch(error => {
+                debugLog('Error loading messages:', error);
+                messagesContainer.innerHTML = '<p class="text-center text-danger">Error loading messages: ' + error.message + '</p>';
+            });
+
+        fetch(`/chat/${chatId}/polls`)
+            .then(response => {
+                debugLog('Polls fetch response status:', response.status);
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        debugLog('Error response text:', text);
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                debugLog('Polls data:', data);
+                const pollsContainer = document.getElementById('polls-container');
+                pollsContainer.innerHTML = '';
+                
+                // Check if data has an error field
+                if (data.error) {
+                    debugLog('Error in poll data:', data.error);
+                    pollsContainer.innerHTML = `<p class="text-center text-danger">Error: ${data.error}</p>`;
+                    return;
+                }
+                
+                if (data.polls && data.polls.length > 0) {
+                    // Log user role for debugging poll rendering
+                    debugLog('User role for poll rendering:', userRole);
+                    
+                    data.polls.forEach(poll => {
+                        const pollElement = document.createElement('div');
+                        pollElement.className = 'poll-card mb-3';
+                        
+                        // Calculate total votes for percentage calculation
+                        const totalVotes = poll.poll_option.reduce((sum, opt) => sum + opt.vote_count, 0);
+                        
+                        let optionsHtml = '';
+                        poll.poll_option.forEach(option => {
+                            const percentage = totalVotes > 0 ? ((option.vote_count / totalVotes) * 100).toFixed(1) : '0.0';
+                            
+                            // Create vote button for active polls
+                            const voteButton = !poll.is_closed ? 
+                                `<button class="btn btn-sm btn-outline-primary vote-btn" data-poll-id="${poll.id}" data-option-id="${option.id}">Vote</button>` 
+                                : '';
+                                
+                            optionsHtml += `
+                                <div class="mb-3 poll-option">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <p class="mb-0">${option.text}</p>
+                                        ${voteButton}
+                                    </div>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar" style="width: ${percentage}%; height: 20px;">
+                                            ${option.vote_count} (${percentage}%)
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        // Add close button for admins/organizers
+                        // Get current user role from the parent scope
+                        debugLog('User role for poll closing:', userRole);
+                        const isAdmin = userRole.includes('ADMIN');
+                        const isOrganisateur = userRole.includes('ORGANISATEUR');
+                        const canClosePoll = (isAdmin || isOrganisateur) && !poll.is_closed;
+                        const closeButton = canClosePoll ? 
+                            `<button class="btn btn-sm btn-outline-secondary close-poll-btn" data-poll-id="${poll.id}">Close Poll</button>` 
+                            : '';
+                        
+                        pollElement.innerHTML = `
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="mb-0">${poll.question}</h6>
+                                    <span class="badge ${poll.is_closed ? 'bg-secondary' : 'bg-success'}">${poll.is_closed ? 'Closed' : 'Active'}</span>
+                                </div>
+                                ${optionsHtml}
+                                <div class="d-flex justify-content-end">
+                                    ${closeButton}
+                                </div>
+                            </div>
+                        `;
+                        
+                        pollsContainer.appendChild(pollElement);
+                    });
+                    
+                    // Add event listeners for vote buttons
+                    document.querySelectorAll('.vote-btn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const pollId = this.dataset.pollId;
+                            const optionId = this.dataset.optionId;
+                            votePoll(pollId, optionId);
+                        });
+                    });
+                    
+                    // Add event listeners for close buttons
+                    document.querySelectorAll('.close-poll-btn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const pollId = this.dataset.pollId;
+                            closePoll(pollId);
+                        });
+                    });
+                    
+                } else {
+                    pollsContainer.innerHTML = '<p class="text-center text-muted">No polls available.</p>';
+                }
+            })
+            .catch(error => {
+                debugLog('Error loading polls:', error);
+                const pollsContainer = document.getElementById('polls-container');
+                pollsContainer.innerHTML = '<p class="text-center text-danger">Error loading polls: ' + error.message + '</p>';
+            });
+    }
+
+    // Function to process mentions in message content
+    function processMentionsInContent(content) {
+        if (!content) return '';
+        
+        // Regular expression to match @mentions
+        const mentionRegex = /@([A-Za-z\s]+)/g;
+        
+        // Replace mentions with styled spans
+        return content.replace(mentionRegex, (match, name) => {
+            // Look up the mentioned user to get their role
+            const mentionedUser = findUserByName(name.trim());
+            const roleClass = mentionedUser ? mentionedUser.role.toLowerCase() : 'participant';
+            
+            // Add animation class randomly to some mentions for visual appeal
+            const animateClass = Math.random() > 0.5 ? 'animate' : '';
+            
+            // Create a gradient mention span with the appropriate role class
+            return `<span class="gradient-mention ${roleClass} ${animateClass}">@${name}</span>`;
+        });
+    }
+    
+    // Function to find a user by name in the community members list
+    function findUserByName(name) {
+        return communityMembers.find(member => 
+            member.name.toLowerCase() === name.toLowerCase()
+        );
+    }
+
+    // Handle message form submission
+    function submitMessageWithPerspectiveCheck() {
+        if (!currentChatId) {
+            alert('Please select a chat first.');
+            return;
+        }
+
+        // Get content safely with checks for CKEDITOR
+        let content = '';
+        if (isCkeditorLoaded() && CKEDITOR.instances['message-input']) {
+            content = CKEDITOR.instances['message-input'].getData().trim();
+            debugLog('Getting content from CKEditor instance');
+        } else {
+            const messageInput = document.getElementById('message-input');
+            content = messageInput ? messageInput.value.trim() : '';
+            debugLog('Getting content from textarea directly');
+        }
+        
+        if (!content) {
+            debugLog('Empty content, not sending message');
+            return; // Don't send empty messages
+        }
+        
+        // Check permissions based on chat type and user role
+        const chatType = document.querySelector(`.chat-link[data-chat-id="${currentChatId}"]`).dataset.chatType;
+        
+        // Use the existing userRole from parent scope
+        debugLog('User role for message posting:', userRole);
+        const isParticipant = userRole.includes('PARTICIPANT');
+        
+        // Participants can't post in ANNONCES or COACH chats
+        if (isParticipant && (chatType === 'ANNONCES' || chatType === 'COACH')) {
+            const chatName = document.querySelector(`.chat-link[data-chat-id="${currentChatId}"]`).dataset.chatName;
+            showPermissionDeniedAlert(chatName, chatType);
+            return;
+        }
+        
+        // Create FormData from the form
+        const formData = new FormData(document.getElementById('message-form'));
+        
+        // Update the content with CKEditor content
+        formData.set('contenu', content);
+        
+        // Extract mentions from message
+        const mentions = extractMentions(content);
+        debugLog('Extracted mentions:', mentions);
+        
+        // Add mentions as JSON if any were found
+        if (mentions.length > 0) {
+            formData.append('mentions', JSON.stringify(mentions));
+        }
+        
+        // Disable submit button during request
+        const submitButton = document.querySelector('#message-form button[type="submit"]');
+        const originalButtonText = submitButton.innerHTML;
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        
+        // First check content with Perspective API directly
+        fetch(`/chat/${currentChatId}/content-check`, {
+            method: 'POST',
+            body: JSON.stringify({
+                content: content,
+                type: 'message'
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.flagged) {
+                // Content was flagged, show alert
+                showToxicityAlert(result.scores);
+                throw new Error('Content flagged as inappropriate');
+            }
+            
+            debugLog('Content passed moderation check, sending message to chat ID:', currentChatId);
+            
+            // Content is ok, choose the correct endpoint based on chat type
+            const endpoint = chatType === 'BOT_SUPPORT' 
+                ? `/chat/${currentChatId}/message/gemini`
+                : `/chat/${currentChatId}/message/new`;
+                
+            // Send the message
+            return fetch(endpoint, {
+                method: 'POST',
+                body: formData
+            });
+        })
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 403) {
+                    throw new Error('You do not have permission to post in this chat.');
+                } else {
+                    return response.json().then(data => {
+                        if (data.error) {
+                            throw new Error(data.error);
+                        } else {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                    }).catch(error => {
+                        if (error instanceof SyntaxError) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        throw error;
+                    });
+                }
+            }
+            return response.json();
+        })
+        .then(data => {
+            debugLog('Message sent response:', data);
+            if (data.success) {
+                // Clear the input safely
+                if (isCkeditorLoaded() && CKEDITOR.instances['message-input']) {
+                    CKEDITOR.instances['message-input'].setData('');
+                } else {
+                    const messageInput = document.getElementById('message-input');
+                    if (messageInput) messageInput.value = '';
+                }
+                
+                // Reload chat to show new message
+                loadChatContent(currentChatId);
+            } else if (data.error) {
+                throw new Error(data.error);
+            }
+        })
+        .catch(error => {
+            debugLog('Error sending message:', error);
+            
+            if (!error.message.includes('Content flagged')) {
+                if (error.message && error.message.includes('permission')) {
+                    // This is a permission error
+                    const chatName = document.querySelector(`.chat-link[data-chat-id="${currentChatId}"]`).dataset.chatName;
+                    showPermissionDeniedAlert(chatName, chatType);
+                } else {
+                    // Other errors
+                    alert('Error sending message: ' + error.message);
+                }
+            }
+        })
+        .finally(() => {
+            // Re-enable submit button
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonText;
+        });
+    }
+
+    // Add this function to display toxicity information
+    function showToxicityAlert(scores) {
+        // Create or get the alert container
+        let alertContainer = document.getElementById('toxicity-alert');
+        if (!alertContainer) {
+            alertContainer = document.createElement('div');
+            alertContainer.id = 'toxicity-alert';
+            alertContainer.className = 'alert alert-warning alert-dismissible fade show';
+            alertContainer.setAttribute('role', 'alert');
+            
+            // Insert it before the messages container
+            const messagesContainer = document.getElementById('messages-container');
+            messagesContainer.parentNode.insertBefore(alertContainer, messagesContainer);
+        }
+        
+        // Format scores for display
+        let scoresHtml = '<ul class="mb-0 mt-2">';
+        for (const [attribute, score] of Object.entries(scores)) {
+            const percentage = Math.round(score * 100);
+            const colorClass = percentage > 70 ? 'text-danger' : 
+                              percentage > 50 ? 'text-warning' : 'text-success';
+            scoresHtml += `<li><strong>${attribute}:</strong> <span class="${colorClass}">${percentage}%</span></li>`;
+        }
+        scoresHtml += '</ul>';
+        
+        // Set the alert content
+        alertContainer.innerHTML = `
+            <strong>Message Not Sent:</strong> Your message was flagged for potentially inappropriate content.
+            <p>The content was analyzed and found to have high scores in the following categories:</p>
+            ${scoresHtml}
+            <p class="mb-0">Please revise your message and try again.</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        // Auto-dismiss after 10 seconds
+        setTimeout(() => {
+            const bsAlert = new bootstrap.Alert(alertContainer);
+            bsAlert.close();
+        }, 10000);
+    }
+
+    // Replace the existing event listener with our new function
+    document.getElementById('message-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitMessageWithPerspectiveCheck();
+    });
+
+    // Function to show a nice permission denied alert
+    function showPermissionDeniedAlert(chatName, chatType) {
+        // Create or get the alert container
+        let alertContainer = document.getElementById('permission-alert');
+        if (!alertContainer) {
+            alertContainer = document.createElement('div');
+            alertContainer.id = 'permission-alert';
+            alertContainer.className = 'alert alert-danger alert-dismissible fade show';
+            alertContainer.setAttribute('role', 'alert');
+            
+            // Insert it before the messages container
+            const messagesContainer = document.getElementById('messages-container');
+            messagesContainer.parentNode.insertBefore(alertContainer, messagesContainer);
+        }
+        
+        // Set the alert content
+        alertContainer.innerHTML = `
+            <strong>Permission Denied!</strong> As a participant, you cannot post messages in "${chatName}" (${chatType}).
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            const bsAlert = new bootstrap.Alert(alertContainer);
+            bsAlert.close();
+        }, 5000);
+    }
+
+    function extractMentions(content) {
+        const mentions = [];
+        const mentionRegex = /@([\w\s]+)/g;
+        let match;
+        
+        while ((match = mentionRegex.exec(content)) !== null) {
+            const mentionedName = match[1].trim();
+            
+            // Find the user ID for this name
+            const mentionedUser = communityMembers.find(member => 
+                member.name === mentionedName
+            );
+            
+            if (mentionedUser) {
+                mentions.push({
+                    id: mentionedUser.id,
+                    name: mentionedName
+                });
+            }
+        }
+        
+        return mentions;
+    }
+
+    function addOption() {
+        const pollOptions = document.getElementById('pollOptions');
+        const optionCount = pollOptions.children.length + 1;
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'mb-2 option-input-group';
+        optionDiv.innerHTML = `
+            <div class="flex-grow-1">
+                <label class="form-label">Option ${optionCount}</label>
+                <input type="text" class="form-control" name="options[]" required>
+            </div>
+            <i class="fas fa-trash remove-option-btn" onclick="this.parentElement.remove()"></i>
+        `;
+        pollOptions.appendChild(optionDiv);
+    }
+
+    // Update poll form submission to use Perspective API too
+    document.getElementById('create-poll-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (!currentChatId) {
+            alert('Please select a chat first.');
+            return;
+        }
+
+        const formData = new FormData(this);
+        
+        // Update the question with CKEditor content safely
+        let questionContent = '';
+        if (isCkeditorLoaded() && CKEDITOR.instances['question']) {
+            questionContent = CKEDITOR.instances['question'].getData().trim();
+            formData.set('question', questionContent);
+        }
+        
+        // Check permissions based on chat type and user role
+        const chatType = document.querySelector(`.chat-link[data-chat-id="${currentChatId}"]`).dataset.chatType;
+        
+        debugLog('User role for poll creation:', userRole);
+        
+        // Only Coachs and Admins can create polls
+        const canCreatePoll = userRole.includes('COACH') || userRole.includes('ADMIN');
+        if (!canCreatePoll) {
+            alert('You do not have permission to create polls.');
+            return;
+        }
+        
+        // Disable the submit button
+        const submitButton = document.querySelector('#create-poll-form button[type="submit"]');
+        const originalButtonText = submitButton.innerHTML;
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+        
+        // First, check content with Perspective API
+        fetch(`/chat/${currentChatId}/content-check`, {
+            method: 'POST',
+            body: JSON.stringify({
+                content: questionContent,
+                type: 'poll'
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.flagged) {
+                // Content was flagged, show alert
+                showToxicityAlert(result.scores);
+                throw new Error('Content flagged as inappropriate');
+            }
+
+            // Content is ok, proceed with creating the poll
+            return fetch(`/chat/${currentChatId}/poll/new`, {
+                method: 'POST',
+                body: formData
+            });
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Failed to create poll');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            debugLog('Poll created successfully:', data);
+            
+            // Reset form fields
+            document.getElementById('pollOptions').innerHTML = '';
+            addOption(); // Add a single empty option
+            
+            // Reset CKEditor content safely
+            if (isCkeditorLoaded() && CKEDITOR.instances['question']) {
+                CKEDITOR.instances['question'].setData('');
+            }
+            
+            // Hide the modal
+            const pollModal = bootstrap.Modal.getInstance(document.getElementById('createPollModal'));
+            pollModal.hide();
+            
+            // Reload chat content to show new poll
+            loadChatContent(currentChatId);
+        })
+        .catch(error => {
+            debugLog('Error creating poll:', error);
+            if (!error.message.includes('Content flagged')) {
+                alert('Error creating poll: ' + error.message);
+            }
+        })
+        .finally(() => {
+            // Re-enable submit button
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonText;
+        });
+    });
+
+    document.getElementById('message-search-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const query = document.getElementById('search-query').value.trim();
+        if (!query) return;
+
+        const resultsContainer = document.getElementById('search-results');
+        resultsContainer.innerHTML = '<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>';
+        resultsContainer.classList.add('show');
+
+        fetch(`/chat/community/${communauteId}/search-ajax?query=${encodeURIComponent(query)}`)
+            .then(response => {
+                debugLog('Search response status:', response.status);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                debugLog('Search data:', data);
+                resultsContainer.innerHTML = '';
+                if (data.success && data.results.length > 0) {
+                    data.results.forEach(result => {
+                        const resultElement = document.createElement('div');
+                        resultElement.className = 'message-card';
+                        resultElement.innerHTML = `
+                            <div class="message-meta">
+                                <span class="message-author">${result.posted_by ? `${result.posted_by.prenomUser} ${result.posted_by.nomUser}` : 'Bot'}</span>
+                                <span class="message-date">${result.post_time}</span>
+                            </div>
+                            <span class="message-chat">${result.chat_id.nom}</span>
+                            <p class="message-content">${result.contenu.replace(new RegExp(query, 'gi'), match => `<span class="highlight">${match}</span>`)}</p>
+                            <a href="#" class="btn btn-sm btn-outline-primary view-message-btn" data-chat-id="${result.chat_id.id}">View in Chat</a>
+                        `;
+                        resultsContainer.appendChild(resultElement);
+                    });
+                } else {
+                    resultsContainer.innerHTML = '<p class="text-center text-muted">No results found.</p>';
+                }
+            })
+            .catch(error => {
+                debugLog('Error searching messages:', error);
+                resultsContainer.innerHTML = '<p class="text-center text-danger">Error loading search results: ' + error.message + '</p>';
+            });
+    });
+
+    document.getElementById('search-results').addEventListener('click', function(e) {
+        if (e.target.classList.contains('view-message-btn')) {
+            e.preventDefault();
+            const chatId = e.target.dataset.chatId;
+            debugLog('View message in chat:', chatId);
+            const chatLink = document.querySelector(`.chat-link[data-chat-id="${chatId}"]`);
+            if (chatLink) {
+                chatLink.click();
+            } else {
+                debugLog('Chat link not found for ID:', chatId);
+            }
+        }
+    });
+
+    // Add this function to format bot responses
+    function formatBotResponse(text) {
+        if (!text) return '';
+        
+        // Replace line breaks with HTML breaks
+        let formatted = text.replace(/\n/g, '<br>');
+        
+        // Format titles (lines with * or # at beginning)
+        formatted = formatted.replace(/^\s*(?:[*#]+)\s*(.*?)$/gm, '<strong>$1</strong>');
+        
+        // Format bullet points
+        formatted = formatted.replace(/^\s*[-•]\s*(.*?)$/gm, '<br>• $1');
+        
+        // Format numbered lists
+        formatted = formatted.replace(/^\s*(\d+)[\.)]\s*(.*?)$/gm, '<br>$1. $2');
+        
+        // Format bold text with ** or __
+        formatted = formatted.replace(/\*\*(.*?)\*\*|__(.*?)__/g, '<strong>$1$2</strong>');
+        
+        // Format italic text with * or _
+        formatted = formatted.replace(/(?<!\*)\*(?!\*)(.*?)(?<!\*)\*(?!\*)|_(.*?)_/g, '<em>$1$2</em>');
+        
+        // Format code blocks
+        formatted = formatted.replace(/`(.*?)`/g, '<code>$1</code>');
+        
+        return formatted;
+    }
+
+    function renderMentionSuggestions(members) {
+        debugLog('Rendering mention suggestions for members:', members);
+        
+        // Make sure we have the mentionContainer element
+        if (!mentionContainer) {
+            debugLog('Creating mention container');
+            mentionContainer = document.createElement('div');
+            mentionContainer.id = 'mention-container';
+            mentionContainer.className = 'mention-container';
+            document.body.appendChild(mentionContainer);
+        }
+        
+        // Clear any existing content
+        mentionContainer.innerHTML = '';
+        
+        // Set explicit visibility and styles
+        mentionContainer.style.display = 'block';
+        mentionContainer.style.zIndex = '10001'; // Higher than editor elements
+        mentionContainer.style.position = 'absolute';
+        mentionContainer.style.minWidth = '300px';
+        mentionContainer.style.maxWidth = '400px';
+        mentionContainer.style.maxHeight = '300px';
+        mentionContainer.style.overflow = 'auto';
+        mentionContainer.style.backgroundColor = '#ffffff';
+        mentionContainer.style.border = '1px solid #d0d0d0';
+        mentionContainer.style.borderRadius = '8px';
+        mentionContainer.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
+        
+        // For CKEditor, position near the editor instance
+        if (isCkeditorLoaded() && CKEDITOR.instances['message-input']) {
+            try {
+                const editor = CKEDITOR.instances['message-input'];
+                const selection = editor.getSelection();
+                
+                if (selection) {
+                    const range = selection.getRanges()[0];
+                    if (range) {
+                        // Get the cursor position
+                        const cursorElement = selection.getStartElement();
+                        if (cursorElement) {
+                            const cursorRect = cursorElement.$.getBoundingClientRect();
+                            
+                            // Position dropdown below cursor
+                            mentionContainer.style.top = (cursorRect.bottom + 5) + 'px';
+                            mentionContainer.style.left = cursorRect.left + 'px';
+                            debugLog('Positioned mention container below cursor');
+                        } else {
+                            // Fallback to editor position
+                            const editorRect = editor.container.$.getBoundingClientRect();
+                            mentionContainer.style.top = (editorRect.top + 30) + 'px';
+                            mentionContainer.style.left = editorRect.left + 'px';
+                            debugLog('Positioned mention container relative to editor (cursor element not found)');
+                        }
+                    } else {
+                        positionFallback();
+                    }
+                } else {
+                    positionFallback();
+                }
+            } catch (err) {
+                debugLog('Error positioning mention container for CKEditor:', err);
+                positionFallback();
+            }
+        } else {
+            // Regular textarea positioning
+            positionFallback();
+        }
+        
+        // Fallback positioning function
+        function positionFallback() {
+            // Center in viewport as fallback
+            mentionContainer.style.top = '50%';
+            mentionContainer.style.left = '50%';
+            mentionContainer.style.transform = 'translate(-50%, -50%)';
+            debugLog('Using fallback central positioning for mention container');
+        }
+        
+        // Add a title to the dropdown
+        const titleElement = document.createElement('div');
+        titleElement.className = 'mention-title';
+        titleElement.innerHTML = members.length > 0 
+            ? 'Select a member to mention:'
+            : 'No matching members found';
+        mentionContainer.appendChild(titleElement);
+        
+        // Create a div for each member or show "no results" message
+        if (members.length === 0) {
+            const noResultsItem = document.createElement('div');
+            noResultsItem.className = 'mention-item mention-no-results';
+            noResultsItem.innerHTML = `
+                <div style="padding: 15px; text-align: center; color: #666;">
+                    <i>No matching members found</i><br>
+                    <small>Try a different search term or click outside to cancel</small>
+                </div>
+            `;
+            mentionContainer.appendChild(noResultsItem);
+        } else {
+            members.forEach((member, index) => {
+                const mentionItem = document.createElement('div');
+                mentionItem.className = 'mention-item';
+                
+                // Determine role class based on member data or default to 'participant'
+                const role = member.role ? member.role.toLowerCase() : 'participant';
+                mentionItem.classList.add(`role-${role}`);
+                
+                mentionItem.dataset.id = member.id;
+                mentionItem.dataset.name = member.name;
+                
+                // Get initials for avatar
+                const name = member.name || '';
+                const nameParts = name.split(' ');
+                const initials = nameParts.length > 1 
+                    ? (nameParts[0].charAt(0) + nameParts[1].charAt(0)).toUpperCase()
+                    : name.substring(0, 2).toUpperCase();
+                
+                mentionItem.innerHTML = `
+                    <div class="mention-avatar">${initials}</div>
+                    <div class="mention-info">
+                        <div class="mention-name">${member.name || 'Unknown'}</div>
+                        <div class="mention-role">${role.toLowerCase().replace('_', ' ')}</div>
+                    </div>
+                `;
+                
+                // Add highlight for first item
+                if (index === 0) {
+                    mentionItem.classList.add('active');
+                    mentionSelectedIndex = 0;
+                }
+                
+                // Add click handler
+                mentionItem.addEventListener('click', () => {
+                    selectMention(mentionItem);
+                });
+                
+                mentionContainer.appendChild(mentionItem);
+            });
+        }
+        
+        // Show the container and add active class
+        mentionContainer.classList.add('show');
+        mentionContainer.style.display = 'block';
+        
+        // Ensure the mention container is in the viewport
+        const rect = mentionContainer.getBoundingClientRect();
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+        
+        // Adjust if off the bottom of the screen
+        if (rect.bottom > viewportHeight) {
+            mentionContainer.style.top = (parseInt(mentionContainer.style.top) - (rect.bottom - viewportHeight) - 20) + 'px';
+        }
+        
+        // Adjust if off the right of the screen
+        if (rect.right > viewportWidth) {
+            mentionContainer.style.left = (parseInt(mentionContainer.style.left) - (rect.right - viewportWidth) - 20) + 'px';
+        }
+        
+        debugLog('Mention suggestions rendered successfully');
+    }
+
+    function showMentionSuggestions(query) {
+        debugLog('Showing mention suggestions with query:', query);
+        
+        // No members available yet, try fetching them
+        if (!communityMembers || communityMembers.length === 0) {
+            debugLog('No community members loaded yet, fetching...');
+            fetchCommunityMembers();
+            // Show all members once loaded
+            setTimeout(() => {
+                if (communityMembers && communityMembers.length > 0) {
+                    renderMentionSuggestions(communityMembers);
+                }
+            }, 500);
+            return;
+        }
+        
+        // If no query or very short query, show all members
+        if (!query || query.length < 1) {
+            debugLog('Empty query, showing all members');
+            renderMentionSuggestions(communityMembers);
+            return;
+        }
+        
+        // Filter members by query - any part of name or email
+        const lowercaseQuery = query.toLowerCase();
+        const filteredMembers = communityMembers.filter(member => {
+            return member.name.toLowerCase().includes(lowercaseQuery) || 
+                   (member.email && member.email.toLowerCase().includes(lowercaseQuery));
+        });
+        
+        debugLog('Showing mention suggestions for:', query);
+        debugLog('Filtered members:', filteredMembers);
+        
+        // Always render even if no filtered members to show a "no matches" message
+        renderMentionSuggestions(filteredMembers);
+    }
+
+    function handleMentionKeydown(e) {
+        // If mentions are not active, do nothing
+        if (!mentionActive || mentionContainer.style.display === 'none') {
+            return;
+        }
+        
+        const mentionItems = mentionContainer.querySelectorAll('.mention-item');
+        
+        // Handle keyboard navigation
+        switch (e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                // Move selection down
+                if (mentionSelectedIndex < mentionItems.length - 1) {
+                    // Remove active class from current item
+                    if (mentionSelectedIndex >= 0) {
+                        mentionItems[mentionSelectedIndex].classList.remove('active');
+                    }
+                    // Add active class to next item
+                    mentionSelectedIndex++;
+                    mentionItems[mentionSelectedIndex].classList.add('active');
+                    
+                    // Scroll to the item if necessary
+                    const selectedItem = mentionItems[mentionSelectedIndex];
+                    if (selectedItem.offsetTop + selectedItem.offsetHeight > mentionContainer.scrollTop + mentionContainer.offsetHeight) {
+                        mentionContainer.scrollTop = selectedItem.offsetTop + selectedItem.offsetHeight - mentionContainer.offsetHeight;
+                    }
+                }
+                break;
+                
+            case 'ArrowUp':
+                e.preventDefault();
+                // Move selection up
+                if (mentionSelectedIndex > 0) {
+                    // Remove active class from current item
+                    mentionItems[mentionSelectedIndex].classList.remove('active');
+                    
+                    // Add active class to previous item
+                    mentionSelectedIndex--;
+                    mentionItems[mentionSelectedIndex].classList.add('active');
+                    
+                    // Scroll to the item if necessary
+                    const selectedItem = mentionItems[mentionSelectedIndex];
+                    if (selectedItem.offsetTop < mentionContainer.scrollTop) {
+                        mentionContainer.scrollTop = selectedItem.offsetTop;
+                    }
+                }
+                break;
+                
+            case 'Enter':
+                e.preventDefault();
+                // Select current item
+                if (mentionSelectedIndex >= 0 && mentionSelectedIndex < mentionItems.length) {
+                    selectMention(mentionItems[mentionSelectedIndex]);
+                } else if (mentionItems.length > 0) {
+                    // Select first item if none is selected
+                    selectMention(mentionItems[0]);
+                }
+                break;
+                
+            case 'Escape':
+                e.preventDefault();
+                // Close mention container
+                closeMentionContainer();
+                break;
+        }
+    }
+
+    function handleMentionKeyup(e) {
+        // Ignore if special key (excluding @ which has keyCode 50)
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter' || e.key === 'Escape') {
+            return;
+        }
+        
+        const cursorPosition = this.selectionStart;
+        const textBeforeCursor = this.value.substring(0, cursorPosition);
+        
+        // Check if we're inside a potential mention (after an @ symbol)
+        const lastAtSymbol = textBeforeCursor.lastIndexOf('@');
+        
+        if (lastAtSymbol !== -1) {
+            // Check if there's a space between the last @ and the cursor
+            const textBetweenAtAndCursor = textBeforeCursor.substring(lastAtSymbol + 1);
+            
+            debugLog('@ detected at position:', lastAtSymbol);
+            debugLog('Text after @:', textBetweenAtAndCursor);
+            
+            // Show mentions as long as there's no space after the @
+            if (!textBetweenAtAndCursor.includes(' ')) {
+                mentionActive = true;
+                mentionStartIndex = lastAtSymbol;
+                mentionSearchText = textBetweenAtAndCursor;
+                
+                // Show mention suggestions for current search text
+                showMentionSuggestions(mentionSearchText);
+                return;
+            }
+        }
+        
+        // If we got here, close the mention container
+        if (mentionActive) {
+            closeMentionContainer();
+        }
+    }
+
+    function closeMentionContainer() {
+        debugLog('Closing mention container');
+        mentionContainer.innerHTML = '';
+        mentionContainer.classList.remove('show');
+        mentionContainer.style.display = 'none';
+        mentionActive = false;
+        mentionSearchText = '';
+        mentionSelectedIndex = -1;
+    }
+    
+    function selectMention(mentionItem) {
+        debugLog('Selecting mention:', mentionItem.dataset);
+        const userId = mentionItem.dataset.id;
+        const userName = mentionItem.dataset.name;
+        
+        // Replace the @query with the selected mention
+        const textBeforeMention = messageTextarea.value.substring(0, mentionStartIndex);
+        const textAfterMention = messageTextarea.value.substring(messageTextarea.selectionStart);
+        
+        // Use data attribute to store metadata about the mention for later processing
+        const newText = textBeforeMention + `@${userName} ` + textAfterMention;
+        debugLog('Replacing text with:', newText);
+        messageTextarea.value = newText;
+        
+        // Close the mention container
+        closeMentionContainer();
+        
+        // Focus back on the textarea
+        messageTextarea.focus();
+    }
+
+    // Function to vote on a poll
+    function votePoll(pollId, optionId) {
+        debugLog('Voting on poll:', { pollId, optionId });
+        
+        fetch(`/chat/poll/${pollId}/vote`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ option_id: optionId })
+        })
+        .then(response => {
+            debugLog('Vote response status:', response.status);
+            if (!response.ok) {
+                return response.text().then(text => {
+                    debugLog('Error response text:', text);
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            debugLog('Vote data:', data);
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+            
+            // Reload the chat content to update the polls
+            loadChatContent(currentChatId);
+        })
+        .catch(error => {
+            debugLog('Error voting on poll:', error);
+            alert('Error voting on poll: ' + error.message);
+        });
+    }
+    
+    // Function to close a poll
+    function closePoll(pollId) {
+        debugLog('Closing poll:', pollId);
+        
+        fetch(`/chat/poll/${pollId}/close`, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            debugLog('Close poll response status:', response.status);
+            if (!response.ok) {
+                return response.text().then(text => {
+                    debugLog('Error response text:', text);
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            debugLog('Close poll data:', data);
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+            
+            // Reload the chat content to update the polls
+            loadChatContent(currentChatId);
+        })
+        .catch(error => {
+            debugLog('Error closing poll:', error);
+            alert('Error closing poll: ' + error.message);
+        });
+    }
+
+    // Handle mention selection in CKEditor
+    function selectMention(mentionItem) {
+        if (!mentionActive || !mentionItem) return;
+        
+        debugLog('Selecting mention item:', mentionItem.dataset);
+        const userId = mentionItem.dataset.id;
+        const userName = mentionItem.dataset.name;
+        
+        // Insert the mention in CKEditor
+        if (isCkeditorLoaded() && CKEDITOR.instances['message-input']) {
+            try {
+                const editor = CKEDITOR.instances['message-input'];
+                
+                // First, find and remove the @ character and any text after it
+                const content = editor.getData();
+                let newContent = content;
+                
+                // Replace the last @ and any text after it with nothing
+                // This is important because we need to remove the partial mention
+                const atIndex = content.lastIndexOf('@');
+                if (atIndex >= 0) {
+                    // Find any HTML tag that might be open
+                    const openTagIndex = content.lastIndexOf('<', atIndex);
+                    const closeTagIndex = content.indexOf('>', atIndex);
+                    
+                    if (openTagIndex > 0 && closeTagIndex > 0 && closeTagIndex > openTagIndex) {
+                        // We're inside a tag, need to be careful
+                        const tag = content.substring(openTagIndex, closeTagIndex + 1);
+                        debugLog('Found tag around @:', tag);
+                        
+                        // Only proceed if it's a reasonable tag (not too long)
+                        if (tag.length < 50) {
+                            // Keep content up to the @ character
+                            newContent = content.substring(0, atIndex);
+                            
+                            // Add close tag if needed
+                            if (tag.indexOf('</') < 0 && !tag.endsWith('/>')) {
+                                const tagName = tag.match(/<([a-z0-9]+)/i);
+                                if (tagName && tagName[1]) {
+                                    newContent += `</${tagName[1]}>`;
+                                }
+                            }
+                            
+                            // Add the rest of the content after the current tag
+                            newContent += content.substring(closeTagIndex + 1);
+                        }
+                    } else {
+                        // Simple case - not inside a tag
+                        // Keep all content up to the @ character, then skip to the next whitespace or tag
+                        const endIndex = content.substring(atIndex).search(/[\s<]/);
+                        if (endIndex >= 0) {
+                            newContent = content.substring(0, atIndex) + content.substring(atIndex + endIndex);
+                        } else {
+                            // If no whitespace or tag after @, just remove everything after @
+                            newContent = content.substring(0, atIndex);
+                        }
+                    }
+                    
+                    // Apply the updated content
+                    editor.setData(newContent);
+                }
+                
+                // Create rich mention text with the appropriate classes
+                const role = mentionItem.classList.contains('role-admin') ? 'admin' : 
+                             mentionItem.classList.contains('role-organisateur') ? 'organisateur' :
+                             mentionItem.classList.contains('role-coach') ? 'coach' : 'participant';
+                
+                // Now insert the styled mention into the editor at cursor position
+                const mentionHtml = `<span class="gradient-mention ${role}">@${userName}</span>&nbsp;`;
+                editor.insertHtml(mentionHtml);
+                
+                debugLog('Mention inserted successfully with HTML:', mentionHtml);
+                
+                // Focus back on editor
+                editor.focus();
+            } catch(err) {
+                debugLog('Error inserting mention:', err);
+                
+                // Fallback to simpler insertion
+                try {
+                    const editor = CKEDITOR.instances['message-input'];
+                    editor.insertText('@' + userName + ' ');
+                    editor.focus();
+                    debugLog('Mention inserted via fallback method');
+                } catch (fallbackErr) {
+                    debugLog('Even fallback mention insertion failed:', fallbackErr);
+                }
+            }
+        } else if (messageTextarea) {
+            // For regular textareas
+            try {
+                const currentValue = messageTextarea.value || '';
+                const cursorPos = messageTextarea.selectionStart || 0;
+                const textBefore = currentValue.substring(0, cursorPos);
+                const textAfter = currentValue.substring(cursorPos);
+                
+                // Replace the last @ and any text after it with nothing
+                const lastAtPos = textBefore.lastIndexOf('@');
+                const mentionText = '@' + userName + ' ';
+                
+                if (lastAtPos >= 0) {
+                    // There's an @ character before the cursor
+                    const newTextBefore = textBefore.substring(0, lastAtPos) + mentionText;
+                    messageTextarea.value = newTextBefore + textAfter;
+                    messageTextarea.selectionStart = messageTextarea.selectionEnd = newTextBefore.length;
+                } else {
+                    // No @ found, just insert at cursor
+                    messageTextarea.value = textBefore + mentionText + textAfter;
+                    messageTextarea.selectionStart = messageTextarea.selectionEnd = textBefore.length + mentionText.length;
+                }
+                
+                messageTextarea.focus();
+            } catch (err) {
+                debugLog('Error inserting mention in textarea:', err);
+            }
+        }
+        
+        // Close the mention container
+        closeMentionContainer();
+    }
+
+    // Close the mention container
+    function closeMentionContainer() {
+        if (mentionContainer) {
+            mentionContainer.classList.remove('show');
+        }
+        mentionActive = false;
+        mentionSearchText = '';
+        mentionSelectedIndex = -1;
+    }
+
+    // Initialize CKEditor for this textarea when it's displayed
+    document.querySelector('.chat-link').addEventListener('click', function() {
+        if (isCkeditorLoaded()) {
+            setTimeout(function() {
+                if (!CKEDITOR.instances['message-input']) {
+                    CKEDITOR.replace('message-input', {
+                        toolbar: [
+                            ['Bold', 'Italic', 'Underline', '-', 'Link', '-', 'NumberedList', 'BulletedList', '-', 'Image', '-', 'TextColor']
+                        ],
+                        height: 150,
+                        width: '100%',
+                        uiColor: '#f8f9fa',
+                        disableNativeSpellChecker: false,
+                        extraPlugins: 'autogrow',
+                        autoGrow_minHeight: 150,
+                        autoGrow_maxHeight: 300,
+                        removePlugins: 'resize',
+                        enterMode: CKEDITOR.ENTER_BR,
+                        allowedContent: true // Allow all content and tags
+                    });
+                    debugLog('CKEditor for message initialized directly');
+                    
+                    // Add a listener once CKEditor is fully initialized
+                    CKEDITOR.instances['message-input'].on('instanceReady', function(evt) {
+                        debugLog('CKEditor instance is ready');
+                        
+                        // Add @ mention button to toolbar
+                        addMentionButton(evt.editor);
+                        
+                        // Add specific event for @ detection
+                        const editor = evt.editor;
+                        
+                        // Add extra focus handling for better cursor position detection
+                        editor.on('focus', function() {
+                            debugLog('CKEditor focused');
+                            // Ensure the editor has a higher z-index when focused
+                            editor.container.$.style.zIndex = '9999';
+                        });
+                        
+                        // Add special handling for pasting to preserve mentions
+                        editor.on('paste', function(evt) {
+                            debugLog('Content pasted into CKEditor');
+                            
+                            // Allow the paste to proceed normally
+                            // We'll just make sure mentions are rendered correctly
+                            setTimeout(function() {
+                                processMentionsInEditor(editor);
+                            }, 100);
+                        });
+                    });
+                }
+            }, 300);
+        } else {
+            debugLog('CKEditor not found!');
+        }
+    });
+    
+    // Function to add a custom @ mention button to the toolbar
+    function addMentionButton(editor) {
+        try {
+            // Add a small button or link near the editor
+            const mentionButton = document.createElement('button');
+            mentionButton.innerHTML = '<strong>@</strong>';
+            mentionButton.className = 'btn btn-sm btn-primary mention-trigger-btn';
+            mentionButton.style.position = 'absolute';
+            mentionButton.style.top = '10px';
+            mentionButton.style.right = '10px';
+            mentionButton.style.zIndex = '10000';  // Increased z-index
+            mentionButton.style.borderRadius = '50%';
+            mentionButton.style.width = '30px';
+            mentionButton.style.height = '30px';
+            mentionButton.style.padding = '0';
+            mentionButton.style.display = 'flex';
+            mentionButton.style.alignItems = 'center';
+            mentionButton.style.justifyContent = 'center';
+            mentionButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+            mentionButton.title = 'Mention a community member (@ symbol)';
+            
+            // Get the CKEditor container and append our button
+            const editorContainer = editor.container.$;
+            editorContainer.style.position = 'relative';
+            editorContainer.appendChild(mentionButton);
+            
+            // Add click event listener
+            mentionButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                debugLog('Mention button clicked');
+                
+                // Insert @ at cursor position
+                editor.insertText('@');
+                
+                // Set active state and show mentions
+                mentionActive = true;
+                atDetected = true;  // Set the detection flag
+                mentionSearchText = '';
+                mentionSelectedIndex = 0;
+                
+                // Make sure community members are loaded
+                if (!communityMembers || communityMembers.length === 0) {
+                    fetchCommunityMembers();
+                    setTimeout(() => showMentionSuggestions(''), 500);
+                } else {
+                    showMentionSuggestions('');
+                }
+                
+                // Position dropdown properly
+                const selection = editor.getSelection();
+                if (selection) {
+                    const range = selection.getRanges()[0];
+                    if (range) {
+                        // Get position of cursor
+                        const cursorElement = selection.getStartElement();
+                        if (cursorElement) {
+                            const cursorRect = cursorElement.$.getBoundingClientRect();
+                            
+                            // Position dropdown below cursor
+                            mentionContainer.style.position = 'absolute';
+                            mentionContainer.style.top = (cursorRect.bottom + 5) + 'px';
+                            mentionContainer.style.left = cursorRect.left + 'px';
+                        }
+                    }
+                }
+                
+                // Focus back on editor
+                editor.focus();
+            });
+            
+            debugLog('Added mention button to CKEditor');
+        } catch (err) {
+            debugLog('Error adding mention button:', err);
+        }
+    }
+
+    // Initialize CKEditor for the poll question when the modal is opened
+    document.getElementById('createPollModal').addEventListener('shown.bs.modal', function() {
+        if (isCkeditorLoaded()) {
+            setTimeout(function() {
+                if (CKEDITOR.instances['question']) {
+                    CKEDITOR.instances['question'].destroy();
+                }
+                
+                // Create a new CKEditor instance with poll_config
+                CKEDITOR.replace('question', {
+                    toolbar: [
+                        ['Bold', 'Italic', 'Underline', '-', 'Link', '-', 'NumberedList', 'BulletedList', '-', 'TextColor']
+                    ],
+                    height: 200,
+                    width: '100%',
+                    uiColor: '#f8f9fa'
+                });
+                debugLog('CKEditor for poll question initialized');
+            }, 300);
+        } else {
+            debugLog('CKEditor not available when opening poll modal');
+        }
+    });
+
+    // Adding the placeholder creation function at the top of the script
+    function createAvatarPlaceholder(initials) {
+        return '<div class="avatar-placeholder" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background-color:#6c757d; color:white; font-weight:bold; font-size:16px;">' + initials + '</div>';
+    }
+
+    // Function to process mentions in the editor content
+    function processMentionsInEditor(editor) {
+        // Get the current content
+        const content = editor.getData();
+        
+        // Check if there are unformatted mentions (@username)
+        const mentionRegex = /@([a-zA-Z0-9_\-\.]+)/g;
+        let match;
+        let modified = false;
+        let newContent = content;
+        
+        // Replace each mention with the styled version
+        while ((match = mentionRegex.exec(content)) !== null) {
+            // Check if this mention is already in a span.gradient-mention
+            const prevChar = content.charAt(match.index - 1);
+            
+            // Only process mentions that aren't already in spans and aren't part of emails
+            if (prevChar !== '>' && prevChar !== '@') {
+                const fullMatch = match[0]; // @username
+                const username = match[1]; // username without @
+                
+                // Look up the user in community members
+                const mentionedUser = communityMembers.find(member => 
+                    member.name === username || member.name.replace(' ', '') === username
+                );
+                
+                if (mentionedUser) {
+                    // Determine role
+                    const role = mentionedUser.role ? mentionedUser.role.toLowerCase() : 'participant';
+                    
+                    // Create the styled mention
+                    const styledMention = `<span class="gradient-mention ${role}">${fullMatch}</span>`;
+                    
+                    // Replace in the content - be careful to only replace the exact match
+                    // Create a regex that matches exactly this occurrence
+                    const exactMatchRegex = new RegExp(`(^|[^>])${fullMatch}($|[^<])`, 'g');
+                    newContent = newContent.replace(exactMatchRegex, function(match, before, after) {
+                        return before + styledMention + after;
+                    });
+                    
+                    modified = true;
+                }
+            }
+        }
+        
+        // If modifications were made, update the editor content
+        if (modified) {
+            debugLog('Mentions processed in editor content');
+            editor.setData(newContent);
+        }
+    }
+
+    // Add this right after the definition of fetchCommunityMembers and before any other function
+
+    // Debug function to force show mentions
+    function debugShowMentions() {
+        debugLog('DEBUG: Force showing mention dropdown');
+        
+        mentionActive = true;
+        mentionSearchText = '';
+        mentionSelectedIndex = 0;
+        
+        // Make sure we have the mentionContainer element
+        if (!mentionContainer) {
+            debugLog('Creating mention container');
+            mentionContainer = document.createElement('div');
+            mentionContainer.id = 'mention-container';
+            mentionContainer.className = 'mention-container';
+            document.body.appendChild(mentionContainer);
+        }
+        
+        // Force it to be visible and centered
+        mentionContainer.style.display = 'block';
+        mentionContainer.style.position = 'fixed';
+        mentionContainer.style.top = '50%';
+        mentionContainer.style.left = '50%';
+        mentionContainer.style.transform = 'translate(-50%, -50%)';
+        mentionContainer.style.zIndex = '999999';
+        mentionContainer.style.width = '300px';
+        mentionContainer.style.maxHeight = '400px';
+        mentionContainer.style.borderRadius = '8px';
+        mentionContainer.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)';
+        
+        // Check our community members
+        if (!communityMembers || communityMembers.length === 0) {
+            debugLog('No community members loaded, using test data');
+            useTestMembers();
+        }
+        
+        // Show members count
+        const membersCount = communityMembers ? communityMembers.length : 0;
+        debugLog('Community members count:', membersCount);
+        
+        // Display members directly
+        mentionContainer.innerHTML = '';
+        
+        // Add header
+        const titleElement = document.createElement('div');
+        titleElement.className = 'mention-title';
+        titleElement.innerHTML = `DEBUG: Community Members (${membersCount})`;
+        mentionContainer.appendChild(titleElement);
+        
+        // Add members
+        if (membersCount > 0) {
+            communityMembers.forEach((member, index) => {
+                const item = document.createElement('div');
+                item.className = 'mention-item';
+                if (index === 0) item.classList.add('active');
+                
+                const role = member.role ? member.role.toLowerCase() : 'participant';
+                const name = member.name || 'Unknown';
+                
+                item.innerHTML = `
+                    <div style="padding: 10px; border-bottom: 1px solid #eee;">
+                        <strong>${name}</strong> (${role})
+                    </div>
+                `;
+                
+                mentionContainer.appendChild(item);
+            });
+        } else {
+            const noMembers = document.createElement('div');
+            noMembers.style.padding = '20px';
+            noMembers.style.textAlign = 'center';
+            noMembers.innerHTML = 'No community members found';
+            mentionContainer.appendChild(noMembers);
+        }
+        
+        // Add close button
+        const closeBtn = document.createElement('div');
+        closeBtn.style.padding = '10px';
+        closeBtn.style.textAlign = 'center';
+        closeBtn.style.borderTop = '1px solid #eee';
+        closeBtn.innerHTML = '<button class="btn btn-sm btn-secondary">Close</button>';
+        closeBtn.onclick = function() {
+            mentionContainer.style.display = 'none';
+            mentionActive = false;
+        };
+        mentionContainer.appendChild(closeBtn);
+        
+        mentionContainer.classList.add('show');
+    }
+
+    // Modify the addMentionButton function to ensure the button is visible and works
+    function addMentionButton(editor) {
+        try {
+            // Create a more visible button
+            const mentionButton = document.createElement('button');
+            mentionButton.innerHTML = '<strong>@</strong>';
+            mentionButton.className = 'btn btn-primary mention-trigger-btn';
+            mentionButton.style.position = 'absolute';
+            mentionButton.style.top = '10px';
+            mentionButton.style.right = '10px';
+            mentionButton.style.zIndex = '100000';
+            mentionButton.style.width = '40px';
+            mentionButton.style.height = '40px';
+            mentionButton.style.borderRadius = '50%';
+            mentionButton.style.fontSize = '18px';
+            mentionButton.style.fontWeight = 'bold';
+            mentionButton.style.padding = '0';
+            mentionButton.style.display = 'flex';
+            mentionButton.style.alignItems = 'center';
+            mentionButton.style.justifyContent = 'center';
+            mentionButton.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+            mentionButton.title = 'Mention a community member';
+            
+            // Get the CKEditor container and append our button
+            const editorContainer = editor.container.$;
+            editorContainer.style.position = 'relative';
+            editorContainer.appendChild(mentionButton);
+            
+            // Add click event listener that will always work
+            mentionButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                debugLog('Mention button clicked');
+                
+                // Force show the debug mentions view
+                debugShowMentions();
+            });
+            
+            debugLog('Added new mention button to CKEditor');
+            
+            // Also add a global mention button outside the editor for testing
+            const globalButton = document.createElement('button');
+            globalButton.innerHTML = 'Test @Mentions';
+            globalButton.className = 'btn btn-warning';
+            globalButton.style.position = 'fixed';
+            globalButton.style.bottom = '10px';
+            globalButton.style.right = '10px';
+            globalButton.style.zIndex = '999999';
+            
+            globalButton.addEventListener('click', function() {
+                debugShowMentions();
+            });
+            
+            document.body.appendChild(globalButton);
+        } catch (err) {
+            debugLog('Error adding mention button:', err);
+        }
+    }
+
+    // Initialize CKEditor
+    ClassicEditor
+            .create(document.querySelector('#message-input'), {
+                toolbar: ['bold', 'italic', 'bulletedList', 'numberedList', 'link', 'blockQuote', 'uploadImage', 'insertTable', 'undo', 'redo'],
+                image: {
+                    toolbar: ['imageStyle:full', 'imageStyle:side', '|', 'imageTextAlternative']
+                }
+            })
+            .then(editor => {
+                window.editor = editor;
+                console.log('CKEditor initialized successfully');
+            })
+            .catch(error => {
+                console.error('Error initializing CKEditor:', error);
+            });
+    
+    // Setup Test Mentions Button
+    document.addEventListener('DOMContentLoaded', function() {
+        const testMentionsBtn = document.getElementById('test-mentions-btn');
+        if (testMentionsBtn) {
+            // Make sure the button is visible and styled properly
+            testMentionsBtn.style.display = 'block';
+            testMentionsBtn.style.fontWeight = 'bold';
+            testMentionsBtn.style.backgroundColor = '#ffc107';
+            testMentionsBtn.style.borderColor = '#ffc107';
+            testMentionsBtn.innerHTML = '<strong>@</strong> Test @Mentions';
+            
+            // Add click handler
+            testMentionsBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Test mentions button clicked');
+                debugShowMentions();
+            });
+        }
+    });
+    
+    // Function to force display the mentions dropdown for testing
+    function debugShowMentions() {
+        console.log('Forcing mentions dropdown to display');
+        
+        // Get the mention container
+        const mentionContainer = document.getElementById('mention-container');
+        if (!mentionContainer) {
+            console.error('Mention container not found');
+            return;
+        }
+        
+        // Show loading state
+        mentionContainer.innerHTML = '<div class="mention-title">Loading Community Members...</div><div style="padding: 20px; text-align: center;"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+        mentionContainer.style.display = 'block';
+        
+        // Position it in a visible location
+        mentionContainer.style.position = 'absolute';
+        mentionContainer.style.top = '50%';
+        mentionContainer.style.left = '50%';
+        mentionContainer.style.transform = 'translate(-50%, -50%)';
+        mentionContainer.style.width = '300px';
+        mentionContainer.style.zIndex = '10000';
+        mentionContainer.style.backgroundColor = '#fff';
+        mentionContainer.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
+        mentionContainer.style.border = '1px solid #ddd';
+        mentionContainer.style.borderRadius = '4px';
+        mentionContainer.style.padding = '10px';
+        mentionContainer.style.maxHeight = '400px';
+        mentionContainer.style.overflowY = 'auto';
+        
+        // Fetch community members
+        fetch(`/chat/community/${communauteId}/members`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to load community members');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success && data.members && data.members.length > 0) {
+                    displayDebugMembers(data.members);
+                } else {
+                    // Try alternative endpoint
+                    return fetch(`/community/${communauteId}/members`);
+                }
+            })
+            .then(response => {
+                if (!response) return; // Skip if first request was successful
+                if (!response.ok) {
+                    throw new Error('Failed with alternative URL too');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data) return; // Skip if first request was successful
+                if (data.success && data.members) {
+                    displayDebugMembers(data.members);
+                } else {
+                    throw new Error('No valid data from both endpoints');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching members:', error);
+                // Show error and use fallback test data
+                mentionContainer.innerHTML = `
+                    <div class="mention-title">Debug @Mentions</div>
+                    <div style="padding: 10px; color: red;">Error: ${error.message}</div>
+                    <div style="padding: 10px;">Using fallback test data:</div>
+                `;
+                
+                // Use fallback test data
+                const testMembers = [
+                    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'ADMIN' },
+                    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'ORGANISATEUR' },
+                    { id: 3, name: 'Alice Johnson', email: 'alice@example.com', role: 'COACH' },
+                    { id: 4, name: 'Bob Brown', email: 'bob@example.com', role: 'PARTICIPANT' },
+                    { id: 5, name: 'Charlie Davis', email: 'charlie@example.com', role: 'PARTICIPANT' }
+                ];
+                
+                displayDebugMembers(testMembers);
+            });
+    }
+    
+    // Display debug members list
+    function displayDebugMembers(members) {
+        const mentionContainer = document.getElementById('mention-container');
+        
+        let membersHTML = `
+            <div class="mention-title">Debug @Mentions</div>
+            <div style="padding: 10px; background-color: #f0f8ff; margin-bottom: 10px; border-radius: 4px;">
+                <strong>Debug Info:</strong><br>
+                - Found ${members.length} members<br>
+                - CKEditor loaded: ${typeof CKEDITOR !== 'undefined'}<br>
+                - Mentions container Z-index: ${window.getComputedStyle(mentionContainer).zIndex}
+            </div>
+        `;
+        
+        members.forEach((member, index) => {
+            const name = member.name || `${member.prenom || ''} ${member.nom || ''}`.trim();
+            const role = member.role || 'USER';
+            const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
+            
+            membersHTML += `
+                <div class="mention-item role-${role.toLowerCase()}" data-id="${member.id}" data-name="${name}">
+                    <div class="mention-avatar">${initials}</div>
+                    <div class="mention-info">
+                        <div class="mention-name">${name}</div>
+                        <div class="mention-role">${role}</div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        mentionContainer.innerHTML = membersHTML;
+        
+        // Add click handlers for mention items
+        const mentionItems = mentionContainer.querySelectorAll('.mention-item');
+        mentionItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const name = this.dataset.name;
+                insertMention(name);
+            });
+        });
+    }
+    
+    // Function to insert mention into CKEditor
+    function insertMention(name) {
+        if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances['message-input']) {
+            const mentionText = `@${name} `;
+            CKEDITOR.instances['message-input'].insertText(mentionText);
+        } else if (window.editor) {
+            const mentionText = `@${name} `;
+            window.editor.model.change(writer => {
+                window.editor.model.insertContent(writer.createText(mentionText));
+            });
+        } else {
+            const messageInput = document.getElementById('message-input');
+            if (messageInput) {
+                const mentionText = `@${name} `;
+                const curPos = messageInput.selectionStart;
+                const textBefore = messageInput.value.substring(0, curPos);
+                const textAfter = messageInput.value.substring(curPos);
+                messageInput.value = textBefore + mentionText + textAfter;
+                messageInput.focus();
+                messageInput.selectionStart = curPos + mentionText.length;
+                messageInput.selectionEnd = curPos + mentionText.length;
+            }
+        }
+        
+        // Close mention container
+        const mentionContainer = document.getElementById('mention-container');
+        if (mentionContainer) {
+            mentionContainer.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}
