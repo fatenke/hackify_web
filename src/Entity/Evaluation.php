@@ -5,7 +5,7 @@ namespace App\Entity;
 use App\Repository\EvaluationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Jury;
+use App\Entity\User;
 use App\Entity\Hackathon;
 use App\Entity\Projets;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -20,18 +20,18 @@ class Evaluation
     #[ORM\Column(name: 'id')]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Jury::class)]
-    #[ORM\JoinColumn(name: "idJury", referencedColumnName: "id")]
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: "id", referencedColumnName: "id")]
     #[Assert\NotBlank(message: "Jury must not be blank.")]
-    private ?Jury $idJury = null;
+    private ?User $idJury = null;
 
     #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: 'evaluations')]
     #[ORM\JoinColumn(name: 'idHackathon', referencedColumnName: 'id', onDelete: 'CASCADE')]
     #[Assert\NotBlank(message: "Hackathon must not be blank.")]
     private ?Hackathon $idHackathon = null;
 
-    #[ORM\ManyToOne(targetEntity: Projets::class ,inversedBy: 'evaluations')]
-    #[ORM\JoinColumn(name: "idProjet", referencedColumnName: "id" , onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: Projets::class, inversedBy: 'evaluations')]
+    #[ORM\JoinColumn(name: "idProjet", referencedColumnName: "id", onDelete: 'CASCADE')]
     #[Assert\NotBlank(message: "Project must not be blank.")]
     private ?Projets $idProjet = null;
 
@@ -73,12 +73,12 @@ class Evaluation
         return $this;
     }
 
-    public function getIdJury(): ?Jury
+    public function getIdJury(): ?User
     {
         return $this->idJury;
     }
 
-    public function setIdJury(?Jury $idJury): static
+    public function setIdJury(?User $idJury): static
     {
         $this->idJury = $idJury;
         return $this;

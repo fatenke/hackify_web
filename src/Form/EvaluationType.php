@@ -7,7 +7,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use App\Entity\Jury;
+use App\Entity\User;
 use App\Entity\Hackathon;
 use App\Entity\Projets;
 
@@ -17,8 +17,8 @@ class EvaluationType extends AbstractType
     {
         $builder
             ->add('idJury', EntityType::class, [
-                'class' => Jury::class,
-                'choice_label' => 'nom', // Or something more readable like 'nom'
+                'class' => User::class,
+                'choice_label' => 'nom_user', // Or something more readable like 'nom'
                 'placeholder' => 'Choose a jury',
                 'attr' => ['class' => 'form-control'],
             ])
