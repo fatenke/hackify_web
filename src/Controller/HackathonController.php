@@ -19,11 +19,11 @@ use App\Service\GeoapifyService;
 use Knp\Component\Pager\PaginatorInterface;
 
 
-
+#[Route('/hackathon')]
 final class HackathonController extends AbstractController
 {
 
-    #[Route('hackathon/ajouter', name: 'ajouter_hackathon')]
+    #[Route('/ajouter', name: 'ajouter_hackathon')]
     public function ajouter(Request $request, EntityManagerInterface $em): Response
     {
         $hackathon = new Hackathon();
@@ -76,7 +76,7 @@ final class HackathonController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-    #[Route('hackathon', name: 'liste_hackathon')]
+    #[Route('/', name: 'liste_hackathon')]
     public function liste(EntityManagerInterface $entityManager): Response
     {
         $currentUser = $this->getUser();
@@ -117,7 +117,7 @@ final class HackathonController extends AbstractController
             'communautesParticipant' => $communautesParticipant,
         ]);
     }
-    #[Route('hackathon/{id}', name: 'hackathon_details')]
+    #[Route('/{id}', name: 'hackathon_details')]
     public function details($id, HackathonRepository $hackathonRepository, ParticipationRepository $participationRepository, GeoapifyService $geoapify): Response
     {
         // Trouver le hackathon par son ID
@@ -141,7 +141,7 @@ final class HackathonController extends AbstractController
     }
 
 
-    #[Route('hackathon/modifier/{id}', name: 'modifier_hackathon')]
+    #[Route('/modifier/{id}', name: 'modifier_hackathon')]
     public function modifier(Request $request, Hackathon $hackathon, EntityManagerInterface $em): Response
     {
         $form = $this->createForm(HackathonType::class, $hackathon);
@@ -159,7 +159,7 @@ final class HackathonController extends AbstractController
             'hackathon' => $hackathon,
         ]);
     }
-    #[Route('/hackathon/supprimer/{id}', name: 'supprimer_hackathon', methods: ['POST'])]
+    #[Route('/supprimer/{id}', name: 'supprimer_hackathon', methods: ['POST'])]
     public function supprimer(Request $request, Hackathon $hackathon, EntityManagerInterface $em): Response
     {
         if ($this->isCsrfTokenValid('supprimer' . $hackathon->getId(), $request->request->get('_token'))) {

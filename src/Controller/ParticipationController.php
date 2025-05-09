@@ -10,7 +10,7 @@ use App\Entity\Hackathon;
 use App\Repository\ParticipationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\TwilioService;
-
+#[Route('/hackathon')]
 final class ParticipationController extends AbstractController
 {
     private $twilioService;
@@ -20,7 +20,7 @@ final class ParticipationController extends AbstractController
         $this->twilioService = $twilioService;
     }
 
-    #[Route('/hackathons/calendar', name: 'hackathons_calendar')]
+    #[Route('/calendar', name: 'hackathons_calendar')]
     public function calendar(EntityManagerInterface $em): Response
     {
         $hackathons = $em->getRepository(Hackathon::class)->findAll();
@@ -30,7 +30,7 @@ final class ParticipationController extends AbstractController
         ]);
     }
 
-    #[Route('hackathon/{id}/participer', name: 'hackathon_participer')]
+    #[Route('/{id}/participer', name: 'hackathon_participer')]
     public function participer(Hackathon $hackathon, EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
@@ -46,7 +46,7 @@ final class ParticipationController extends AbstractController
         return $this->redirectToRoute('hackathon_details', ['id' => $hackathon->getId_hackathon()]);
     }
 
-    #[Route('hackathon/{id}/participants', name: 'voir_participants')]
+    #[Route('/{id}/participants', name: 'voir_participants')]
     public function voirParticipants(Hackathon $hackathon, ParticipationRepository $participationRepository): Response
     {
         $participations = $participationRepository->findBy(['hackathon' => $hackathon]);
@@ -57,7 +57,7 @@ final class ParticipationController extends AbstractController
         ]);
     }
 
-    #[Route('participation/annuler/{id}', name: 'annuler_participation')]
+    #[Route('/participation/annuler/{id}', name: 'annuler_participation')]
     public function annulerParticipation(Participation $participation, EntityManagerInterface $entityManager): Response
     {
         $entityManager->remove($participation);
