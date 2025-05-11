@@ -18,9 +18,9 @@
   {% else %}
     <a href="{{ path('app_register', {'msg': 'login_required'}) }}" class="btn-get-started">Découvrir les hackathons</a>
   {% endif %}
-  <a href="{{ path('app_ressources_new') }}" class="btn btn-outline-light btn-lg">
-           ressources
-    </a>
+ {% if app.user %}
+            <a href="{{ path('app_ressources_new') }}" class="btn btn-outline-light btn-lg ms-2">Ressources</a>
+          {% endif %}
           
         </div>
       </div>
