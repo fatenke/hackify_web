@@ -21,7 +21,7 @@ class Evaluation
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(name: "id", referencedColumnName: "id")]
+    #[ORM\JoinColumn(name: "idJury", referencedColumnName: "id")]
     #[Assert\NotBlank(message: "Jury must not be blank.")]
     private ?User $idJury = null;
 

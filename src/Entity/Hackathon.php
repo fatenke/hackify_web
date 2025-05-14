@@ -29,8 +29,8 @@ class Hackathon
     #[ORM\OneToMany(mappedBy: 'idHackathon', targetEntity: Vote::class)]
     private Collection $votes;
 
-    
-    public function getid_hackathon(): ?int
+
+    public function getid(): ?int
     {
         return $this->id_hackathon;
     }

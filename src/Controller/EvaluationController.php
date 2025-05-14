@@ -165,20 +165,7 @@ class EvaluationController extends AbstractController
     $scores = array_column($projectScores, 'totalScore');
 
 
-    // Calculate participation rate
-    $totalJury = $em->createQueryBuilder()
-      ->select('COUNT(j.id)')
-      ->from('App\Entity\Jury', 'j')
-      ->getQuery()
-      ->getSingleScalarResult();
 
-    $participatingJury = $em->createQueryBuilder()
-      ->select('COUNT(DISTINCT e.idJury)')
-      ->from('App\Entity\Evaluation', 'e')
-      ->getQuery()
-      ->getSingleScalarResult();
-
-    $participationRate = $totalJury > 0 ? round(($participatingJury / $totalJury) * 100, 1) : 0;
 
     return $this->render('evaluation/top_projects.html.twig', [
       'topProjects' => $topProjects,
@@ -186,7 +173,6 @@ class EvaluationController extends AbstractController
       'totalEvaluations' => $stats['totalEvaluations'],
       'averageTechScore' => $stats['averageTechScore'] ?: 0,
       'averageInnovScore' => $stats['averageInnovScore'] ?: 0,
-      'participationRate' => $participationRate,
       'topScore' => $maxScore ?: 0
     ]);
   }
