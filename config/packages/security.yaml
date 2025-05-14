@@ -42,6 +42,7 @@ security:
     - { path: ^/admin, roles: ROLE_ADMIN }
     - { path: ^/profile, roles: ROLE_USER }
     - { path: ^/hackathon, roles: ROLE_USER }
+    - { path: ^/communaute, roles: ROLE_USER }
 
     # Allow access to the home page
     - { path: ^/$, roles: PUBLIC_ACCESS }

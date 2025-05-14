@@ -2118,7 +2118,7 @@
             
             // Only enable poll creation for ADMIN and ORGANISATEUR roles
             const isAdmin = userRole.includes('ADMIN');
-            const isOrganisateur = userRole.includes('ORGANISATEUR');
+            const isOrganisateur = userRole.includes('ROLE_ORGANISATEUR');
             
             debugLog('Is admin:', isAdmin);
             debugLog('Is organisateur:', isOrganisateur);
@@ -2751,9 +2751,8 @@
         const chatType = document.querySelector(`.chat-link[data-chat-id="${currentChatId}"]`).dataset.chatType;
         
         debugLog('User role for poll creation:', userRole);
-        
-        // Only Coachs and Admins can create polls
-        const canCreatePoll = userRole.includes('COACH') || userRole.includes('ADMIN');
+        // Allow ORGANISATEUR, COACH, and ADMIN to create polls
+        const canCreatePoll = userRole.includes('ORGANISATEUR') || userRole.includes('COACH') || userRole.includes('ADMIN');
         if (!canCreatePoll) {
             alert('You do not have permission to create polls.');
             return;
