@@ -19,7 +19,7 @@ class Hackathon
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: 'integer' , name: "id_hackathon")]
     private ?int $id_hackathon = null;
 
 
@@ -29,8 +29,7 @@ class Hackathon
     #[ORM\OneToMany(mappedBy: 'idHackathon', targetEntity: Vote::class)]
     private Collection $votes;
 
-
-    public function getid(): ?int
+    public function getId_hackathon(): ?int
     {
         return $this->id_hackathon;
     }

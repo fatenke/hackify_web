@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250509001406 extends AbstractMigration
+final class Version20250514010157 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -30,13 +30,10 @@ final class Version20250509001406 extends AbstractMigration
             CREATE TABLE communaute (id INT AUTO_INCREMENT NOT NULL, id_hackathon INT DEFAULT NULL, nom VARCHAR(255) NOT NULL, description LONGTEXT NOT NULL, date_creation DATETIME NOT NULL, is_active TINYINT(1) NOT NULL, INDEX IDX_21C94799B0F4A68 (id_hackathon), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE evaluation (id INT AUTO_INCREMENT NOT NULL, noteTech DOUBLE PRECISION NOT NULL, noteInnov DOUBLE PRECISION NOT NULL, date DATE NOT NULL, idJury INT DEFAULT NULL, idHackathon INT DEFAULT NULL, idProjet INT DEFAULT NULL, INDEX IDX_1323A57560C8EEB2 (idJury), INDEX IDX_1323A57577D0DD19 (idHackathon), INDEX IDX_1323A57533043433 (idProjet), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+            CREATE TABLE evaluation (id INT AUTO_INCREMENT NOT NULL, noteTech DOUBLE PRECISION NOT NULL, noteInnov DOUBLE PRECISION NOT NULL, date DATE NOT NULL, idHackathon INT DEFAULT NULL, idProjet INT DEFAULT NULL, INDEX IDX_1323A57577D0DD19 (idHackathon), INDEX IDX_1323A57533043433 (idProjet), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE hackathon (id INT AUTO_INCREMENT NOT NULL, id_organisateur INT DEFAULT NULL, nom_hackathon VARCHAR(255) NOT NULL, description LONGTEXT NOT NULL, date_debut DATETIME NOT NULL, date_fin DATETIME NOT NULL, lieu VARCHAR(255) NOT NULL, theme VARCHAR(255) NOT NULL, max_participants INT NOT NULL, INDEX IDX_8B3AF64F68161836 (id_organisateur), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
-        SQL);
-        $this->addSql(<<<'SQL'
-            CREATE TABLE jury (id INT AUTO_INCREMENT NOT NULL, nom VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+            CREATE TABLE hackathon (id_hackathon INT AUTO_INCREMENT NOT NULL, id_organisateur INT DEFAULT NULL, nom_hackathon VARCHAR(255) NOT NULL, description LONGTEXT NOT NULL, date_debut DATETIME NOT NULL, date_fin DATETIME NOT NULL, lieu VARCHAR(255) NOT NULL, theme VARCHAR(255) NOT NULL, max_participants INT NOT NULL, INDEX IDX_8B3AF64F68161836 (id_organisateur), PRIMARY KEY(id_hackathon)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
         SQL);
         $this->addSql(<<<'SQL'
             CREATE TABLE message (id INT AUTO_INCREMENT NOT NULL, chat_id INT DEFAULT NULL, posted_by INT DEFAULT NULL, contenu LONGTEXT NOT NULL, type VARCHAR(255) NOT NULL, post_time DATETIME NOT NULL, INDEX IDX_B6BD307F1A9A7125 (chat_id), INDEX IDX_B6BD307FAE36D154 (posted_by), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
@@ -87,13 +84,13 @@ final class Version20250509001406 extends AbstractMigration
             ALTER TABLE chat ADD CONSTRAINT FK_659DF2AAC903E5B8 FOREIGN KEY (communaute_id) REFERENCES communaute (id) ON DELETE CASCADE
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE communaute ADD CONSTRAINT FK_21C94799B0F4A68 FOREIGN KEY (id_hackathon) REFERENCES hackathon (id) ON DELETE CASCADE
+            ALTER TABLE communaute ADD CONSTRAINT FK_21C94799B0F4A68 FOREIGN KEY (id_hackathon) REFERENCES hackathon (id_hackathon) ON DELETE CASCADE
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE evaluation ADD CONSTRAINT FK_1323A57560C8EEB2 FOREIGN KEY (idJury) REFERENCES jury (id)
+            ALTER TABLE evaluation ADD CONSTRAINT FK_1323A575BF396750 FOREIGN KEY (id) REFERENCES user (id)
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE evaluation ADD CONSTRAINT FK_1323A57577D0DD19 FOREIGN KEY (idHackathon) REFERENCES hackathon (id) ON DELETE CASCADE
+            ALTER TABLE evaluation ADD CONSTRAINT FK_1323A57577D0DD19 FOREIGN KEY (idHackathon) REFERENCES hackathon (id_hackathon) ON DELETE CASCADE
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE evaluation ADD CONSTRAINT FK_1323A57533043433 FOREIGN KEY (idProjet) REFERENCES projets (id) ON DELETE CASCADE
@@ -108,7 +105,7 @@ final class Version20250509001406 extends AbstractMigration
             ALTER TABLE message ADD CONSTRAINT FK_B6BD307FAE36D154 FOREIGN KEY (posted_by) REFERENCES user (id) ON DELETE CASCADE
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE participation ADD CONSTRAINT FK_AB55E24FB0F4A68 FOREIGN KEY (id_hackathon) REFERENCES hackathon (id)
+            ALTER TABLE participation ADD CONSTRAINT FK_AB55E24FB0F4A68 FOREIGN KEY (id_hackathon) REFERENCES hackathon (id_hackathon)
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE participation ADD CONSTRAINT FK_AB55E24FCF8DA6E6 FOREIGN KEY (id_participant) REFERENCES user (id) ON DELETE CASCADE
@@ -129,7 +126,7 @@ final class Version20250509001406 extends AbstractMigration
             ALTER TABLE poll_vote ADD CONSTRAINT FK_ED568EBE8D93D649 FOREIGN KEY (user) REFERENCES user (id) ON DELETE CASCADE
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE projets ADD CONSTRAINT FK_B454C1DBBF396750 FOREIGN KEY (id) REFERENCES hackathon (id)
+            ALTER TABLE projets ADD CONSTRAINT FK_B454C1DBBF396750 FOREIGN KEY (id) REFERENCES hackathon (id_hackathon) ON DELETE CASCADE
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE projets_technologies ADD CONSTRAINT FK_DCC225EE597A6CB7 FOREIGN KEY (projets_id) REFERENCES projets (id) ON DELETE CASCADE
@@ -156,7 +153,7 @@ final class Version20250509001406 extends AbstractMigration
             ALTER TABLE vote ADD CONSTRAINT FK_5A10856433043433 FOREIGN KEY (idProjet) REFERENCES projets (id)
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE vote ADD CONSTRAINT FK_5A10856477D0DD19 FOREIGN KEY (idHackathon) REFERENCES hackathon (id)
+            ALTER TABLE vote ADD CONSTRAINT FK_5A10856477D0DD19 FOREIGN KEY (idHackathon) REFERENCES hackathon (id_hackathon)
         SQL);
     }
 
@@ -173,7 +170,7 @@ final class Version20250509001406 extends AbstractMigration
             ALTER TABLE communaute DROP FOREIGN KEY FK_21C94799B0F4A68
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE evaluation DROP FOREIGN KEY FK_1323A57560C8EEB2
+            ALTER TABLE evaluation DROP FOREIGN KEY FK_1323A575BF396750
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE evaluation DROP FOREIGN KEY FK_1323A57577D0DD19
@@ -255,9 +252,6 @@ final class Version20250509001406 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE hackathon
-        SQL);
-        $this->addSql(<<<'SQL'
-            DROP TABLE jury
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE message

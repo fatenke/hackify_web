@@ -168,7 +168,8 @@ class ChatController extends AbstractController
                     // Find the bot user - now with a try/catch block
                     $botUser = null;
                     try {
-                        $botUser = $this->entityManager->getRepository(User::class)->find(-1);
+                        $botUser = $this->entityManager->getRepository(User::class)
+                            ->findOneBy(['emailUser' => 'bot@hackify.com']);
                         if ($botUser) {
                             file_put_contents($logPath, "Found existing bot user ID: -1\n", FILE_APPEND);
                         }
@@ -180,7 +181,6 @@ class ChatController extends AbstractController
                         file_put_contents($logPath, "Creating new bot user\n", FILE_APPEND);
                         try {
                             $botUser = new User();
-                            $botUser->setId(-1);
                             $botUser->setNomUser('Bot');
                             $botUser->setPrenomUser('Support');
                             $botUser->setEmailUser('bot@hackify.com');

@@ -11,15 +11,18 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class HomeController extends AbstractController
 {
-    #[Route('/', name: 'app_home')]
-    public function indexx(RessourcesRepository $ressourcesRepository): Response
-    {
-        $ressources = $ressourcesRepository->findAll();
+   //#[Route('/', name: 'app_home')]
+   //public function indexx(RessourcesRepository $ressourcesRepository): Response
+   //{
+   //    $ressources = $ressourcesRepository->findAll();
 
-        return $this->render('home/index.html.twig', [
-            'ressources' =>  $ressources ,
-        ]);
-    }
+   //    return $this->render('home/index.html.twig', [
+   //        'ressources' =>  $ressources ,
+   //    ]);
+   //}
+
+
+   
     #[Route('/home', name: 'app_home')]
     public function index(HackathonRepository $hackathonRepository): Response
     {

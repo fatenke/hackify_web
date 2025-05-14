@@ -3,15 +3,53 @@
 {% block title %}Community: {{ communaute.nom }}{% endblock %}
 
 {% block head %}
-    <!-- Load CKEditor 5 from CDN directly in head to ensure it's loaded before any scripts that need it -->
-    <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
-    <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/translations/fr.js"></script>
+    {# Removed CKEditor 5 scripts to avoid ClassicEditor errors. Only CKEditor 4 is needed. #}
+    {# <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script> #}
+    {# <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/translations/fr.js"></script> #}
+    {# If you need hackathon.css, ensure it exists in public/assets/css/hackathon.css or remove its reference. #}
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     <!-- Add the mentions debug script -->
     <script src="{{ asset('js/mentions-debug.js') }}"></script>
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+    <script>
+    // ...existing code...
+    document.addEventListener('DOMContentLoaded', function() {
+        // ...existing code...
+        // Initialize CKEditor 4 for all textareas with class 'ckeditor'
+        var textareas = document.querySelectorAll('textarea.ckeditor');
+        for (var i = 0; i < textareas.length; i++) {
+            var textarea = textareas[i];
+            if (textarea.id && !CKEDITOR.instances[textarea.id]) {
+                CKEDITOR.replace(textarea.id, {
+                    toolbar: [
+                        ['Bold', 'Italic', 'Underline', '-', 'Link', '-', 'NumberedList', 'BulletedList', '-', 'Image', '-', 'TextColor']
+                    ],
+                    height: textarea.getAttribute('rows') ? textarea.getAttribute('rows') * 20 : 200,
+                    width: '100%',
+                    removePlugins: 'elementspath',
+                    resize_enabled: true
+                });
+            }
+        }
+        // Also initialize CKEditor for message input if it exists and is a textarea
+        var messageInput = document.getElementById('message-input');
+        if (messageInput && messageInput.tagName.toLowerCase() === 'textarea' && !CKEDITOR.instances['message-input']) {
+            CKEDITOR.replace('message-input', {
+                toolbar: [
+                    ['Bold', 'Italic', 'Underline', '-', 'Link', '-', 'NumberedList', 'BulletedList', '-', 'Image', '-', 'TextColor']
+                ],
+                height: messageInput.getAttribute('rows') ? messageInput.getAttribute('rows') * 20 : 100,
+                width: '100%',
+                removePlugins: 'elementspath',
+                resize_enabled: true
+            });
+        }
+    });
+    // ...existing code...
+    </script>
 {% endblock %}
 
 {% block stylesheets %}
@@ -3690,7 +3728,7 @@
                 if (index === 0) item.classList.add('active');
                 
                 const role = member.role ? member.role.toLowerCase() : 'participant';
-                const name = member.name || 'Unknown';
+                const name = member.name || '';
                 
                 item.innerHTML = `
                     <div style="padding: 10px; border-bottom: 1px solid #eee;">
