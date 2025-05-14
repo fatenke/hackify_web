@@ -123,7 +123,7 @@ final class HackathonController extends AbstractController
     {
         // Trouver le hackathon par son ID
         $hackathon = $hackathonRepository->find($id);
-        $coords = $geoapify->getCoordinates($hackathon->getLieu());
+        
 
 
 
@@ -131,6 +131,7 @@ final class HackathonController extends AbstractController
         if (!$hackathon) {
             return $this->redirectToRoute('liste_hackathon');
         }
+        $coords = $geoapify->getCoordinates($hackathon->getLieu());
         $participations = $participationRepository->findBy([
             'participant' => $this->getUser(),
             'hackathon' => $hackathon

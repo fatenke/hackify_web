@@ -21,6 +21,16 @@ class Hackathon
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer' , name: "id_hackathon")]
     private ?int $id_hackathon = null;
+    public function getId_hackathon(): ?int
+    {
+        return $this->id_hackathon;
+    }
+
+    public function setId_hackathon(int $id_hackathon): self
+    {
+        $this->id_hackathon = $id_hackathon;
+        return $this;
+    }
 
 
     #[ORM\OneToMany(mappedBy: 'idHackathon', targetEntity: Evaluation::class)]
@@ -29,17 +39,7 @@ class Hackathon
     #[ORM\OneToMany(mappedBy: 'idHackathon', targetEntity: Vote::class)]
     private Collection $votes;
 
-    public function getId_hackathon(): ?int
-    {
-        return $this->id_hackathon;
-    }
-
-    public function setid_hackathon(int $id_hackathon): self
-    {
-        $this->id_hackathon = $id_hackathon;
-        return $this;
-    }
-
+    
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: "hackathons")]
     #[ORM\JoinColumn(name: 'id_organisateur', referencedColumnName: 'id', onDelete: 'CASCADE')]

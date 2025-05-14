@@ -20,7 +20,7 @@ final class ParticipationController extends AbstractController
         $this->twilioService = $twilioService;
     }
 
-    #[Route('/calendar', name: 'hackathons_calendar')]
+    #[Route('/hackathons/calendar', name: 'hackathons_calendar')]
     public function calendar(EntityManagerInterface $em): Response
     {
         $hackathons = $em->getRepository(Hackathon::class)->findAll();
