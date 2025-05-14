@@ -34,7 +34,7 @@ class Vote
     private ?Projets $idProjet = null;
 
     #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: 'votes')]
-    #[ORM\JoinColumn(name: 'idHackathon', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'idHackathon', referencedColumnName: 'id_hackathon')]
     #[Assert\NotBlank(message: "Hackathon must not be blank.")]
     private ?Hackathon $idHackathon = null;
 

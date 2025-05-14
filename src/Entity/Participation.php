@@ -30,7 +30,7 @@ class Participation
     }
 
     #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: 'participations')]
-    #[ORM\JoinColumn(name: 'id_hackathon', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'id_hackathon', referencedColumnName: 'id_hackathon')]
     private ?Hackathon $hackathon = null;
 
     public function getHackathon(): ?Hackathon

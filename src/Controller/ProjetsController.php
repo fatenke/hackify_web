@@ -1,8 +1,5 @@
 <?php
 
-
-
-
 namespace App\Controller;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
@@ -16,11 +13,11 @@ use App\Form\ProjetsTypeback;
 use App\Form\TechnologiesType;
 use App\Repository\ProjetsRepository;
 use App\Repository\TechnologiesRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Doctrine\ORM\EntityManagerInterface;    
 
 final class ProjetsController extends AbstractController
 {

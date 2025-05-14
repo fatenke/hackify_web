@@ -26,7 +26,7 @@ class Evaluation
     private ?User $idJury = null;
 
     #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: 'evaluations')]
-    #[ORM\JoinColumn(name: 'idHackathon', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'idHackathon', referencedColumnName: 'id_hackathon', onDelete: 'CASCADE')]
     #[Assert\NotBlank(message: "Hackathon must not be blank.")]
     private ?Hackathon $idHackathon = null;
 
