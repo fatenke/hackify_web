@@ -19,17 +19,19 @@ Ce projet a été établi comme projet d'étude à *Esprit Engineering School* p
 
 ## 📚 Table des matières
 
-- [Installation](#installation)
-- [Utilisation](#utilisation)
-- [Fonctionnalités](#fonctionnalités)
-- [Contribution](#contribution)
-- [Licence](#licence)
+[Installation](#installation)
+[Utilisation](#utilisation)
+[Contributions](#contributions)
+[Mots-clés](#mots-clés)
 
 ## ⚙️ Installation
 
 1. Clonez le repository :
+:
+
 git clone https://github.com/fatenke/hackify_web
-2. Installez les dépendances PHP :
+git clone 
+3. Installez les dépendances PHP :
 composer install
 npm run
 npm dev run
