@@ -19,35 +19,75 @@ Ce projet a été établi comme projet d'étude à *Esprit Engineering School* p
 
 ## 📚 Table des matières
 
-[Installation](#installation)
-[Utilisation](#utilisation)
-[Contributions](#contributions)
-[Mots-clés](#mots-clés)
+- [Installation](#installation)
+- [Utilisation](#utilisation)
+- [Contributions](#contributions)
+- [Mots-clés](#mots-clés)
 
 ## ⚙️ Installation
 
 1. Clonez le repository :
-:
-
+```bash
 git clone https://github.com/fatenke/hackify_web
-git clone 
+```
 3. Installez les dépendances PHP :
+```bash
 composer install
 npm run
 npm dev run
-
+```
 4. Configurez votre base de données dans le fichier `.env`.
 
-5. Exécutez les migrations :
+6. Exécutez les migrations :
+```bash
 php bin/console doctrine:migrations:migrate
+```
 5. Lancez le serveur Symfony :
+```bash
 symfony server:start
+```
 
 ## 💡 Utilisation
-### Technologies utilisées
-- **Symfony** : Backend (PHP)
-- **Twig** : Moteur de templates
-- **MySQL** : Base de données
+### Installation de MySQL
+Symfony utilise une base de données pour stocker les données de l'application. MySQL est l’un des systèmes les plus couramment utilisés.
+1. Téléchargez MySQL depuis le site officiel : [MySQL - Téléchargement](https://dev.mysql.com/downloads/)
+2. Installez MySQL en suivant les instructions pour votre système d’exploitation.
+3. Une fois installé, vérifiez que MySQL fonctionne correctement en exécutant la commande suivante dans votre terminal :
+```bash
+mysql -u root -p
+```
+### Installation de XAMPP
+XAMPP est un environnement de développement Apache simple à installer, qui inclut PHP, MySQL et phpMyAdmin. 
+1. Téléchargez XAMPP depuis le site officiel : [XAMPP - Téléchargement](https://www.apachefriends.org/fr/index.html)
+2. Installez XAMPP en suivant les instructions d’installation.
+3. Lancez le *XAMPP Control Panel* et démarrez les modules *Apache* et *MySQL*.
+4. Vous pouvez accéder à phpMyAdmin via : [http://localhost/phpmyadmin](http://localhost/phpmyadmin)
+
+### Installation de PHP
+Pour utiliser ce projet, vous devez installer PHP, Voici les etapes:
+1. Télécharger PHP à partir du site officiel : [ PHP-Téléchargement] ( https://www.php.net/download.php).
+2.Installez PHP en suivant les instructions spécifiques à votre systeme d'exploitation:
+- Pour *Windows*, vous pouvez utiliser [XAMPP] (https://apachefriends.org/fr/index.html)
+3. Vérifiez l'installation de PHP en exécutant la commande suivante dans votre terminal:
+```bash
+php -v
+```
+###  Installation de Composer
+Composer est un gestionnaire de dépendances indispensable pour Symfony.
+1. Téléchargez Composer depuis le site officiel : [Composer - Téléchargement](https://getcomposer.org/download/)
+2. Suivez les instructions d’installation selon votre système d’exploitation (Windows, macOS, Linux).
+3. Une fois installé, vérifiez que Composer fonctionne correctement en exécutant la commande suivante dans votre terminal :
+```bash
+composer -v
+```
+### Installation de Symfony CLI
+La Symfony CLI est un outil en ligne de commande permettant de créer, exécuter et gérer facilement des projets Symfony.
+1. Téléchargez la Symfony CLI depuis le site officiel : [Symfony CLI - Installation](https://symfony.com/download)
+2. Suivez les instructions d’installation selon votre système d’exploitation (Windows, macOS, Linux).
+3. Vérifiez que l'installation est correcte en exécutant la commande suivante dans votre terminal :
+```bash
+symfony -v
+```
 
 ## ✨ Fonctionnalités
 
