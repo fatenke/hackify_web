@@ -17,7 +17,7 @@ Hackify est une plateforme web permettant d’organiser, de gérer et de suivre 
 ### Contexte du Projet
 Ce projet a été établi comme projet d'étude à *Esprit Engineering School* pour l'année scolaire *2024/2025*. Il s'inscrit dans le cadre de la formation en ingénierie et vise à appliquer des concepts avancés de développement web et de gestion de base de données.
 
-## 📚 Table des matières
+## Table des matières
 
 - [Installation](#installation)
 - [Utilisation](#utilisation)
