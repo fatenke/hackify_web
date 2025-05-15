@@ -105,7 +105,7 @@ symfony -v
 1. **Fork le projet**: Allez sur la page Github du projet et cliquez sur le bouton **Fork** dans le coin supérieur droit pour créer une copie du projet dans votre propre compte Github.
 2. **Clonez votre fork**: Clonez le fork sur votre machine locale:
 ```bash
-git clone [https://github.com/ ](https://github.com/fatenke/hackify_web)
+git clone https://github.com/fatenke/hackify_web
 ```
 3. **Créez une nouvelle branche**
 ```bash
