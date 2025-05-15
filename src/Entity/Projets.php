@@ -153,7 +153,7 @@ class Projets
 
 
     #[ORM\ManyToOne(targetEntity: Hackathon::class, inversedBy: 'projets')]
-    #[ORM\JoinColumn(name: "id", referencedColumnName: "id_hackathon", onDelete: "CASCADE")]
+    #[ORM\JoinColumn(name: "id_hackathon", referencedColumnName: "id_hackathon", onDelete: "CASCADE")]
     private ?Hackathon $hackathon = null;
 
     public function __construct()

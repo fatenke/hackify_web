@@ -51,7 +51,7 @@ class ProjetsTypeback extends AbstractType
                 'multiple' => true,
                 'expanded' => true, // render as checkboxes
             ])
-            ->add('id_hack', EntityType::class, [
+            ->add('hackathon', EntityType::class, [
                 'class' => Hackathon::class,
                 'choice_label' => 'nom_hackathon',
             ])

@@ -12,6 +12,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.4",
         "doctrine/orm": "^3.3",
         "dompdf/dompdf": "^3.1",
+        "endroid/qr-code": "^6.0",
         "friendsofsymfony/ckeditor-bundle": "^2.6",
         "guzzlehttp/guzzle": "^7.9",
         "karser/karser-recaptcha3-bundle": "^0.2.1",

@@ -49,7 +49,7 @@ final class ProjetsController extends AbstractController
     #[Route('hackathon/{id}/projets', name: 'voir_projets')]
     public function voirProjets(Hackathon $hackathon, ProjetsRepository $projets_repository): Response
     {
-        $projets = $projets_repository->findBy(['id_hack' => $hackathon]);
+        $projets = $projets_repository->findBy(['hackathon' => $hackathon]);
         
         return $this->render('projets/afficherProjets.html.twig', [
             'hackathon' => $hackathon,
@@ -132,7 +132,7 @@ final class ProjetsController extends AbstractController
     public function supprimerfront(Request $request, Projets $projet, EntityManagerInterface $em): Response
     {
         // Get the hackathon ID before removing the project
-        $hackathon = $projet->getIdHack();
+        $hackathon = $projet->getHackathon();
         $projetId = $projet->getId();
         $csrfTokenName = 'delete'.$projetId;
         $csrfToken = $request->request->get('_token');
@@ -152,7 +152,7 @@ final class ProjetsController extends AbstractController
             $this->addFlash('error', 'Jeton CSRF invalide. La suppression a été annulée.');
         }
     
-        return $this->redirectToRoute('voir_projets', ['id' => $hackathon ? $hackathon->getId() : null]);
+        return $this->redirectToRoute('voir_projets', ['id' => $hackathon ? $hackathon->getId_hackathon() : null]);
     }
     #[Route('/technologie/supprimer/{id}', name: 'supprimer_technologie', methods: ['POST'])]
     public function supprimertech(Request $request, Technologies $Technologies, EntityManagerInterface $em): Response
@@ -288,7 +288,7 @@ public function updatefront(Request $request, Projets $projet, EntityManagerInte
         $em->flush();
 
         return $this->redirectToRoute('voir_projets', [
-            'id' => $projet->getIdHack()->getIdHackathon(),
+            'id' => $projet->getHackathon()->getId_hackathon(),
         ]);
     }
 
@@ -365,7 +365,7 @@ public function updatefront(Request $request, Projets $projet, EntityManagerInte
         $qrImage = base64_encode($qrImageData); // Encodage en base64 pour l'affichage dans la vue
     
         // Récupérer l'ID du hackathon associé au projet
-        $hackathonId = $projet->getIdHack() ? $projet->getIdHack()->getId() : null;
+        $hackathonId = $projet->getHackathon() ? $projet->getHackathon()->getId_hackathon() : null;
 
         return $this->render('projets/qr_confirmation.html.twig', [
             'qrImage' => $qrImage,

@@ -204,7 +204,12 @@ class Hackathon
 
     public function getIdHackathon(): ?int
     {
-        return $this->id;
+        return $this->id_hackathon;
+    }
+    
+    public function getId(): ?int
+    {
+        return $this->id_hackathon;
     }
 
     public function getNomHackathon(): ?string
@@ -284,10 +289,16 @@ class Hackathon
     #[ORM\OneToMany(targetEntity: Participation::class, mappedBy: 'hackathon')]
     private Collection $participations;
 
+    #[ORM\OneToMany(mappedBy: 'hackathon', targetEntity: Projets::class)]
+    private Collection $projets;
+
     public function __construct()
     {
-        $this->participations = new ArrayCollection();
         $this->projets = new ArrayCollection();
+        $this->participations = new ArrayCollection();
+        $this->evaluations = new ArrayCollection();
+        $this->votes = new ArrayCollection();
+        $this->communautes = new ArrayCollection();
     }
 
     /**
@@ -346,8 +357,7 @@ class Hackathon
         return $this;
     }
 
-    #[ORM\OneToMany(mappedBy: "hackathon", targetEntity: Projets::class)]
-    private Collection $projets;
+    /* The projets property is already initialized in the constructor */
 
 
     /**
@@ -381,6 +391,6 @@ class Hackathon
     }
     public function __toString(): string
     {
-        return (string) $this->getId(); // Replace getName() with any property you want to show
+        return (string) $this->getId_hackathon(); // Replace getName() with any property you want to show
     }
 }
