@@ -125,3 +125,20 @@ git push origin nomdubranche
 git pull origin nomdubranche
 ```
 
+## Mots-clés
+Symfony 6  
+PHP 8.1+
+Bundle
+Service
+Doctrine
+QR Code
+Symfony Mailer
+Symfony Notifier
+RH 
+Doctrine ORM  
+Bootstrap 5  
+Mantis Admin Template   
+Composer  
+Symfony CLI  
+MySQL
+
