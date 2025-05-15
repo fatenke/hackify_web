@@ -100,7 +100,7 @@ symfony -v
 - Ajout de ressources par les coachs pour les projets
 - Visualisation des lieux des hackathons sur une carte
 
-## Contribution
+## Contributions
 
 1. **Fork le projet**: Allez sur la page Github du projet et cliquez sur le bouton **Fork** dans le coin supérieur droit pour créer une copie du projet dans votre propre compte Github.
 2. **Clonez votre fork**: Clonez le fork sur votre machine locale:
