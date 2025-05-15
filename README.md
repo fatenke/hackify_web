@@ -24,7 +24,7 @@ Ce projet a été établi comme projet d'étude à *Esprit Engineering School* p
 - [Contributions](#contributions)
 - [Mots-clés](#mots-clés)
 
-## ⚙️ Installation
+## Installation
 
 1. Clonez le repository :
 ```bash
