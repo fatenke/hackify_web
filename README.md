@@ -102,14 +102,26 @@ symfony -v
 
 ## 🤝 Contribution
 
-Les contributions sont les bienvenues ! Pour contribuer :
+1. **Fork le projet**: Allez sur la page Github du projet et cliquez sur le bouton **Fork** dans le coin supérieur droit pour créer une copie du projet dans votre propre compte Github.
+2. **Clonez votre fork**: Clonez le fork sur votre machine locale:
+```bash
+git clone [https://github.com/ ](https://github.com/fatenke/hackify_web)
+```
+3. **Créez une nouvelle branche**
+```bash
+git checkout -b nomdubranche
+```
+4. **Committer aprés modifications pour le enregistrer**
+```bash
+git add . 
+git commit -m 'Ajout de la fonctionnalité x'
+```
+5. **Pousser vos modifications**
+```bash
+git push origin nomdubranche
+```
+4. **Soumettez une Pull Request**
+```bash
+git pull origin nomdubranche
+```
 
-1. Fork le repo
-2. Crée une branche : `git checkout -b feature/mon-feature`
-3. Commit tes changements : `git commit -m "Ajout de ma fonctionnalité"`
-4. Push : `git push origin feature/mon-feature`
-5. Crée une Pull Request
-
-## 📄 Licence
-
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus d’informations.
