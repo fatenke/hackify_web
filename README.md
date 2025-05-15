@@ -1,6 +1,6 @@
-# 🎯 Hackify
+# Hackify
 
-## 📝 Description
+## Description
 
 Hackify est une plateforme web permettant d’organiser, de gérer et de suivre des hackathons de manière collaborative et structurée.
 
@@ -47,7 +47,7 @@ php bin/console doctrine:migrations:migrate
 symfony server:start
 ```
 
-## 💡 Utilisation
+## Utilisation
 ### Installation de MySQL
 Symfony utilise une base de données pour stocker les données de l'application. MySQL est l’un des systèmes les plus couramment utilisés.
 1. Téléchargez MySQL depuis le site officiel : [MySQL - Téléchargement](https://dev.mysql.com/downloads/)
@@ -89,7 +89,7 @@ La Symfony CLI est un outil en ligne de commande permettant de créer, exécuter
 symfony -v
 ```
 
-## ✨ Fonctionnalités
+## Fonctionnalités
 
 - Authentification des utilisateurs (organisateur, participant, coach, jury)
 - Gestion des rôles et des permissions
@@ -100,7 +100,7 @@ symfony -v
 - Ajout de ressources par les coachs pour les projets
 - Visualisation des lieux des hackathons sur une carte
 
-## 🤝 Contribution
+## Contribution
 
 1. **Fork le projet**: Allez sur la page Github du projet et cliquez sur le bouton **Fork** dans le coin supérieur droit pour créer une copie du projet dans votre propre compte Github.
 2. **Clonez votre fork**: Clonez le fork sur votre machine locale:
