@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="964.0" prefWidth="368.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.NavBar">
+    <VBox alignment="TOP_CENTER" layoutX="-2.0" prefHeight="964.0" prefWidth="371.0" style="-fx-background-color: #286371; -fx-background-radius: 10px; -fx-spacing: 10px;">
+        <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="141.0" prefWidth="283.0" style="-fx-spacing: 10px;">
+                <children>
+                    <ImageView fitHeight="141.0" fitWidth="157.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@Image/logo.png" />
+                        </image>
+                    </ImageView>
+                    <Label alignment="TOP_CENTER" text="hackify" textFill="WHITE">
+                        <font>
+                            <Font size="36.0" />
+                        </font>
+                    </Label>
+               <ImageView fx:id="profile" fitHeight="78.0" fitWidth="42.0" onMouseClicked="#btn_view_profile" pickOnBounds="true" preserveRatio="true">
+                  <image>
+                     <Image url="@img/preferences.png" />
+                  </image>
+               </ImageView>
+                </children>
+            </HBox>
+            <Button fx:id="btAfficherHackathon" mnemonicParsing="false" onAction="#AfficherHackathon" prefHeight="55.0" prefWidth="363.0" style="-fx-text-fill: white; -fx-background-color: #1b3347; -fx-background-radius: 15px;" text="Liste des hackathon">
+                <font>
+                    <Font size="18.0" />
+                </font></Button>
+            <Button fx:id="btAjouterHackathon" mnemonicParsing="false" onAction="#AjouterHackathon" prefHeight="55.0" prefWidth="363.0" style="-fx-text-fill: white; -fx-background-color: #1b3347; -fx-background-radius: 15px;" text="Ajouter un hackathon">
+                <font>
+                    <Font size="18.0" />
+                </font></Button>
+            <Button fx:id="btHistoriqueParticipation" mnemonicParsing="false" onAction="#AfficherParticipation" prefHeight="55.0" prefWidth="363.0" style="-fx-text-fill: white; -fx-background-color: #1b3347; -fx-background-radius: 15px;" text="Historique de Participation">
+                <font>
+                    <Font size="18.0" />
+                </font></Button>
+         <Button fx:id="btAfiicherCommunaute1" layoutX="14.0" layoutY="359.0" mnemonicParsing="false" onAction="#AfficherCommunaute" prefHeight="55.0" prefWidth="363.0" style="-fx-text-fill: white; -fx-background-color: #1b3347; -fx-background-radius: 15px;" text="Vos Communautés">
+            <font>
+               <Font size="18.0" />
+            </font>
+         </Button>
+            <Button fx:id="btAjoutertech"
+                    text="Ajouter une technologie"
+                    onAction="#Ajoutertechnologie" mnemonicParsing="false"  prefHeight="55.0" prefWidth="363.0" style="-fx-text-fill: white; -fx-background-color: #1b3347; -fx-background-radius: 15px;">
+                <font>
+                    <Font size="18.0" />
+                </font></Button>
+            <Button fx:id="btAjouterEvaluation"
+                    text="Ajouter Evaluation"
+                    onAction="#AjouterEvaluation"
+                    mnemonicParsing="false"
+                    prefHeight="55.0"
+                    prefWidth="363.0"
+                    style="-fx-text-fill: white; -fx-background-color: #1b3347; -fx-background-radius: 15px;">
+                <font>
+                    <Font size="18.0" />
+                </font>
+            </Button>
+
+            <Button fx:id="btAfficherEvaluation"
+                    text="Afficher Evaluation"
+                    onAction="#AfficherEvaluation"
+                    mnemonicParsing="false"
+                    prefHeight="55.0"
+                    prefWidth="363.0"
+                    style="-fx-text-fill: white; -fx-background-color: #1b3347; -fx-background-radius: 15px;">
+                <font>
+                    <Font size="18.0" />
+                </font>
+            </Button>
+
+            <Button fx:id="btAjouterVote"
+                    text="Ajouter Vote"
+                    onAction="#AjouterVote"
+                    mnemonicParsing="false"
+                    prefHeight="55.0"
+                    prefWidth="363.0"
+                    style="-fx-text-fill: white; -fx-background-color: #1b3347; -fx-background-radius: 15px;">
+                <font>
+                    <Font size="18.0" />
+                </font>
+            </Button>
+
+            <Button fx:id="btAfficherVote"
+                    text="Afficher Vote"
+                    onAction="#AfficherVote"
+                    mnemonicParsing="false"
+                    prefHeight="55.0"
+                    prefWidth="363.0"
+                    style="-fx-text-fill: white; -fx-background-color: #1b3347; -fx-background-radius: 15px;">
+                <font>
+                    <Font size="18.0" />
+                </font>
+            </Button>
+
+            <Button fx:id="btChatbot"
+                    text="Chatbot"
+                    onAction="#Chatbot"
+                    mnemonicParsing="false"
+                    prefHeight="55.0"
+                    prefWidth="363.0"
+                    style="-fx-text-fill: white; -fx-background-color: #1b3347; -fx-background-radius: 15px;">
+                <font>
+                    <Font size="18.0" />
+                </font>
+            </Button>
+
+            <Button fx:id="btAnalyse"
+                    text="Analyse"
+                    onAction="#Analyse"
+                    mnemonicParsing="false"
+                    prefHeight="55.0"
+                    prefWidth="363.0"
+                    style="-fx-text-fill: white; -fx-background-color: #1b3347; -fx-background-radius: 15px;">
+                <font>
+                    <Font size="18.0" />
+                </font>
+            </Button>
+            <Button fx:id="btGestionRessource"
+                    text="Gestion des Ressources"
+                    onAction="#openRessourceView"
+                    mnemonicParsing="false"
+                    prefHeight="55.0"
+                    prefWidth="363.0"
+                    style="-fx-text-fill: white; -fx-background-color: #1b3347; -fx-background-radius: 15px;">
+                <font>
+                    <Font size="18.0" />
+                </font>
+            </Button>
+
+
+            <com.jfoenix.controls.JFXButton fx:id="btn_logout" mnemonicParsing="false" onAction="#logoutuser" prefHeight="55.0" prefWidth="363.0" style="-fx-text-fill: white; -fx-background-color: #1b3347; -fx-background-radius: 15px;" text="Log out">
+            <font>
+               <Font size="18.0" />
+            </font>
+            <VBox.margin>
+               <Insets top="450.0" />
+            </VBox.margin>
+         </com.jfoenix.controls.JFXButton>
+
+        </children>
+    </VBox>
+
+
+
+</AnchorPane>
