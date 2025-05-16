@@ -4,49 +4,33 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="76deb76d-711e-4c5c-87d8-4023ef5200f7" name="Changes" comment="" />
+    <list default="true" id="8d1ef62d-b00d-4737-aee3-e60eb02e2bb7" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 4
 }</component>
-  <component name="ProjectId" id="2x9jab0eQHq9FfSDSpIt4CrEtTt" />
+  <component name="ProjectId" id="2xA34bfIOkNys1NLpdaU0k8MoKc" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.PI.executor&quot;: &quot;Run&quot;,
-    &quot;Maven.PI.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;Spring Boot.PI.executor&quot;: &quot;Run&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/hanin/IdeaProjects/Hackify&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
-  <component name="RunManager">
-    <configuration name="PI" type="Application" factoryName="Application">
-      <option name="MAIN_CLASS_NAME" value="main.TestFX" />
-      <module name="PI" />
-      <option name="VM_PARAMETERS" value="--module-path &quot;C:\javafx-sdk-24.0.1\lib&quot; --add-modules javafx.controls,javafx.fxml " />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-  </component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -58,15 +42,13 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="76deb76d-711e-4c5c-87d8-4023ef5200f7" name="Changes" comment="" />
-      <created>1747357247196</created>
+      <changelist id="8d1ef62d-b00d-4737-aee3-e60eb02e2bb7" name="Changes" comment="" />
+      <created>1747366863839</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1747357247196</updated>
-      <workItem from="1747357248274" duration="825000" />
-      <workItem from="1747358416466" duration="1902000" />
-      <workItem from="1747360824999" duration="132000" />
-      <workItem from="1747361492666" duration="3309000" />
+      <updated>1747366863839</updated>
+      <workItem from="1747366864999" duration="113000" />
+      <workItem from="1747367140549" duration="463000" />
     </task>
     <servers />
   </component>
