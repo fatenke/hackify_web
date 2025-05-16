@@ -4,9 +4,9 @@
 
 Hackify est une plateforme web permettant d’organiser, de gérer et de suivre des hackathons de manière collaborative et structurée.
 
-- **Objectif** : Faciliter l'organisation des hackathons pour les organisateurs, offrir un espace clair pour les participants, et permettre une évaluation juste via un jury.
-- **Problème résolu** : L'absence d'une plateforme unifiée pour la gestion complète de hackathons, du lancement à l'évaluation.
-- **Fonctionnalités principales** :
+### Objectif : Faciliter l'organisation des hackathons pour les organisateurs, offrir un espace clair pour les participants, et permettre une évaluation juste via un jury.
+### Problème résolu : L'absence d'une plateforme unifiée pour la gestion complète de hackathons, du lancement à l'évaluation.
+### Fonctionnalités principales :
   - Gestion des hackathons par les organisateurs.
   - Inscriptions des participants.
   - Évaluation des projets par un jury avec attribution de notes.
